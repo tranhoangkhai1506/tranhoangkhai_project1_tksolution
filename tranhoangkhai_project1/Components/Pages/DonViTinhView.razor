@@ -1,0 +1,81 @@
+﻿@page "/donvitinh-list"
+@inject iDonViTinhService DonViTinhSevice
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>Đơn vị tính</PageTitle>
+<h3>Đơn vị tính</h3>
+<hr />
+<button class="btn btn-primary" @onclick="AddDVT">Thêm đơn vị tính</button>
+@if (dvtList.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy đơn vị tính nào! Vui lòng thêm đơn vị tính!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Tên Đơn vị tính
+                </th>
+                <th>
+                    Ghi chú
+                </th>
+                <th>
+                    
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dvt in dvtList)
+            {
+                <tr>
+                    <td>
+                        @dvt.Ten_Don_Vi_Tinh
+                    </td>
+                    <td>
+                        @dvt.Ghi_Chu
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(()=>EditDVT(dvt.Ten_Don_Vi_Tinh))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteDVT(dvt.Ten_Don_Vi_Tinh))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    
+}
+
+@code {
+    List<DonViTinhModel> dvtList = new List<DonViTinhModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        dvtList = await DonViTinhSevice.GetAllDonViTinhAsync();
+    }
+
+    void EditDVT(string tendonvi)
+    {
+        nav.NavigateTo($"/edit-donvitinh/{tendonvi}");
+    }
+
+    void AddDVT()
+    {
+        nav.NavigateTo($"/edit-donvitinh");
+    }
+    async Task DeleteDVT(string tendonvi)
+    {
+        await DonViTinhSevice.DeleteDonViTinhAsync(tendonvi);
+        dvtList = await DonViTinhSevice.GetAllDonViTinhAsync();
+    }
+}

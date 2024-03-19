@@ -1,0 +1,69 @@
+﻿@page "/edit-donvitinh"
+@page "/edit-donvitinh/{Ten_Don_Vi_Tinh}"
+@inject iDonViTinhService DonViTinhSevice
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+@if (Ten_Don_Vi_Tinh is null)
+{
+    <PageTitle>Thêm đơn vị tính</PageTitle>
+    <h3>Thêm đơn vị tính</h3>
+
+    <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
+        <div>
+            <label for="Ten_Don_Vi_Tinh">Tên Đơn vị tính</label>
+            <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control"></InputText>
+            <label for="Ghi_Chu">Ghi chú</label>
+            <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+}
+else
+{
+    <PageTitle>Chỉnh sửa "@CurrentDVT.Ten_Don_Vi_Tinh"</PageTitle>
+    <h3>Chỉnh sửa "@CurrentDVT.Ten_Don_Vi_Tinh"</h3>
+
+    <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
+        <div>
+            <label for="Ghi_Chu">Ghi chú</label>
+            <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string? Ten_Don_Vi_Tinh { get; set; }
+
+    public DonViTinhModel CurrentDVT { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Ten_Don_Vi_Tinh is not null)
+        {
+            var dvt = await DonViTinhSevice.GetByIdAsync(Ten_Don_Vi_Tinh);
+            if (dvt is not null)
+            {
+                CurrentDVT = dvt;
+            }
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Ten_Don_Vi_Tinh is not null)
+        {
+            await DonViTinhSevice.UpdateDonViTinhAsync(CurrentDVT, Ten_Don_Vi_Tinh);
+            nav.NavigateTo("/donvitinh-list");
+        }
+        else
+        {
+            await DonViTinhSevice.AddDonViTinh(CurrentDVT);
+            nav.NavigateTo("/donvitinh-list");
+        }
+    }
+}
