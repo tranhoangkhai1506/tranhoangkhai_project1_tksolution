@@ -1,0 +1,117 @@
+﻿@page "/edit-nhacungcap"
+@page "/edit-nhacungcap/{maNCC}"
+
+@inject iNhaCungCapService NhaCungCapSevice
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+@if (maNCC is null)
+{
+    <PageTitle>Thêm Sản Phẩm</PageTitle>
+    <h1>Thêm Sản Phẩm</h1>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+    <EditForm Model="CurrentNCC" OnSubmit="HandleSubmit">
+        <div>
+            <label for="Ma_NCC">Mã Nhà Cung Cấp</label>
+            <InputText id="Ma_NCC" @bind-Value="CurrentNCC.Ma_NCC" class="form-control"></InputText>
+        </div>
+        <div>
+            <label for="Ten_NCC">Tên Nhà Cung Cấp</label>
+            <InputText id="Ten_NCC" @bind-Value="CurrentNCC.Ten_NCC" class="form-control"></InputText>
+        </div>
+        <div>
+            <label for="Ghi_Chu">Ghi Chú</label>
+            <InputText id="Ghi_Chu" @bind-Value="CurrentNCC.Ghi_Chu" class="form-control"></InputText>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+
+
+    
+}
+else
+{
+    <PageTitle>Chỉnh sửa "@CurrentNCC."</PageTitle>
+    <h3>Chỉnh sửa "@CurrentNCC.Ten_NCC"</h3>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+
+    <EditForm Model="CurrentNCC" OnSubmit="HandleSubmit">
+        <div>
+            <label for="Ten_NCC">Tên Nhà Cung Cấp</label>
+            <InputText id="Ten_NCC" @bind-Value="CurrentNCC.Ten_NCC" class="form-control"></InputText>
+        </div>
+        <div>
+            <label for="Ghi_Chu">Ghi Chú</label>
+            <InputText id="Ghi_Chu" @bind-Value="CurrentNCC.Ghi_Chu" class="form-control"></InputText>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string? maNCC { get; set; }
+    public string ErrorMessage { get; set; }
+
+
+    public NhaCungCapModel CurrentNCC { get; set; } = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (maNCC is not null)
+        {
+            var sanPham = await NhaCungCapSevice.GetByIdAsync(maNCC);
+            if (sanPham is not null)
+            {
+                CurrentNCC = sanPham;
+            }
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+
+        if (string.IsNullOrWhiteSpace(CurrentNCC.Ma_NCC))
+        {
+            ErrorMessage = "Mã sản phẩm không được để trống.";
+            return;
+        }
+
+        var existingProduct = await NhaCungCapSevice.GetByIdAsync(CurrentNCC.Ma_NCC);
+        if (existingProduct != null && maNCC is null)
+        {
+            ErrorMessage = "Mã sản phẩm đã tồn tại.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(CurrentNCC.Ghi_Chu))
+        {
+            ErrorMessage = "Ghi chú không được để trống.";
+            return;
+        }
+
+        // Nếu không có lỗi, tiến hành cập nhật hoặc thêm mới sản phẩm
+        if (maNCC is not null)
+        {
+            await NhaCungCapSevice.UpdateNhaCungCapAsync(CurrentNCC, maNCC);
+            nav.NavigateTo("/nhacungcap-list");
+        }
+        else
+        {
+            await NhaCungCapSevice.AddNhaCungCap(CurrentNCC);
+            nav.NavigateTo("/nhacungcap-list");
+        }
+    }
+}

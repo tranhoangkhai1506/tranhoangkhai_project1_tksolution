@@ -8,6 +8,12 @@
 {
     <PageTitle>Thêm đơn vị tính</PageTitle>
     <h3>Thêm đơn vị tính</h3>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
 
     <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
         <div>
@@ -24,6 +30,12 @@ else
 {
     <PageTitle>Chỉnh sửa "@CurrentDVT.Ten_Don_Vi_Tinh"</PageTitle>
     <h3>Chỉnh sửa "@CurrentDVT.Ten_Don_Vi_Tinh"</h3>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
 
     <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
         <div>
@@ -38,7 +50,7 @@ else
 @code {
     [Parameter]
     public string? Ten_Don_Vi_Tinh { get; set; }
-
+    public string ErrorMessage { get; set; }
     public DonViTinhModel CurrentDVT { get; set; } = new();
 
     protected override async Task OnParametersSetAsync()
@@ -55,6 +67,24 @@ else
 
     async Task HandleSubmit()
     {
+        if (string.IsNullOrWhiteSpace(CurrentDVT.Ten_Don_Vi_Tinh))
+        {
+            ErrorMessage = "Tên đơn vị tính không được để trống.";
+            return;
+        }
+
+        var existingUnitCode = await DonViTinhSevice.GetByIdAsync(CurrentDVT.Ten_Don_Vi_Tinh);
+        if (existingUnitCode != null && Ten_Don_Vi_Tinh is null)
+        {
+            ErrorMessage = "Tên đơn vị tính đã tồn tại.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(CurrentDVT.Ghi_Chu))
+        {
+            ErrorMessage = "Ghi chú không được để trống.";
+            return;
+        }
+
         if (Ten_Don_Vi_Tinh is not null)
         {
             await DonViTinhSevice.UpdateDonViTinhAsync(CurrentDVT, Ten_Don_Vi_Tinh);

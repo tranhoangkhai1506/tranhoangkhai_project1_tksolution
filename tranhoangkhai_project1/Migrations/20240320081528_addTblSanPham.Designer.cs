@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tranhoangkhai_project1.Data;
 
@@ -10,9 +11,11 @@ using tranhoangkhai_project1.Data;
 namespace tranhoangkhai_project1.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240320081528_addTblSanPham")]
+    partial class addTblSanPham
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,44 +90,6 @@ namespace tranhoangkhai_project1.Migrations
                             Ma_LSP = "lsp_03",
                             Ghi_Chu = "Ghi chu 3",
                             Ten_LSP = "Loai 3"
-                        });
-                });
-
-            modelBuilder.Entity("tranhoangkhai_project1.Models.NhaCungCapModel", b =>
-                {
-                    b.Property<string>("Ma_NCC")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Ghi_Chu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Ten_NCC")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Ma_NCC");
-
-                    b.ToTable("tbl_DM_NCC");
-
-                    b.HasData(
-                        new
-                        {
-                            Ma_NCC = "ncc_01",
-                            Ghi_Chu = "Ghi chu 1",
-                            Ten_NCC = "Nha cung cap 1"
-                        },
-                        new
-                        {
-                            Ma_NCC = "ncc_02",
-                            Ghi_Chu = "Ghi chu 2",
-                            Ten_NCC = "Nha cung cap 2"
-                        },
-                        new
-                        {
-                            Ma_NCC = "ncc_03",
-                            Ghi_Chu = "Ghi chu 3",
-                            Ten_NCC = "Nha cung cap 3"
                         });
                 });
 

@@ -8,6 +8,12 @@
 {
     <PageTitle>Thêm đơn vị tính</PageTitle>
     <h3>Thêm đơn vị tính</h3>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
     <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
         <div>
             <label for="Ma_LSP">Mã Loại</label>
@@ -29,7 +35,12 @@ else
 {
     <PageTitle>Chỉnh sửa "@CurrentLSP."</PageTitle>
     <h3>Chỉnh sửa "@CurrentLSP.Ten_LSP"</h3>
-
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
     <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
         <div>
             <label for="Ten_LSP">Ten SP</label>
@@ -47,7 +58,7 @@ else
 @code {
     [Parameter]
     public string? Ma_LSP { get; set; }
-
+    public string ErrorMessage { get; set; }
     public LoaiSanPhamModel CurrentLSP { get; set; } = new();
 
     protected override async Task OnParametersSetAsync()
@@ -64,6 +75,36 @@ else
 
     async Task HandleSubmit()
     {
+        if (string.IsNullOrWhiteSpace(CurrentLSP.Ma_LSP))
+        {
+            ErrorMessage = "Mã loại sản phẩm không được để trống.";
+            return;
+        }
+
+        var existingUnitCode = await LoaiSanPhamSevice.GetByIdAsync(CurrentLSP.Ma_LSP);
+        if (existingUnitCode != null && Ma_LSP is null)
+        {
+            ErrorMessage = "Mã loại sản phẩm đã tồn tại.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(CurrentLSP.Ten_LSP))
+        {
+            ErrorMessage = "Tên loại sản phẩm không được để trống.";
+            return;
+        }
+
+        var existingUni = await LoaiSanPhamSevice.GetByIdAsync(CurrentLSP.Ma_LSP);
+        if (existingUni != null && Ma_LSP is null)
+        {
+            ErrorMessage = "Mã sản phẩm đã tồn tại.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(CurrentLSP.Ghi_Chu))
+        {
+            ErrorMessage = "Ghi chú không được để trống.";
+            return;
+        }
         if (Ma_LSP is not null)
         {
             await LoaiSanPhamSevice.UpdateLoaiSanPhamAsync(CurrentLSP, Ma_LSP);

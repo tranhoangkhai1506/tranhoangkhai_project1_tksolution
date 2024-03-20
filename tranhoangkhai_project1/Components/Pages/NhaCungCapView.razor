@@ -1,0 +1,87 @@
+﻿ @page "/nhacungcap-list"
+@inject iNhaCungCapService NhaCungCapService
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>NHÀ CUNG CẤP</PageTitle>
+<h1>NHÀ CUNG CẤP</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddNhaCungCap">Thêm Nhà Cung Cấp</button>
+@if (NCCList.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy nhà cung cấp nào! Vui lòng thêm nhà cung cấp!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã Nhà Cung Cấp
+                </th>
+                <th>
+                    Tên Nhà Cung Cấp
+                </th>
+                <th>
+                    Ghi chú
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var nhaCungCap in NCCList)
+            {
+                <tr>
+                    <td>
+                        @nhaCungCap.Ma_NCC
+                    </td>
+                    <td>
+                        @nhaCungCap.Ten_NCC
+                    </td>
+                    <td>
+                        @nhaCungCap.Ghi_Chu
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(()=>EditNhaCungCap(nhaCungCap.Ma_NCC))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteNhaCungCap(nhaCungCap.Ma_NCC))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+@code {
+    List<NhaCungCapModel> NCCList = new List<NhaCungCapModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        NCCList = await NhaCungCapService.GetAllNhaCungCapAsync();
+    }
+
+    void EditNhaCungCap(string maNCC)
+    {
+        nav.NavigateTo($"/edit-nhacungcap/{maNCC}");
+    }
+
+    void AddNhaCungCap()
+    {
+        nav.NavigateTo($"/edit-nhacungcap");
+    }
+    async Task DeleteNhaCungCap(string maNCC)
+    {
+        await NhaCungCapService.DeleteNhaCungCapAsync(maNCC);
+        NCCList = await NhaCungCapService.GetAllNhaCungCapAsync();
+    }
+}

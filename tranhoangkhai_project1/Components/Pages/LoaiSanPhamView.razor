@@ -4,8 +4,8 @@
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-<PageTitle>loại sản phẩm</PageTitle>
-<h1>Loại sản phẩm</h1>
+<PageTitle>LOẠI SẢN PHẨM</PageTitle>
+<h1>LOẠI SẢN PHẨM</h1>
 <hr />
 <button class="btn btn-primary" @onclick="AddDVT">Thêm loại sản phẩm</button>
 @if (lSPList.Count == 0)
@@ -64,7 +64,6 @@ else
 
 @code {
     List<LoaiSanPhamModel> lSPList = new List<LoaiSanPhamModel>();
-
     protected override async Task OnInitializedAsync()
     {
         lSPList = await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync();

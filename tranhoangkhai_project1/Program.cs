@@ -14,6 +14,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddScoped<iDonViTinhService, DonViTinhService>();
 builder.Services.AddScoped<iLoaiSanPhamService, LoaiSanPhamService>();
+builder.Services.AddScoped<iSanPhamService, SanPhamService>();
+builder.Services.AddScoped<iNhaCungCapService, NhaCungCapService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

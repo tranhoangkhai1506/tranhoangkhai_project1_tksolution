@@ -1,0 +1,99 @@
+﻿ @page "/sanpham-list"
+@inject iSanPhamService SanPhamSevice
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>SẢN PHẨM</PageTitle>
+<h1>SẢN PHẨM</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddSanPham">Thêm loại sản phẩm</button>
+@if (SPList.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy loại sản phẩm nào! Vui lòng thêm loại sản phẩm!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã sản phẩm
+                </th>
+                <th>
+                    Tên sản phẩm
+                </th>
+                <th>
+                    Loại sản phẩm
+                </th>
+                <th>
+                    Loại đơn vị tính
+                </th>
+                <th>
+                    Ghi chú
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dvt in SPList)
+            {
+                <tr>
+                    <td>
+                        @dvt.Ma_San_Pham
+                    </td>
+                    <td>
+                        @dvt.Ten_San_Pham
+                    </td>
+                    <td>
+                        @dvt.Loai_San_Pham_ID
+                    </td>
+                    <td>
+                        @dvt.Don_Vi_Tinh_ID
+                    </td>
+                    <td>
+                        @dvt.Ghi_Chu
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(()=>EditSanPham(dvt.Ma_San_Pham))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteSanPham(dvt.Ma_San_Pham))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+@code {
+    List<SanPhamModel> SPList = new List<SanPhamModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        SPList = await SanPhamSevice.GetAllSanPhamAsync();
+    }
+
+    void EditSanPham(string maSanPham)
+    {
+        nav.NavigateTo($"/edit-sanpham/{maSanPham}");
+    }
+
+    void AddSanPham()
+    {
+        nav.NavigateTo($"/edit-sanpham");
+    }
+    async Task DeleteSanPham(string maSanPham)
+    {
+        await SanPhamSevice.DeleteSanPhamAsync(maSanPham);
+        SPList = await SanPhamSevice.GetAllSanPhamAsync();
+    }
+}
