@@ -1,0 +1,87 @@
+﻿ @page "/loaisanpham-list"
+@inject iLoaiSanPhamService LoaiSanPhamSevice
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>loại sản phẩm</PageTitle>
+<h1>Loại sản phẩm</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddDVT">Thêm loại sản phẩm</button>
+@if (lSPList.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy loại sản phẩm nào! Vui lòng thêm loại sản phẩm!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã loại
+                </th>
+                <th>
+                    Tên loại sản phẩm
+                </th>
+                <th>
+                    Ghi chú
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dvt in lSPList)
+            {
+                <tr>
+                    <td>
+                        @dvt.Ma_LSP
+                    </td>
+                    <td>
+                        @dvt.Ten_LSP
+                    </td>
+                    <td>
+                        @dvt.Ghi_Chu
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(()=>EditDVT(dvt.Ma_LSP))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteDVT(dvt.Ma_LSP))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+@code {
+    List<LoaiSanPhamModel> lSPList = new List<LoaiSanPhamModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        lSPList = await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync();
+    }
+
+    void EditDVT(string ma_lsp)
+    {
+        nav.NavigateTo($"/edit-loaisanpham/{ma_lsp}");
+    }
+
+    void AddDVT()
+    {
+        nav.NavigateTo($"/edit-loaisanpham");
+    }
+    async Task DeleteDVT(string ma_lsp)
+    {
+        await LoaiSanPhamSevice.DeleteLoaiSanPhamAsync(ma_lsp);
+        lSPList = await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync();
+    }
+}
