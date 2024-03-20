@@ -1,0 +1,81 @@
+﻿@page "/kho-list"
+@inject iKhoService KhoService
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>KHO</PageTitle>
+<h1>KHO</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddKho">Thêm kho mới</button>
+@if (khoList.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy kho nào! Vui lòng thêm kho mới!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Tên Kho
+                </th>
+                <th>
+                    Ghi Chú
+                </th>
+                <th>
+                    
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kho in khoList)
+            {
+                <tr>
+                    <td>
+                        @kho.Ten_Kho
+                    </td>
+                    <td>
+                        @kho.Ghi_Chu
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(()=>EditKho(kho.Ten_Kho))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteKho(kho.Ten_Kho))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    
+}
+
+@code {
+    List<KhoModel> khoList = new List<KhoModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        khoList = await KhoService.GetAllKhoAsync();
+    }
+
+    void EditKho(string tenKho)
+    {
+        nav.NavigateTo($"/edit-kho/{tenKho}");
+    }
+
+    void AddKho()
+    {
+        nav.NavigateTo($"/edit-kho");
+    }
+    async Task DeleteKho(string tenKho)
+    {
+        await KhoService.DeleteKhoAsync(tenKho);
+        khoList = await KhoService.GetAllKhoAsync();
+    }
+}

@@ -34,11 +34,17 @@ namespace tranhoangkhai_project1.Data
                 new NhaCungCapModel { Ma_NCC = "ncc_02", Ten_NCC = "Nha cung cap 2", Ghi_Chu = "Ghi chu 2" },
                 new NhaCungCapModel { Ma_NCC = "ncc_03", Ten_NCC = "Nha cung cap 3", Ghi_Chu = "Ghi chu 3" }
             );
+            modelBuilder.Entity<KhoModel>().HasData(
+                new KhoModel { Ten_Kho = "Kho_01", Ghi_Chu = "Ghi chu 1" },
+                new KhoModel { Ten_Kho = "Kho_02", Ghi_Chu = "Ghi chu 2" },
+                new KhoModel { Ten_Kho = "Kho_03", Ghi_Chu = "Ghi chu 3" }
+            );
         }
 
         public DbSet<DonViTinhModel> tbl_DM_Don_Vi_Tinh { get; set; }
         public DbSet<LoaiSanPhamModel> tbl_DM_Loai_San_Pham { get; set; }
         public DbSet<SanPhamModel> tbl_DM_San_Pham { get; set; }
         public DbSet<NhaCungCapModel> tbl_DM_NCC { get; set; }
+        public DbSet<KhoModel> tbl_DM_Kho { get; set; }
     }
 }
