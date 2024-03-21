@@ -1,0 +1,54 @@
+﻿@page "/login/{tenKho}"
+@inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthenticationService
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<h3>Đăng nhập</h3>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+<EditForm Model="loginModel" OnValidSubmit="@HandleLogin">
+    <div>
+        <label for="Ma_Dang_Nhap">Mã Đăng Nhập:</label>
+        <InputText id="Ma_Dang_Nhap" @bind-Value="loginModel.Ma_Dang_Nhap" class="form-control" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Đăng nhập</button>
+</EditForm>
+
+
+
+@code {
+    [Parameter]
+    public string? tenKho { get; set; }
+    private KhoUserModel loginModel = new KhoUserModel();
+    private string errorMessage = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (tenKho is not null)
+        {
+            loginModel.Kho_ID = tenKho;
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        await AuthenticationService.LoginAsync(loginModel.Ma_Dang_Nhap, loginModel.Kho_ID);
+        bool isAuthenticated = IsAuthStatic.IsAuthenticated;
+        if (isAuthenticated)
+        {
+            NavigationManager.NavigateTo($"/edit-kho/{loginModel.Kho_ID}");
+        }
+        else
+        {
+            errorMessage = "Đăng nhập không thành công. Vui lòng kiểm tra mã đăng nhập.";
+        }
+    }
+
+    
+}

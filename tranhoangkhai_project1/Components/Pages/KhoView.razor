@@ -4,10 +4,25 @@
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-<PageTitle>KHO</PageTitle>
+<PageTitle>KHO </PageTitle>
 <h1>KHO</h1>
 <hr />
-<button class="btn btn-primary" @onclick="AddKho">Thêm kho mới</button>
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <button class="btn btn-primary" @onclick="AddKho">Thêm kho mới</button>
+    </div>
+    <div>
+        @if (IsAuthStatic.IsAuthenticated)
+        {
+            <span>Xin chào, @IsAuthStatic.UserLogin.Ma_Dang_Nhap! (@IsAuthStatic.UserLogin.Kho_ID) </span>
+            <button class="btn btn-warning ml-2" @onclick="Logout">Đăng xuất</button>
+        }
+        else
+        {
+            <span>Bạn chưa đăng nhập.</span>
+        }
+    </div>
+</div>
 @if (khoList.Count == 0)
 {
     <hr />
@@ -43,7 +58,7 @@ else
                         @kho.Ghi_Chu
                     </td>
                     <td>
-                        <button class="btn btn-primary" @onclick="@(()=>EditKho(kho.Ten_Kho))">Chỉnh sửa</button>
+                        <button class="btn btn-info" @onclick="@(()=>EditKho(kho.Ten_Kho))">Chỉnh sửa</button>
                     </td>
                     <td>
                         <button class="btn btn-danger" @onclick="@(()=>DeleteKho(kho.Ten_Kho))">Xóa</button>
@@ -58,6 +73,10 @@ else
 
 @code {
     List<KhoModel> khoList = new List<KhoModel>();
+    bool isAuthenticated = IsAuthStatic.IsAuthenticated;
+    KhoUserModel isAccountAuthenticated = IsAuthStatic.UserLogin;
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,7 +85,15 @@ else
 
     void EditKho(string tenKho)
     {
-        nav.NavigateTo($"/edit-kho/{tenKho}");
+        if (isAuthenticated && isAccountAuthenticated.Kho_ID.Equals(tenKho))
+        {
+            nav.NavigateTo($"/edit-kho/{tenKho}");
+        }
+        else
+        {
+            nav.NavigateTo($"/login/{tenKho}");
+        }
+
     }
 
     void AddKho()
@@ -75,7 +102,22 @@ else
     }
     async Task DeleteKho(string tenKho)
     {
-        await KhoService.DeleteKhoAsync(tenKho);
-        khoList = await KhoService.GetAllKhoAsync();
+        
+        if (isAuthenticated && isAccountAuthenticated.Kho_ID.Equals(tenKho))
+        {
+            await KhoService.DeleteKhoAsync(tenKho);
+            khoList = await KhoService.GetAllKhoAsync();
+        }
+        else
+        {
+            nav.NavigateTo($"/login/{tenKho}");
+        }
+        
+    }
+    void Logout()
+    {
+        IsAuthStatic.MarkUserAsLoggedOut(); 
+        IsAuthStatic.MarkAccountUserAsLoggedOut(); 
+        //nav.NavigateTo("/login"); // Redirect to the login page
     }
 }

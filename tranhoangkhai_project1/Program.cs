@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using tranhoangkhai_project1.Components;
 using tranhoangkhai_project1.Data;
@@ -17,6 +18,9 @@ builder.Services.AddScoped<iLoaiSanPhamService, LoaiSanPhamService>();
 builder.Services.AddScoped<iSanPhamService, SanPhamService>();
 builder.Services.AddScoped<iNhaCungCapService, NhaCungCapService>();
 builder.Services.AddScoped<iKhoService, KhoService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

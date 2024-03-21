@@ -39,6 +39,11 @@ namespace tranhoangkhai_project1.Data
                 new KhoModel { Ten_Kho = "Kho_02", Ghi_Chu = "Ghi chu 2" },
                 new KhoModel { Ten_Kho = "Kho_03", Ghi_Chu = "Ghi chu 3" }
             );
+            modelBuilder.Entity<KhoUserModel>().HasData(
+                new KhoUserModel { Ma_Dang_Nhap = "qlkho1", Kho_ID = "Kho_01" },
+                new KhoUserModel { Ma_Dang_Nhap = "qlkho2", Kho_ID = "Kho_02" },
+                new KhoUserModel { Ma_Dang_Nhap = "qlkho3", Kho_ID = "Kho_03" }
+            );
         }
 
         public DbSet<DonViTinhModel> tbl_DM_Don_Vi_Tinh { get; set; }
@@ -46,5 +51,6 @@ namespace tranhoangkhai_project1.Data
         public DbSet<SanPhamModel> tbl_DM_San_Pham { get; set; }
         public DbSet<NhaCungCapModel> tbl_DM_NCC { get; set; }
         public DbSet<KhoModel> tbl_DM_Kho { get; set; }
+        public DbSet<KhoUserModel> tbl_DM_Kho_User { get; set; }
     }
 }
