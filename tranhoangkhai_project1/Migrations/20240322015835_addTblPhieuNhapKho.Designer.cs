@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tranhoangkhai_project1.Data;
 
@@ -11,9 +12,11 @@ using tranhoangkhai_project1.Data;
 namespace tranhoangkhai_project1.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240322015835_addTblPhieuNhapKho")]
+    partial class addTblPhieuNhapKho
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,31 +54,6 @@ namespace tranhoangkhai_project1.Migrations
                             Ten_Don_Vi_Tinh = "dvt_03",
                             Ghi_Chu = "Ghi chu 3"
                         });
-                });
-
-            modelBuilder.Entity("tranhoangkhai_project1.Models.HieuChinhPhieuNhapKhoModel", b =>
-                {
-                    b.Property<string>("So_Phieu_Nhap_Kho")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Ghi_Chu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Kho_ID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NCC_ID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Ngay_Nhap_Kho")
-                        .HasColumnType("Date");
-
-                    b.HasKey("So_Phieu_Nhap_Kho");
-
-                    b.ToTable("tbl_XNK_Nhap_Kho");
                 });
 
             modelBuilder.Entity("tranhoangkhai_project1.Models.KhoModel", b =>
@@ -247,7 +225,7 @@ namespace tranhoangkhai_project1.Migrations
                             Ghi_Chu = "Ghi chu 1",
                             Kho_ID = "Kho_01",
                             NCC_ID = "ncc_01",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 22, 17, 29, 40, 395, DateTimeKind.Local).AddTicks(1854)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 22, 8, 58, 34, 459, DateTimeKind.Local).AddTicks(7722)
                         },
                         new
                         {
@@ -255,7 +233,7 @@ namespace tranhoangkhai_project1.Migrations
                             Ghi_Chu = "Ghi chu 2",
                             Kho_ID = "Kho_02",
                             NCC_ID = "ncc_02",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 22, 17, 29, 40, 395, DateTimeKind.Local).AddTicks(1866)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 22, 8, 58, 34, 459, DateTimeKind.Local).AddTicks(7735)
                         },
                         new
                         {
@@ -263,7 +241,7 @@ namespace tranhoangkhai_project1.Migrations
                             Ghi_Chu = "Ghi chu 3",
                             Kho_ID = "Kho_03",
                             NCC_ID = "ncc_03",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 22, 17, 29, 40, 395, DateTimeKind.Local).AddTicks(1868)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 22, 8, 58, 34, 459, DateTimeKind.Local).AddTicks(7737)
                         });
                 });
 

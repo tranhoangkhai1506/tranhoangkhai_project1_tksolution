@@ -1,0 +1,115 @@
+﻿ @page "/phieunhapkho-list"
+@inject iPhieuNhapKhoService PhieuNhapKhoService
+@inject iHieuChinhPhieuNhapKhoService HieuChinhPhieuNhapKhoService
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>PHIẾU NHẬP KHO</PageTitle>
+<h1>PHIẾU NHẬP KHO</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddPhieuNhapKho">Thêm phiếu nhập kho</button>
+@if (phieuNhapKhoList.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy loại phiếu nhập kho nào! Vui lòng thêm phiếu nhập kho!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã Phiếu Nhập Kho
+                </th>
+                <th>
+                    Mã kho
+                </th>
+                <th>
+                    Nhà cung cấp 
+                </th>
+                <th>
+                    Ngày nhập
+                </th>
+                <th>
+                    Ghi chú
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var phieu in phieuNhapKhoList)
+            {
+                <tr>
+                    <td>
+                        @phieu.So_Phieu_Nhap_Kho
+                    </td>
+                    <td>
+                        @phieu.Kho_ID
+                    </td>
+                    <td>
+                        @phieu.NCC_ID
+                    </td>
+                    <td>
+                        @phieu.Ngay_Nhap_Kho
+
+                    </td>
+                    <td>
+                        @phieu.Ghi_Chu
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-info" @onclick="@(()=>HieuChinh(phieu.So_Phieu_Nhap_Kho))">Hiệu chỉnh</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeletePhieuNhapKho(phieu.So_Phieu_Nhap_Kho))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+}
+
+@code {
+    List<PhieuNhapKhoModel> phieuNhapKhoList = new List<PhieuNhapKhoModel>();
+    public string ErrorMessage { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        phieuNhapKhoList = await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync();
+    }
+    void AddPhieuNhapKho()
+    {
+        nav.NavigateTo($"/edit-phieunhapkho");
+    }
+    async Task DeletePhieuNhapKho(string maphieu)
+    {
+        var hieuchinhPhieuNhapKho = await HieuChinhPhieuNhapKhoService.GetByIdAsync(maphieu);
+        if(hieuchinhPhieuNhapKho is null)
+        {
+            await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
+            phieuNhapKhoList = await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync();
+        }
+        else
+        {
+            ErrorMessage = "Không thể xóa phiếu nhập!";
+            return;
+        }
+
+    }
+    async Task HieuChinh(string So_Phieu_Nhap_Kho)
+    {
+        nav.NavigateTo($"/edit-hieuchinh/{So_Phieu_Nhap_Kho}");
+    }
+}

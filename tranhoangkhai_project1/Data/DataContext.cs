@@ -44,6 +44,11 @@ namespace tranhoangkhai_project1.Data
                 new KhoUserModel { Ma_Dang_Nhap = "qlkho2", Kho_ID = "Kho_02" },
                 new KhoUserModel { Ma_Dang_Nhap = "qlkho3", Kho_ID = "Kho_03" }
             );
+            modelBuilder.Entity<PhieuNhapKhoModel>().HasData(
+                new PhieuNhapKhoModel { So_Phieu_Nhap_Kho = "pn_01", Kho_ID = "Kho_01",NCC_ID = "ncc_01",Ngay_Nhap_Kho= DateTime.Now, Ghi_Chu = "Ghi chu 1" },
+                new PhieuNhapKhoModel { So_Phieu_Nhap_Kho = "pn_02", Kho_ID = "Kho_02", NCC_ID = "ncc_02", Ngay_Nhap_Kho= DateTime.Now, Ghi_Chu = "Ghi chu 2" },
+                new PhieuNhapKhoModel { So_Phieu_Nhap_Kho = "pn_03", Kho_ID = "Kho_03", NCC_ID = "ncc_03", Ngay_Nhap_Kho= DateTime.Now, Ghi_Chu = "Ghi chu 3" }
+            );
         }
 
         public DbSet<DonViTinhModel> tbl_DM_Don_Vi_Tinh { get; set; }
@@ -52,5 +57,7 @@ namespace tranhoangkhai_project1.Data
         public DbSet<NhaCungCapModel> tbl_DM_NCC { get; set; }
         public DbSet<KhoModel> tbl_DM_Kho { get; set; }
         public DbSet<KhoUserModel> tbl_DM_Kho_User { get; set; }
+        public DbSet<PhieuNhapKhoModel> tbl_DM_Nhap_Kho { get; set; }
+        public DbSet<HieuChinhPhieuNhapKhoModel> tbl_XNK_Nhap_Kho { get; set; }
     }
 }

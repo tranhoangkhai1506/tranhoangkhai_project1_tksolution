@@ -20,6 +20,8 @@ builder.Services.AddScoped<iNhaCungCapService, NhaCungCapService>();
 builder.Services.AddScoped<iKhoService, KhoService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<iPhieuNhapKhoService, PhieuNhapKhoService>();
+builder.Services.AddScoped<iHieuChinhPhieuNhapKhoService, HieuChinhPhieuNhapKhoService>();
 
 var app = builder.Build();
 
