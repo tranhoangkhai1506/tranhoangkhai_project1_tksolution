@@ -25,6 +25,7 @@
         <div>
             <label for="NCC_ID">Nhà Cung Cấp</label>
             <InputSelect class="form-control" id="NCC_ID" @bind-Value="phieuNhapKho.NCC_ID">
+                <option value="" disabled selected>Chọn nhà cung cấp</option>
                 @foreach (var nhacungcap in listNhaCC)
                 {
                     <option value="@nhacungcap.Ma_NCC">@nhacungcap.Ten_NCC</option>
@@ -34,6 +35,7 @@
         <div>
             <label for="Kho_ID">Kho</label>
             <InputSelect class="form-control" id="Kho_ID" @bind-Value="phieuNhapKho.Kho_ID">
+                <option value="" disabled selected>Chọn kho</option>
                 @foreach (var kho in listKho)
                 {
                     <option value="@kho.Ten_Kho">@kho.Ten_Kho</option>

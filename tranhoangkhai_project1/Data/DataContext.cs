@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using tranhoangkhai_project1.Models;
 
 namespace tranhoangkhai_project1.Data
@@ -49,6 +50,16 @@ namespace tranhoangkhai_project1.Data
                 new PhieuNhapKhoModel { So_Phieu_Nhap_Kho = "pn_02", Kho_ID = "Kho_02", NCC_ID = "ncc_02", Ngay_Nhap_Kho= DateTime.Now, Ghi_Chu = "Ghi chu 2" },
                 new PhieuNhapKhoModel { So_Phieu_Nhap_Kho = "pn_03", Kho_ID = "Kho_03", NCC_ID = "ncc_03", Ngay_Nhap_Kho= DateTime.Now, Ghi_Chu = "Ghi chu 3" }
             );
+            modelBuilder.Entity<ChiTietPhieuNhapKho>().HasKey(table => new {
+                table.Nhap_Kho_ID,
+                table.San_Pham_ID
+            });
+            modelBuilder.Entity<ChiTietPhieuNhapKho>().HasData(
+                new ChiTietPhieuNhapKho { Nhap_Kho_ID = "pn_01", San_Pham_ID = "sp_01", SL_Nhap = 100, Don_Gia_Nhap = 2000000},
+                new ChiTietPhieuNhapKho { Nhap_Kho_ID = "pn_02", San_Pham_ID = "sp_01", SL_Nhap = 200, Don_Gia_Nhap = 4000000 },
+                new ChiTietPhieuNhapKho { Nhap_Kho_ID = "pn_03", San_Pham_ID = "sp_01", SL_Nhap = 300, Don_Gia_Nhap = 5000000 }
+            );
+
         }
 
         public DbSet<DonViTinhModel> tbl_DM_Don_Vi_Tinh { get; set; }
@@ -59,5 +70,6 @@ namespace tranhoangkhai_project1.Data
         public DbSet<KhoUserModel> tbl_DM_Kho_User { get; set; }
         public DbSet<PhieuNhapKhoModel> tbl_DM_Nhap_Kho { get; set; }
         public DbSet<HieuChinhPhieuNhapKhoModel> tbl_XNK_Nhap_Kho { get; set; }
+        public DbSet<ChiTietPhieuNhapKho> tbl_DM_Nhap_Kho_Raw_Data { get; set; }
     }
 }

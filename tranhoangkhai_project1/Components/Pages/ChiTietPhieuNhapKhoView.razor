@@ -1,0 +1,99 @@
+﻿@page "/chitietphieunhapkho-list"
+@inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>CHI TIẾT PHIÊU NHẬP KHO</PageTitle>
+<h1>CHI TIẾT PHIÊU NHẬP KHO</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddDVT">Thêm chi tiết</button>
+@if (chitietPNK_list.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy đơn vị tính nào! Vui lòng thêm đơn vị tính!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã phiếu nhập kho
+                </th>
+                <th>
+                    Sản phẩm 
+                </th>
+                <th>
+                    Số lượng nhập
+                </th>
+                <th>
+                    Đơn giá
+                </th>
+                <th>
+                    Trị giá
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var chiTiet in chitietPNK_list)
+            {
+                <tr>
+                    <td>
+                        @chiTiet.Nhap_Kho_ID
+                    </td>
+                    <td>
+                        @chiTiet.San_Pham_ID
+                    </td>
+                    <td>
+                        @chiTiet.SL_Nhap
+                    </td>
+                    <td>
+                        @chiTiet.Don_Gia_Nhap
+                    </td>
+                    <td>
+                        @(@chiTiet.Don_Gia_Nhap * @chiTiet.SL_Nhap)
+                    </td>
+                    <td>
+                        <button class="btn btn-info" @onclick="@(()=>EditDVT(chiTiet.Nhap_Kho_ID, chiTiet.San_Pham_ID))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteDVT(chiTiet.Nhap_Kho_ID, chiTiet.San_Pham_ID))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+@code {
+    List<ChiTietPhieuNhapKho> chitietPNK_list = new List<ChiTietPhieuNhapKho>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        chitietPNK_list = await ChiTietPhieuNhapKhoService.GetAllChiTietPhieuNhapKhoAsync();
+    }
+
+    void EditDVT(string Nhap_Kho_ID, string San_Pham_ID)
+    {
+        nav.NavigateTo($"/edit-chitietphieunhapkho/{Nhap_Kho_ID}/{San_Pham_ID}");
+    }
+
+    void AddDVT()
+    {
+        nav.NavigateTo($"/edit-chitietphieunhapkho");
+    }
+    async Task DeleteDVT(string Nhap_Kho_ID, string San_Pham_ID)
+    {
+        await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(Nhap_Kho_ID, San_Pham_ID);
+        chitietPNK_list = await ChiTietPhieuNhapKhoService.GetAllChiTietPhieuNhapKhoAsync();
+    }
+}

@@ -30,6 +30,7 @@
         <div>
             <label for="Loai_San_Pham_ID">Loại Sản Phẩm</label>
             <InputSelect class="form-control" id="Loai_San_Pham_ID" @bind-Value="CurrentSP.Loai_San_Pham_ID">
+                <option value="" disabled selected>Chọn loại sản phẩm nhập kho</option>
                 @foreach (var loaiSanPham in danhSachLoaiSanPham)
                 {
                     <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ma_LSP</option>
@@ -40,6 +41,7 @@
         <div>
             <label for="Don_Vi_Tinh_ID">Đơn Vị Tính</label>
             <InputSelect class="form-control" id="Don_Vi_Tinh_ID" @bind-Value="CurrentSP.Don_Vi_Tinh_ID">
+                <option value="" disabled selected>Chọn đơn vị tính</option>
                 @foreach (var donViTinh in danhSachDonViTinh)
                 {
                     <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>

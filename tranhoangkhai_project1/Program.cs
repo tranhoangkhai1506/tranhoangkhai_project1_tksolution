@@ -22,6 +22,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<iPhieuNhapKhoService, PhieuNhapKhoService>();
 builder.Services.AddScoped<iHieuChinhPhieuNhapKhoService, HieuChinhPhieuNhapKhoService>();
+builder.Services.AddScoped<iChiTietPhieuNhapKhoService, ChiTietPhiNhapKhoService>();
 
 var app = builder.Build();
 
