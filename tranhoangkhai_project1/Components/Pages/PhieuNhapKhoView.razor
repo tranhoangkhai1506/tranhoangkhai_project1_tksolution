@@ -1,7 +1,7 @@
 ﻿ @page "/phieunhapkho-list"
 @inject iPhieuNhapKhoService PhieuNhapKhoService
 @inject iHieuChinhPhieuNhapKhoService HieuChinhPhieuNhapKhoService
-
+@inject IJSRuntime js
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
@@ -68,6 +68,12 @@ else
                     <td>
                         <button class="btn btn-danger" @onclick="@(()=>DeletePhieuNhapKho(phieu.So_Phieu_Nhap_Kho))">Xóa</button>
                     </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="ShowForecast">Show</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="Print">Print</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -79,10 +85,23 @@ else
             @ErrorMessage
         </div>
     }
-
+    <hr />
+    <div class="row">
+        <div class="col-12">
+            <div id="PrintDiv" style="border:1px solid black; min-height:400px">
+                @if (html != null)
+                {
+                    @html
+                }
+            </div>
+        </div>
+    </div>
+    <hr />
 }
 
 @code {
+    public RenderFragment html;
+
     List<PhieuNhapKhoModel> phieuNhapKhoList = new List<PhieuNhapKhoModel>();
     public string ErrorMessage { get; set; }
     protected override async Task OnInitializedAsync()
@@ -112,4 +131,43 @@ else
     {
         nav.NavigateTo($"/edit-hieuchinhphieunhapkho/{So_Phieu_Nhap_Kho}");
     }
+
+
+    public void ShowForecast()
+    {
+        RenderFragment CreateDynamicComponent() => builder =>
+        {
+            builder.OpenComponent(0, typeof(Home));
+            //builder.AddAttribute(0, "Param", "Weather Forecast Report");
+            builder.CloseComponent();
+        };
+
+        html = CreateDynamicComponent();
+    }
+
+    public async Task Print()
+    {
+        try
+        {
+            await js.InvokeVoidAsync("PrintReport");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+
 }
+<script type="text/javascript">
+    function PrintReport() {
+        var divcontent = document.getElementById("PrintDiv").innerHTML;
+        var a = window.open('', '', 'height=600,width=600');
+        a.document.write('<html>');
+        a.document.write('<body><br/>');
+        a.document.write(divcontent);
+        a.document.write('</body></html>');
+        a.document.close();
+        a.print();
+    }
+</script>
