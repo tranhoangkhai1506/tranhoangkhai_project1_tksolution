@@ -1,0 +1,118 @@
+﻿@page "/edit-hieuchinhphieuxuat/{So_Phieu_Xuat_Kho}"
+@inject iNhaCungCapService NhaCungCapSevice
+@inject iKhoService KhoSevice
+@inject iPhieuXuatKhoService PhieuXuatKhoService
+@inject iHieuChinhPhieuXuatKhoService HieuChinhPhieuXuatKhoService
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+@if (So_Phieu_Xuat_Kho is not null)
+{
+    <PageTitle>HIỆU CHỈNH PHIẾU XUẤT</PageTitle>
+    <h1>HIỆU CHỈNH PHIẾU XUẤT</h1>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+    <EditForm Model="phieuXuatKho" OnSubmit="HandleSubmit">
+        @* <div>
+    <label for="So_Phieu_Xuat_Kho">Số Phiếu Nhập Kho</label>
+    <InputText id="So_Phieu_Xuat_Kho" @bind-Value="phieuXuatKho.So_Phieu_Xuat_Kho" class="form-control"></InputText>
+    </div> *@
+        
+        <div>
+            <label for="Kho_ID">Kho</label>
+            <InputSelect class="form-control" id="Kho_ID" @bind-Value="phieuXuatKho.Kho_ID">
+                <option value="" disabled selected>Chọn kho</option>
+                @foreach (var kho in listKho)
+                {
+                    <option value="@kho.Ten_Kho">@kho.Ten_Kho</option>
+                }
+            </InputSelect>
+        </div>
+        <div>
+            <label for="ngayNhapKho">Ngày Nhập Kho</label>
+            <InputDate id="ngayNhapKho" @bind-Value="phieuXuatKho.Ngay_Nhap_Kho" class="form-control"></InputDate>
+        </div>
+
+        <div>
+            <label for="Ghi_Chu">Ghi Chú</label>
+            <InputText id="Ghi_Chu" @bind-Value="phieuXuatKho.Ghi_Chu" class="form-control"></InputText>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+}
+else
+{
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string? So_Phieu_Xuat_Kho { get; set; }
+    public string ErrorMessage { get; set; }
+
+
+    public HieuChinhPhieuXuatKhoModel phieuXuatKho { get; set; } = new();
+    public List<KhoModel> listKho { get; set; } = new List<KhoModel>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        listKho = await KhoSevice.GetAllKhoAsync(); // Lấy danh sách đơn vị tính từ dịch vụ
+
+        if (So_Phieu_Xuat_Kho is not null)
+        {
+            var sanPham = await PhieuXuatKhoService.GetByIdAsync(So_Phieu_Xuat_Kho);
+            if (sanPham is not null)
+            {
+                phieuXuatKho.So_Phieu_Xuat_Kho = sanPham.So_Phieu_Xuat_Kho;
+                phieuXuatKho.Kho_ID = sanPham.Kho_ID;
+                phieuXuatKho.Ngay_Nhap_Kho = sanPham.Ngay_Nhap_Kho;
+                phieuXuatKho.Ghi_Chu = sanPham.Ghi_Chu;
+            }
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        var existingPNK = await PhieuXuatKhoService.GetByIdAsync(phieuXuatKho.So_Phieu_Xuat_Kho);
+        if (existingPNK != null && So_Phieu_Xuat_Kho is null)
+        {
+            ErrorMessage = "Số phiếu nhập kho đã tồn tại.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(phieuXuatKho.Kho_ID))
+        {
+            ErrorMessage = "Kho không được để trống.";
+            return;
+        }
+
+        if (phieuXuatKho.Ngay_Nhap_Kho == default(DateTime))
+        {
+            ErrorMessage = "Ngày nhập kho không được để trống.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(phieuXuatKho.Ghi_Chu))
+        {
+            ErrorMessage = "Ghi chú không được để trống.";
+            return;
+        }
+        else
+        {
+            await HieuChinhPhieuXuatKhoService.UpdateHieuChinhPhieuXuatKhoAsync(phieuXuatKho, phieuXuatKho.So_Phieu_Xuat_Kho);
+            nav.NavigateTo("/phieuxuatkho-list");
+        }
+    }
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using tranhoangkhai_project1.Data;
 
@@ -11,9 +12,11 @@ using tranhoangkhai_project1.Data;
 namespace tranhoangkhai_project1.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240327013657_addTblPhieuXuatKho")]
+    partial class addTblPhieuXuatKho
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,48 +64,6 @@ namespace tranhoangkhai_project1.Migrations
                             San_Pham_ID = "sp_01",
                             Don_Gia_Nhap = 5000000m,
                             SL_Nhap = 300m
-                        });
-                });
-
-            modelBuilder.Entity("tranhoangkhai_project1.Models.ChiTietPhieuXuatKhoModel", b =>
-                {
-                    b.Property<string>("Xuat_Kho_ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("San_Pham_ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Don_Gia_Xuat")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SL_Xuat")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Xuat_Kho_ID", "San_Pham_ID");
-
-                    b.ToTable("tbl_DM_Xuat_Kho_Raw_Data");
-
-                    b.HasData(
-                        new
-                        {
-                            Xuat_Kho_ID = "px_01",
-                            San_Pham_ID = "sp_01",
-                            Don_Gia_Xuat = 2000000m,
-                            SL_Xuat = 100m
-                        },
-                        new
-                        {
-                            Xuat_Kho_ID = "px_02",
-                            San_Pham_ID = "sp_02",
-                            Don_Gia_Xuat = 4000000m,
-                            SL_Xuat = 200m
-                        },
-                        new
-                        {
-                            Xuat_Kho_ID = "px_03",
-                            San_Pham_ID = "sp_03",
-                            Don_Gia_Xuat = 5000000m,
-                            SL_Xuat = 300m
                         });
                 });
 
@@ -160,50 +121,6 @@ namespace tranhoangkhai_project1.Migrations
                     b.HasKey("So_Phieu_Nhap_Kho");
 
                     b.ToTable("tbl_XNK_Nhap_Kho");
-                });
-
-            modelBuilder.Entity("tranhoangkhai_project1.Models.HieuChinhPhieuXuatKhoModel", b =>
-                {
-                    b.Property<string>("So_Phieu_Xuat_Kho")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Ghi_Chu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Kho_ID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Ngay_Nhap_Kho")
-                        .HasColumnType("Date");
-
-                    b.HasKey("So_Phieu_Xuat_Kho");
-
-                    b.ToTable("tbl_XNK_Xuat_Kho");
-
-                    b.HasData(
-                        new
-                        {
-                            So_Phieu_Xuat_Kho = "px_01",
-                            Ghi_Chu = "Ghi chu da sua 1",
-                            Kho_ID = "Kho_01",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(7093)
-                        },
-                        new
-                        {
-                            So_Phieu_Xuat_Kho = "px_02",
-                            Ghi_Chu = "Ghi chu da chu 2",
-                            Kho_ID = "Kho_02",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(7094)
-                        },
-                        new
-                        {
-                            So_Phieu_Xuat_Kho = "px_03",
-                            Ghi_Chu = "Ghi chu da chu 3",
-                            Kho_ID = "Kho_03",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(7095)
-                        });
                 });
 
             modelBuilder.Entity("tranhoangkhai_project1.Models.KhoModel", b =>
@@ -375,7 +292,7 @@ namespace tranhoangkhai_project1.Migrations
                             Ghi_Chu = "Ghi chu 1",
                             Kho_ID = "Kho_01",
                             NCC_ID = "ncc_01",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(5440)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 36, 56, 4, DateTimeKind.Local).AddTicks(8773)
                         },
                         new
                         {
@@ -383,7 +300,7 @@ namespace tranhoangkhai_project1.Migrations
                             Ghi_Chu = "Ghi chu 2",
                             Kho_ID = "Kho_02",
                             NCC_ID = "ncc_02",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(5456)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 36, 56, 4, DateTimeKind.Local).AddTicks(8789)
                         },
                         new
                         {
@@ -391,7 +308,7 @@ namespace tranhoangkhai_project1.Migrations
                             Ghi_Chu = "Ghi chu 3",
                             Kho_ID = "Kho_03",
                             NCC_ID = "ncc_03",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(5457)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 36, 56, 4, DateTimeKind.Local).AddTicks(8790)
                         });
                 });
 
@@ -421,21 +338,21 @@ namespace tranhoangkhai_project1.Migrations
                             So_Phieu_Xuat_Kho = "px_01",
                             Ghi_Chu = "Ghi chu 1",
                             Kho_ID = "Kho_01",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(7065)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 36, 56, 5, DateTimeKind.Local).AddTicks(577)
                         },
                         new
                         {
                             So_Phieu_Xuat_Kho = "px_02",
                             Ghi_Chu = "Ghi chu 2",
                             Kho_ID = "Kho_02",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(7069)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 36, 56, 5, DateTimeKind.Local).AddTicks(580)
                         },
                         new
                         {
                             So_Phieu_Xuat_Kho = "px_03",
                             Ghi_Chu = "Ghi chu 3",
                             Kho_ID = "Kho_03",
-                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 39, 35, 212, DateTimeKind.Local).AddTicks(7070)
+                            Ngay_Nhap_Kho = new DateTime(2024, 3, 27, 8, 36, 56, 5, DateTimeKind.Local).AddTicks(582)
                         });
                 });
 

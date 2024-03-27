@@ -1,0 +1,189 @@
+﻿@page "/edit-chitietphieuxuatkho"
+@page "/edit-chitietphieuxuatkho/{Xuat_Kho_ID}/{San_Pham_ID}"
+
+@inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
+@inject iPhieuXuatKhoService PhieuXuatKhoService
+@inject iSanPhamService SanPhamSevice
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+@if (Xuat_Kho_ID is null && San_Pham_ID is null)
+{
+    <PageTitle>THÊM CHI TIẾT PHIẾU NHẬP KHO</PageTitle>
+    <h3>THÊM CHI TIẾT PHIẾU NHẬP KHO</h3>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+    <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
+        <div>
+            <label for="Xuat_Kho_ID">Số Phiếu Nhập</label>
+            <InputSelect class="form-control" id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID">
+                <option value="" disabled selected>Chọn mã phiếu nhập kho</option>
+                @foreach (var kho in phieuXuatKhoList)
+                {
+                    <option value="@kho.So_Phieu_Xuat_Kho">@kho.So_Phieu_Xuat_Kho</option>
+                }
+            </InputSelect>
+        </div>
+        <div>
+            <label for="San_Pham_ID">Số Phiếu Nhập</label>
+            <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID">
+                <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
+                @foreach (var sanpham in sanPhamList)
+                {
+                    <option value="@sanpham.Ma_San_Pham">@sanpham.Ma_San_Pham</option>
+                }
+            </InputSelect>
+        </div>
+        <div>
+            <label for="SL_Xuat">Số lượng nhập</label>
+            <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
+        </div>
+        <div>
+            <label for="Don_Gia_Nhap">Đơn giá</label>
+            <InputNumber id="Don_Gia_Nhap" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+}
+else
+{
+    <PageTitle>Chỉnh sửa "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</PageTitle>
+    <h3>Chỉnh sửa "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</h3>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+    <hr />
+    <div class="d-flex justify-content-start info-section" style="align-items: flex-start;">
+        <div class="p-2" style="border-right: 1px solid #dee2e6;">
+            <h5>Thông tin Phiếu Nhập Kho</h5>
+            @foreach (PhieuXuatKhoModel phieu in phieuXuatKhoList)
+            {
+                if (phieu.So_Phieu_Xuat_Kho.Equals(CurrentCTPXK.Xuat_Kho_ID))
+                {
+                    <p>Số phiếu nhập kho: @phieu.So_Phieu_Xuat_Kho</p>
+                    <p>ID Kho: @phieu.Kho_ID</p>
+                    <p>Ngày nhập kho: @phieu.Ngay_Nhap_Kho.ToShortDateString()</p>
+                    <p>Ghi chú: @phieu.Ghi_Chu</p>
+                }
+            }
+        </div>
+        <div class="p-2" style="flex-grow: 1;">
+            <h5>Thông tin Sản Phẩm</h5>
+            @foreach (SanPhamModel sanpham in sanPhamList)
+            {
+                if (sanpham.Ma_San_Pham.Equals(CurrentCTPXK.San_Pham_ID))
+                {
+                    <p>Mã sản phẩm: @sanpham.Ma_San_Pham</p>
+                    <p>Tên sản phẩm: @sanpham.Ten_San_Pham</p>
+                    <p>Mã loại sản phẩm: @sanpham.Loai_San_Pham_ID</p>
+                    <p>Mã đơn vị tính: @sanpham.Don_Vi_Tinh_ID</p>
+                    <p>Ghi chú: @sanpham.Ghi_Chu</p>
+                }
+            }
+        </div>
+    </div>
+    <hr />
+
+    <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
+        @* <div>
+    <label for="Xuat_Kho_ID">Tên Đơn vị tính</label>
+    <InputText id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID" class="form-control"></InputText>
+    </div>
+    <div>
+    <label for="San_Pham_ID">Tên Đơn vị tính</label>
+    <InputText id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID" class="form-control"></InputText>
+    </div> *@
+
+        <div>
+            <label for="SL_Xuat">Số Lượng Xuất</label>
+            <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
+        </div>
+        <div>
+            <label for="Don_Gia_Xuat">Đơn giá</label>
+            <InputNumber id="Don_Gia_Xuat" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string Xuat_Kho_ID { get; set; }
+
+    [Parameter]
+    public string San_Pham_ID { get; set; }
+
+    public string ErrorMessage { get; set; }
+    public ChiTietPhieuXuatKhoModel CurrentCTPXK { get; set; } = new();
+    List<PhieuXuatKhoModel> phieuXuatKhoList = new List<PhieuXuatKhoModel>();
+    List<SanPhamModel> sanPhamList = new List<SanPhamModel>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Xuat_Kho_ID is not null && San_Pham_ID is not null)
+        {
+            var ctPNK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Xuat_Kho_ID, San_Pham_ID);
+            if (ctPNK is not null)
+            {
+                CurrentCTPXK = ctPNK;
+            }
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        phieuXuatKhoList = await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync();
+        sanPhamList = await SanPhamSevice.GetAllSanPhamAsync();
+    }
+
+    async Task HandleSubmit()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentCTPXK.Xuat_Kho_ID))
+        {
+            ErrorMessage = "Số phiếu nhập kho được để trống.";
+            return;
+        }
+
+        var existingUnitCode = await ChiTietPhieuXuatKhoService.GetByIdAsync(CurrentCTPXK.Xuat_Kho_ID, CurrentCTPXK.San_Pham_ID);
+        if (existingUnitCode != null && Xuat_Kho_ID is null && San_Pham_ID is null)
+        {
+            ErrorMessage = "Phiếu nhập của sản phẩm đã tồn tại.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID))
+        {
+            ErrorMessage = "Mã sản phẩm không được để trống.";
+            return;
+        }
+        if (CurrentCTPXK.SL_Xuat <= 0)
+        {
+            ErrorMessage = "Số lượng phải lớn hơn 0.";
+            return;
+        }
+        if (CurrentCTPXK.Don_Gia_Xuat <= 0)
+        {
+            ErrorMessage = "Đơn giá phải lớn hơn 0.";
+            return;
+        }
+
+        if (Xuat_Kho_ID is not null && San_Pham_ID is not null)
+        {
+            await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, San_Pham_ID);
+            nav.NavigateTo("/chitietphieuxuatkho-list");
+        }
+        else
+        {
+            await ChiTietPhieuXuatKhoService.AddChiTietPhieuXuat(CurrentCTPXK);
+            nav.NavigateTo("/chitietphieuxuatkho-list");
+        }
+    }
+}

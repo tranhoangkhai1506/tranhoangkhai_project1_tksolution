@@ -1,18 +1,18 @@
-﻿ @page "/phieunhapkho-list"
-@inject iPhieuNhapKhoService PhieuNhapKhoService
+﻿ @page "/phieuxuatkho-list"
+@inject iPhieuXuatKhoService PhieuXuatKhoService
 @inject iHieuChinhPhieuNhapKhoService HieuChinhPhieuNhapKhoService
 
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-<PageTitle>PHIẾU NHẬP KHO</PageTitle>
-<h1>PHIẾU NHẬP KHO</h1>
+<PageTitle>PHIẾU XUẤT KHO</PageTitle>
+<h1>PHIẾU XUẤT KHO</h1>
 <hr />
-<button class="btn btn-primary" @onclick="AddPhieuNhapKho">Thêm phiếu nhập kho</button>
-@if (phieuNhapKhoList.Count == 0)
+<button class="btn btn-primary" @onclick="AddPhieuXuatKho">Thêm phiếu xuất kho</button>
+@if (phieuXuatKhoList.Count == 0)
 {
     <hr />
-    <p>Chưa tìm thấy loại phiếu nhập kho nào! Vui lòng thêm phiếu nhập kho!</p>
+    <p>Chưa tìm thấy loại phiếu xuất kho nào! Vui lòng thêm phiếu xuất kho!</p>
 }
 else
 {
@@ -24,9 +24,6 @@ else
                 </th>
                 <th>
                     Mã kho
-                </th>
-                <th>
-                    Nhà cung cấp 
                 </th>
                 <th>
                     Ngày nhập
@@ -43,17 +40,14 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var phieu in phieuNhapKhoList)
+            @foreach (var phieu in phieuXuatKhoList)
             {
                 <tr>
                     <td>
-                        @phieu.So_Phieu_Nhap_Kho
+                        @phieu.So_Phieu_Xuat_Kho
                     </td>
                     <td>
                         @phieu.Kho_ID
-                    </td>
-                    <td>
-                        @phieu.NCC_ID
                     </td>
                     <td>
                         @phieu.Ngay_Nhap_Kho
@@ -63,10 +57,10 @@ else
                         @phieu.Ghi_Chu
                     </td>
                     <td>
-                        <button class="btn btn-outline-info" @onclick="@(()=>HieuChinh(phieu.So_Phieu_Nhap_Kho))">Hiệu chỉnh</button>
+                        <button class="btn btn-outline-info" @onclick="@(()=>HieuChinh(phieu.So_Phieu_Xuat_Kho))">Hiệu chỉnh</button>
                     </td>
                     <td>
-                        <button class="btn btn-danger" @onclick="@(()=>DeletePhieuNhapKho(phieu.So_Phieu_Nhap_Kho))">Xóa</button>
+                        <button class="btn btn-danger" @onclick="@(()=>DeletePhieuXuatKho(phieu.So_Phieu_Xuat_Kho))">Xóa</button>
                     </td>
                 </tr>
             }
@@ -83,23 +77,23 @@ else
 }
 
 @code {
-    List<PhieuNhapKhoModel> phieuNhapKhoList = new List<PhieuNhapKhoModel>();
+    List<PhieuXuatKhoModel> phieuXuatKhoList = new List<PhieuXuatKhoModel>();
     public string ErrorMessage { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        phieuNhapKhoList = await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync();
+        phieuXuatKhoList = await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync();
     }
-    void AddPhieuNhapKho()
+    void AddPhieuXuatKho()
     {
-        nav.NavigateTo($"/edit-phieunhapkho");
+        nav.NavigateTo($"/edit-phieuxuatkho");
     }
-    async Task DeletePhieuNhapKho(string maphieu)
+    async Task DeletePhieuXuatKho(string maphieu)
     {
-        var hieuchinhPhieuNhapKho = await HieuChinhPhieuNhapKhoService.GetByIdAsync(maphieu);
-        if(hieuchinhPhieuNhapKho is null)
+        var hieuchinhPhieuXuatKho = await HieuChinhPhieuNhapKhoService.GetByIdAsync(maphieu);
+        if (hieuchinhPhieuXuatKho is null)
         {
-            await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
-            phieuNhapKhoList = await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync();
+            await PhieuXuatKhoService.DeletePhieuXuatKhoAsync(maphieu);
+            phieuXuatKhoList = await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync();
         }
         else
         {
@@ -108,8 +102,8 @@ else
         }
 
     }
-    async Task HieuChinh(string So_Phieu_Nhap_Kho)
+    async Task HieuChinh(string So_Phieu_Xuat_Kho)
     {
-        nav.NavigateTo($"/edit-hieuchinhphieunhapkho/{So_Phieu_Nhap_Kho}");
+        nav.NavigateTo($"/edit-hieuchinhphieuxuat/{So_Phieu_Xuat_Kho}");
     }
 }

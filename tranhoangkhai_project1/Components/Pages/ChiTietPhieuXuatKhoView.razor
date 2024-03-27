@@ -1,0 +1,99 @@
+﻿@page "/chitietphieuxuatkho-list"
+@inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
+
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+<PageTitle>CHI TIẾT PHIẾU NHẬP KHO</PageTitle>
+<h1>CHI TIẾT PHIẾU NHẬP KHO</h1>
+<hr />
+<button class="btn btn-primary" @onclick="AddChiTietPhieuXuatKho">Thêm chi tiết</button>
+@if (chitietPXK_list.Count == 0)
+{
+    <hr />
+    <p>Chưa tìm thấy chi tiết phiếu xuất nào! Vui lòng thêm chi tiết phiếu xuất!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mã phiếu xuất kho
+                </th>
+                <th>
+                    Sản phẩm
+                </th>
+                <th>
+                    Số lượng xuất
+                </th>
+                <th>
+                    Đơn giá xuất
+                </th>
+                <th>
+                    Trị giá
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var chiTiet in chitietPXK_list)
+            {
+                <tr>
+                    <td>
+                        @chiTiet.Xuat_Kho_ID
+                    </td>
+                    <td>
+                        @chiTiet.San_Pham_ID
+                    </td>
+                    <td>
+                        @chiTiet.SL_Xuat
+                    </td>
+                    <td>
+                        @chiTiet.Don_Gia_Xuat
+                    </td>
+                    <td>
+                        @(@chiTiet.Don_Gia_Xuat * @chiTiet.SL_Xuat)
+                    </td>
+                    <td>
+                        <button class="btn btn-info" @onclick="@(()=>EditChiTietPhieuXuatKho(chiTiet.Xuat_Kho_ID, chiTiet.San_Pham_ID))">Chỉnh sửa</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(()=>DeleteChiTietPhieuXuatKho(chiTiet.Xuat_Kho_ID, chiTiet.San_Pham_ID))">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+@code {
+    List<ChiTietPhieuXuatKhoModel> chitietPXK_list = new List<ChiTietPhieuXuatKhoModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        chitietPXK_list = await ChiTietPhieuXuatKhoService.GetAllChiTietPhieuXuatKhoAsync();
+    }
+
+    void EditChiTietPhieuXuatKho(string Xuat_Kho_ID, string San_Pham_ID)
+    {
+        nav.NavigateTo($"/edit-chitietphieuxuatkho/{Xuat_Kho_ID}/{San_Pham_ID}");
+    }
+
+    void AddChiTietPhieuXuatKho()
+    {
+        nav.NavigateTo($"/edit-chitietphieuxuatkho");
+    }
+    async Task DeleteChiTietPhieuXuatKho(string Nhap_Kho_ID, string San_Pham_ID)
+    {
+        await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(Nhap_Kho_ID, San_Pham_ID);
+        chitietPXK_list = await ChiTietPhieuXuatKhoService.GetAllChiTietPhieuXuatKhoAsync();
+    }
+}
