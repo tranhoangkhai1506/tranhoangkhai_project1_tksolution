@@ -1,0 +1,376 @@
+﻿@page "/phieunhapkhoreportviewer/{So_Phieu_Nhap_Kho}"
+@inject iPhieuNhapKhoService PhieuNhapKhoService
+@inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
+@inject iSanPhamService SanPhamService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr; /* 3 cột với tỷ lệ 1:2:1 */
+            grid-template-rows: auto; /* chiều cao tự động cho mỗi hàng */
+            gap: 3px; /* giảm khoảng cách giữa các hàng */
+            font-size: 0.9em;
+        }
+
+        .grid-item {
+            padding: 1px; /* giảm đệm để giảm khoảng cách */
+        }
+
+        .grid-header {
+            grid-column: 1 / -1; /* header chiếm toàn bộ cột */
+            text-align: center;
+            font-size: 2em; /* tăng kích thước font cho tiêu đề */
+            font-weight: bold;
+            padding: 5px 0; /* đệm trên và dưới cho tiêu đề */
+        }
+
+        .model-number {
+            font-size: 1.2em; /* tăng kích thước font cho mẫu số */
+            font-weight: bold; /* nếu cần nổi bật hơn */
+        }
+
+        .align-right {
+            text-align: center; /* căn lề phải */
+        }
+
+        .my-table {
+            table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tfoot {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+
+            tfoot td {
+                text-align: right;
+            }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+        }
+
+        .footer-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 cột bằng nhau */
+            text-align: center;
+            margin-top: 10px; /* Khoảng cách với nội dung phía trên */
+        }
+
+            .footer-section .footer-item {
+                margin-bottom: 5px; /* Khoảng cách giữa các mục */
+            }
+
+                .footer-section .footer-item .label {
+                    margin-bottom: 10px; /* Khoảng cách giữa nhãn và nơi ký */
+                }
+
+                .footer-section .footer-item .signature-area {
+                    height: 60px; /* Đặt chiều cao cho khu vực ký */
+                }
+
+                .footer-section .footer-item .parentheses {
+                    display: block; /* Đảm bảo dấu ngoặc đơn hiển thị trên dòng mới */
+                    margin-top: 5px; /* Khoảng cách giữa khu vực ký và dấu ngoặc đơn */
+                }
+
+        .signature img {
+            width: 100px; /* Điều chỉnh kích thước chữ ký */
+        }
+    </style>
+</head>
+<body>
+
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }else{
+
+    <div class="grid-container">
+        <div class="grid-header">PHIẾU NHẬP KHO</div>
+
+        <div class="grid-item">Đơn Vị:</div>
+        <div class="grid-item align-right">Nợ...........</div>
+        <div class="grid-item model-number">Mẫu Số: 01 - VT</div>
+
+        <div class="grid-item">Bộ Phận:</div>
+        <div class="grid-item align-right">Có...........</div>
+        <div class="grid-item">(Ban Hành Theo QĐ số 15/2006/QĐ-BTC</div>
+
+        <div class="grid-item">Ngày 25 tháng 7 năm 2016</div>
+        <div class="grid-item"></div>
+        <div class="grid-item">Ngày 20/03/2006 Của Bộ Trưởng BTC)</div>
+
+        <div class="grid-item">Số Phiếu Nhập:</div>
+        <div class="grid-item"></div>
+        <div class="grid-item"></div>
+
+        <div class="grid-item">501345/16/MHF</div>
+        <div class="grid-item"></div>
+        <div class="grid-item"></div>
+
+        <div class="grid-item">Họ Tên Người Giao Hàng:</div>
+        <div class="grid-item">MAGNUSSEN HOME FURNISHINGS INC.</div>
+        <div class="grid-item"></div>
+
+        <div class="grid-item">Theo TK Số:</div>
+        <div class="grid-item">Ngày 25 tháng 7 năm 2016 của MINH THÀNH</div>
+        <div class="grid-item"></div>
+
+        <div class="grid-item">Nhập Tại Kho: KNQ Tân Uyên</div>
+        <div class="grid-item">Địa Điểm:</div>
+        <div class="grid-item"></div>
+    </div>
+    <table class="my-table">
+        <thead>
+            <tr>
+                <th rowspan="2">STT</th>
+                <th rowspan="2">Tên nhãn hiệu, quy cách, phẩm chất, vật tư, dụng cụ, sản phẩm, hàng hóa</th>
+                <th rowspan="2">Mã Hàng</th>
+                <th rowspan="2">Đơn Vị Tính</th>
+                <th colspan="2">Số Lượng</th>
+                <th rowspan="2">Đơn Giá</th>
+                <th rowspan="2">Thành Tiền</th>
+            </tr>
+            <tr>
+                <th class="center">Kiện</th>
+                <th class="center">Cái</th>
+            </tr>
+            <tr>
+                <th class="center">A</th>
+                <th class="center">B</th>
+                <th class="center">C</th>
+                <th class="center">D</th>
+                <th class="center">1</th>
+                <th class="center">2</th>
+                <th class="center">3</th>
+                <th class="center">4</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Các hàng dữ liệu sẽ đi vào đây. Ví dụ: -->
+            
+            @{
+                int i = 1;
+                decimal totalPackages = 0;
+                decimal totalPrice = 0;
+                foreach(var item in chitietPNKList){
+                    var total = item.Don_Gia_Nhap * item.SL_Nhap;
+                    SanPhamModel sanpham = sanphamList.Where(p => p.Ma_San_Pham.Equals(item.San_Pham_ID)).FirstOrDefault();
+                    <tr>
+                        <td class="center">@i</td>
+                        <td>@sanpham.Ten_San_Pham</td>
+                        <td>@sanpham.Ma_San_Pham</td>
+                        <td>@sanpham.Don_Vi_Tinh_ID</td>
+                        <td class="center">@item.SL_Nhap.ToString("0")</td>
+                        <td class="center">@item.SL_Nhap.ToString("0")</td>
+                        <td class="center">@item.Don_Gia_Nhap.ToString("0.00")</td>
+                        <td class="center">
+                            @total.ToString("0.00")
+                        </td>
+                    </tr>
+                    totalPackages += item.SL_Nhap;
+                    totalPrice += total;
+                    i++;
+                }
+                }
+                
+           
+            <!-- Tiếp tục thêm các hàng khác theo cấu trúc tương tự -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">Tổng</td>
+                <td class="center">@totalPackages.ToString("0")</td>
+                <td class="center">@totalPackages.ToString("0")</td>
+                <td></td>
+                <td class="right">@totalPrice.ToString("0.00")</td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="grid-container">
+        <div class="grid-item model-number">Tổng số tiền viết bằng chữ: </div>
+        <div class="grid-item model-number">@NumberToTextConverter.Convert(totalPrice)</div>
+        <div class="grid-item"></div>
+
+        <div class="grid-item model-number">Số chứng từ kèm theo:</div>
+        <div class="grid-item"></div>
+        <div class="grid-item">Ngày ... Tháng .... Năm .....</div>
+    </div>
+    <div class="footer-section">
+        <div class="footer-item">
+            <div class="label model-number">Người Lập Phiếu</div>
+            <span class="parentheses">(Ký, họ tên)</span>
+        </div>
+        <div class="footer-item">
+            <div class="label model-number">Người Giao Hàng</div>
+            <span class="parentheses">(Ký, họ tên)</span>
+        </div>
+        <div class="footer-item">
+            <div class="label model-number">Thủ Kho</div>
+            <span class="parentheses">(Ký, họ tên)</span>
+        </div>
+        <div class="footer-item signature">
+            <div class="label model-number">Kế Toán Trưởng</div>
+            <span class="parentheses">(Ký, họ tên)</span>
+            <div class="signature-area">
+                <img src="path_to_signature_image.png" alt="Chữ ký">
+            </div>
+        </div>
+    </div>
+    }
+</body>
+</html>
+
+
+@code {
+    [Parameter]
+    public string So_Phieu_Nhap_Kho { get; set; }
+    PhieuNhapKhoModel phieuNhapKho = new PhieuNhapKhoModel();
+    List<ChiTietPhieuNhapKho> chitietPNKList = new List<ChiTietPhieuNhapKho>();
+    List<SanPhamModel> sanphamList = new List<SanPhamModel>();
+    public string ErrorMessage { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (So_Phieu_Nhap_Kho is not null)
+        {
+            phieuNhapKho = await PhieuNhapKhoService.GetByIdAsync(So_Phieu_Nhap_Kho);
+            sanphamList = await SanPhamService.GetAllSanPhamAsync();
+        }
+
+        if (phieuNhapKho is not null)
+        {
+            chitietPNKList = await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(phieuNhapKho.So_Phieu_Nhap_Kho);
+        }
+
+        if (chitietPNKList.Count <= 0)
+        {
+            ErrorMessage = "KHÔNG TÌM THẤY THÔNG TIN CHI TIẾT PHIẾU NHẬP!";
+        }
+    }
+
+    public class NumberToTextConverter
+    {
+        private static readonly string[] unitNumbers = { "không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
+        private static readonly string[] tens = { "mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín" };
+        private static readonly string[] tyLe = { "", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ" };
+
+        public static string Convert(decimal number)
+        {
+            if (number == 0) return "không đồng";
+
+            if (number < 0) return "âm " + Convert(-number);
+
+            var parts = new List<string>();
+
+            var intPart = (long)number;
+            var decimalPart = (int)((number - intPart) * 100); // Lấy 2 số sau dấu phẩy
+            int level = 0;
+
+            while (intPart > 0)
+            {
+                var remainder = intPart % 1000;
+                intPart /= 1000;
+
+                if (remainder > 0)
+                {
+                    var text = ConvertLessThanOneThousand(remainder) + " " + tyLe[level];
+                    parts.Insert(0, text);
+                }
+
+                level++;
+            }
+
+            var result = string.Join(" ", parts.Where(p => !string.IsNullOrEmpty(p))).Trim() + " đồng";
+
+            if (decimalPart > 0)
+            {
+                result += " chẵn " + ConvertLessThanOneThousand(decimalPart) + " xu";
+            }
+
+            return result;
+        }
+
+        private static string ConvertLessThanOneThousand(long number)
+        {
+            string result = "";
+
+            // Hàng trăm
+            var hundreds = number / 100;
+            var remainder = number % 100;
+            if (hundreds > 0)
+            {
+                result += unitNumbers[hundreds] + " trăm ";
+                if (remainder == 0) return result.Trim();
+            }
+
+            // Hàng chục và hàng đơn vị
+            if (remainder < 20 && remainder > 0)
+            {
+                result += tens[remainder];
+            }
+            else
+            {
+                var tensPlace = remainder / 10;
+                var unitsPlace = remainder % 10;
+
+                if (tensPlace > 0)
+                {
+                    if (tensPlace > 1)
+                    {
+                        result += unitNumbers[tensPlace] + " mươi ";
+                    }
+                    else
+                    {
+                        result += "mười ";
+                    }
+                }
+
+                if (unitsPlace > 0)
+                {
+                    if (tensPlace > 0 && unitsPlace == 5)
+                    {
+                        result += "lăm";
+                    }
+                    else
+                    {
+                        result += unitNumbers[unitsPlace];
+                    }
+                }
+            }
+
+            return result.Trim();
+        }
+    }
+
+
+
+}

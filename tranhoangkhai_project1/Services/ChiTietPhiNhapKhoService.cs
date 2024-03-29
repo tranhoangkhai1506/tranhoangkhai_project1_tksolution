@@ -27,6 +27,12 @@ namespace tranhoangkhai_project1.Services
             }
         }
 
+        public async Task<List<ChiTietPhieuNhapKho>> GetAllChiTietByKhoIDAsync(string Nhap_Kho_ID)
+        {
+            var result = await _dataContext.tbl_DM_Nhap_Kho_Raw_Data.Where(p => p.Nhap_Kho_ID.Equals(Nhap_Kho_ID)).ToListAsync();
+            return result;
+        }
+
         public async Task<List<ChiTietPhieuNhapKho>> GetAllChiTietPhieuNhapKhoAsync()
         {
             var result = await _dataContext.tbl_DM_Nhap_Kho_Raw_Data.ToListAsync();

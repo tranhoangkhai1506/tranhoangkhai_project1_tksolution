@@ -5,6 +5,7 @@ namespace tranhoangkhai_project1.Services
     public interface iChiTietPhieuNhapKhoService
     {
         Task<List<ChiTietPhieuNhapKho>> GetAllChiTietPhieuNhapKhoAsync();
+        Task<List<ChiTietPhieuNhapKho>> GetAllChiTietByKhoIDAsync(string Nhap_Kho_ID);
         Task<ChiTietPhieuNhapKho> GetByIdAsync(string Nhap_Kho_ID, string San_Pham_ID);
 
         Task AddChiTietPhieuNhap(ChiTietPhieuNhapKho chitietPHK);

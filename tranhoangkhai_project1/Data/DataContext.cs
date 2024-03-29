@@ -78,7 +78,7 @@ namespace tranhoangkhai_project1.Data
                 new ChiTietPhieuXuatKhoModel { Xuat_Kho_ID = "px_01", San_Pham_ID = "sp_01", SL_Xuat = 100, Don_Gia_Xuat = 2000000 },
                 new ChiTietPhieuXuatKhoModel { Xuat_Kho_ID = "px_02", San_Pham_ID = "sp_02", SL_Xuat = 200, Don_Gia_Xuat = 4000000 },
                 new ChiTietPhieuXuatKhoModel { Xuat_Kho_ID = "px_03", San_Pham_ID = "sp_03", SL_Xuat = 300, Don_Gia_Xuat = 5000000 }
-            );
+               );
         }
 
         public DbSet<DonViTinhModel> tbl_DM_Don_Vi_Tinh { get; set; }

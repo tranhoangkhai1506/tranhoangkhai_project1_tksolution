@@ -1,7 +1,7 @@
 ﻿ @page "/phieuxuatkho-list"
 @inject iPhieuXuatKhoService PhieuXuatKhoService
 @inject iHieuChinhPhieuNhapKhoService HieuChinhPhieuNhapKhoService
-
+@inject IJSRuntime js
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
@@ -90,10 +90,16 @@ else
     async Task DeletePhieuXuatKho(string maphieu)
     {
         var hieuchinhPhieuXuatKho = await HieuChinhPhieuNhapKhoService.GetByIdAsync(maphieu);
+
         if (hieuchinhPhieuXuatKho is null)
         {
-            await PhieuXuatKhoService.DeletePhieuXuatKhoAsync(maphieu);
-            phieuXuatKhoList = await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync();
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
+            if (confirmed)
+            {
+
+                await PhieuXuatKhoService.DeletePhieuXuatKhoAsync(maphieu);
+                phieuXuatKhoList = await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync();
+            }
         }
         else
         {

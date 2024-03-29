@@ -10,5 +10,6 @@ namespace tranhoangkhai_project1.Services
         Task AddPhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho);
         //Task UpdatePhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho, string So_Phieu_Nhap_Kho);
         Task DeletePhieuNhapKhoAsync(string So_Phieu_Nhap_Kho);
+
     }
 }

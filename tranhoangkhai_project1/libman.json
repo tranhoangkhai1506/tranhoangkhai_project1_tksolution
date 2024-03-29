@@ -12,6 +12,23 @@
     {
       "library": "jquery@3.7.1",
       "destination": "wwwroot/jquery/"
+    },
+    {
+      "library": "datatables@1.10.21",
+      "destination": "wwwroot/datatables/",
+      "files": [
+        "js/jquery.dataTables.min.js",
+        "js/dataTables.bootstrap.js",
+        "js/dataTables.bootstrap.min.js"
+      ]
+    },
+    {
+      "library": "datatable@2.0.2",
+      "destination": "wwwroot/jquery",
+      "files": [
+        "js/datatable.min.js",
+        "css/datatable.css"
+      ]
     }
   ]
 }
