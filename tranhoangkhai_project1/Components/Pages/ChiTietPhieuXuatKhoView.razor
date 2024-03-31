@@ -8,79 +8,80 @@
 <h1>CHI TIẾT PHIẾU NHẬP KHO</h1>
 <hr />
 <button class="btn btn-primary" @onclick="AddChiTietPhieuXuatKho">Thêm chi tiết</button>
-@if (chitietPXK_list.Count == 0)
+@if (itemsQueryable is null)
 {
     <hr />
     <p>Chưa tìm thấy chi tiết phiếu xuất nào! Vui lòng thêm chi tiết phiếu xuất!</p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Mã phiếu xuất kho
-                </th>
-                <th>
-                    Sản phẩm
-                </th>
-                <th>
-                    Số lượng xuất
-                </th>
-                <th>
-                    Đơn giá xuất
-                </th>
-                <th>
-                    Trị giá
-                </th>
-                <th>
+    <hr />
+    <div class="page-size-chooser mb-3">
+        Items per page:
+        <select class="form-select form-select-sm" style="width: auto; display: inline-block;" @bind="@pagination.ItemsPerPage">
+            <option>3</option>
+            <option>5</option>
+            <option>10</option>
+            <option>15</option>
+        </select>
+    </div>
 
-                </th>
-                <th>
+    <div class="table-responsive">
+        <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
+            <PropertyColumn Property="@(c => c.Xuat_Kho_ID)" Sortable="true" Title="NHẬP KHO ID" />
+            <PropertyColumn Property="@(c => c.San_Pham_ID)" Sortable="true" Title="SẢN PHẨM ID" />
+            <PropertyColumn Property="@(c => $"{c.SL_Xuat:0.0}")" Sortable="true" Title="SỐ LƯỢNG" />
+            <PropertyColumn Property="@(c => $"{c.Don_Gia_Xuat:0.0}")" Sortable="true" Title="ĐƠN GIÁ" />
+            <PropertyColumn Property="@(c => c.SL_Xuat * c.Don_Gia_Xuat)" Format="0.00" Sortable="true" Title="TRỊ GIÁ" />
+            <TemplateColumn Title="Actions" Class="text-center">
+                <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID))">Hiệu chỉnh</button>
+                <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID))">Xóa</button>
+            </TemplateColumn>
+        </QuickGrid>
 
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var chiTiet in chitietPXK_list)
-            {
-                <tr>
-                    <td>
-                        @chiTiet.Xuat_Kho_ID
-                    </td>
-                    <td>
-                        @chiTiet.San_Pham_ID
-                    </td>
-                    <td>
-                        @chiTiet.SL_Xuat
-                    </td>
-                    <td>
-                        @chiTiet.Don_Gia_Xuat
-                    </td>
-                    <td>
-                        @(@chiTiet.Don_Gia_Xuat * @chiTiet.SL_Xuat)
-                    </td>
-                    <td>
-                        <button class="btn btn-info" @onclick="@(()=>EditChiTietPhieuXuatKho(chiTiet.Xuat_Kho_ID, chiTiet.San_Pham_ID))">Chỉnh sửa</button>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger" @onclick="@(()=>DeleteChiTietPhieuXuatKho(chiTiet.Xuat_Kho_ID, chiTiet.San_Pham_ID))">Xóa</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    </div>
+    @*  <Paginator State="@pagination" /> *@
+    <div class="page-buttons d-flex justify-content-around">
+        Page:
+        @if (pagination.TotalItemCount.HasValue)
+        {
+            <div class="btn-group">
+                @for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
+                {
+                    var capturedIndex = pageIndex;
+                    <button @onclick="@(() => GoToPageAsync(capturedIndex))"
+                            class="@PageButtonClass(capturedIndex) btn btn-secondary mx-1"
+                            aria-current="@AriaCurrentValue(capturedIndex)"
+                            aria-label="Go to page @(pageIndex + 1)">
+                        @(pageIndex + 1)
+                    </button>
+                }
+            </div>
 
-
+        }
+    </div>
 }
 
 @code {
-    List<ChiTietPhieuXuatKhoModel> chitietPXK_list = new List<ChiTietPhieuXuatKhoModel>();
-
+    PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
+    IQueryable<ChiTietPhieuXuatKhoModel>? itemsQueryable;
     protected override async Task OnInitializedAsync()
     {
-        chitietPXK_list = await ChiTietPhieuXuatKhoService.GetAllChiTietPhieuXuatKhoAsync();
+        itemsQueryable = (await ChiTietPhieuXuatKhoService.GetAllChiTietPhieuXuatKhoAsync()).AsQueryable();
+        pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
+
+    private async Task GoToPageAsync(int pageIndex)
+    {
+        await pagination.SetCurrentPageIndexAsync(pageIndex);
+    }
+
+    private string? PageButtonClass(int pageIndex)
+        => pagination.CurrentPageIndex == pageIndex ? "current" : null;
+
+    private string? AriaCurrentValue(int pageIndex)
+        => pagination.CurrentPageIndex == pageIndex ? "page" : null;
+
 
     void EditChiTietPhieuXuatKho(string Xuat_Kho_ID, string San_Pham_ID)
     {
@@ -94,6 +95,7 @@ else
     async Task DeleteChiTietPhieuXuatKho(string Nhap_Kho_ID, string San_Pham_ID)
     {
         await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(Nhap_Kho_ID, San_Pham_ID);
-        chitietPXK_list = await ChiTietPhieuXuatKhoService.GetAllChiTietPhieuXuatKhoAsync();
+        itemsQueryable = (await ChiTietPhieuXuatKhoService.GetAllChiTietPhieuXuatKhoAsync()).AsQueryable();
+        pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
 }

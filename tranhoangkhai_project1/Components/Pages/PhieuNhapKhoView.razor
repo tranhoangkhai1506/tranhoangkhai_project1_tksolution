@@ -10,7 +10,7 @@
 <hr />
 <button class="btn btn-primary" @onclick="AddPhieuNhapKho">Thêm phiếu nhập kho</button>
 
-@if (phieuNhapKhoList.Count == 0)
+@if (itemsQueryable is null)
 {
     <p>Chưa có phiếu nhập kho nào. Vui lòng thêm phiếu nhập kho mới.</p>
 }
@@ -37,7 +37,7 @@ else
             <PropertyColumn Property="@(c => c.So_Phieu_Nhap_Kho)" Sortable="true" Class="text-center" Title="MÃ PHIẾU"/>
             <PropertyColumn Property="@(c => c.Kho_ID)" Sortable="true" Class="text-center" Title="KHO" />
             <PropertyColumn Property="@(c => c.NCC_ID)" Sortable="true" Class="text-center" Title="NHÀ CUNG CẤP" />
-            <PropertyColumn Property="@(c => c.Ngay_Nhap_Kho)" Sortable="true" Class="text-center date-column" Title="NGÀY NHẬP" />
+            <PropertyColumn Property="@(c => c.Ngay_Nhap_Kho)" Sortable="true" Class="text-center date-column" Title="NGÀY NHẬP" Format="dd-MM-yyyy"/>
             <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Class="text-center" Title="GHI CHÚ" />
             <TemplateColumn Title="Actions" Class="text-center">
                 <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context.So_Phieu_Nhap_Kho))">Hiệu chỉnh</button>
@@ -85,14 +85,12 @@ else
 @code {
     bool showName = true;
     bool showBirthDate = false;
-    private List<PhieuNhapKhoModel> phieuNhapKhoList = new();
     private string ErrorMessage { get; set; }
     private string currentReportId;
     PaginationState pagination = new PaginationState { ItemsPerPage = 3 };
     IQueryable<PhieuNhapKhoModel>? itemsQueryable;
     protected override async Task OnInitializedAsync()
     {
-        phieuNhapKhoList = await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync();
         itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
@@ -114,7 +112,8 @@ else
         if (hieuchinhPhieuNhapKho is null)
         {
             await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
-            phieuNhapKhoList = await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync();
+            itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
+            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
         }
         else
         {
