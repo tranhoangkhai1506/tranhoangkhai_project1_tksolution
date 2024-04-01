@@ -36,6 +36,8 @@ else
             <TemplateColumn Title="Actions" Class="text-center">
                 <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context.So_Phieu_Xuat_Kho))">Hiệu chỉnh</button>
                 <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeletePhieuXuatKho(context.So_Phieu_Xuat_Kho))">Xóa</button>
+                <button class="btn btn-primary btn-sm me-1" @onclick="@(() => ShowReportByID(context.So_Phieu_Xuat_Kho))">Xem Report</button>
+                <button class="btn btn-secondary btn-sm" @onclick="@(() => Print(context.So_Phieu_Xuat_Kho))">In</button>
             </TemplateColumn>
         </QuickGrid>
     </div>
@@ -59,6 +61,12 @@ else
 
         }
     </div>
+    <div id="PrintDivXuatKhoReport">
+        @if (currentReportId != null)
+        {
+            @DynamicComponent(currentReportId)
+        }
+    </div>
 
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
@@ -72,6 +80,7 @@ else
 @code {
     public string ErrorMessage { get; set; }
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
+    private string currentReportId;
     IQueryable<PhieuXuatKhoModel>? itemsQueryable;
     protected override async Task OnInitializedAsync()
     {
@@ -120,4 +129,43 @@ else
     {
         nav.NavigateTo($"/edit-hieuchinhphieuxuat/{So_Phieu_Xuat_Kho}");
     }
+
+    private RenderFragment DynamicComponent(string reportId) => builder =>
+    {
+        builder.OpenComponent(0, typeof(PhieuXuatKhoReportViewer));
+        builder.AddAttribute(1, "So_Phieu_Xuat_Kho", reportId);
+        builder.SetKey(reportId); // Đặt key để Blazor nhận biết sự thay đổi
+        builder.CloseComponent();
+    };
+
+
+    private async Task ShowReportByID(string So_Phieu_Nhap_Kho)
+    {
+        currentReportId = So_Phieu_Nhap_Kho;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Print(string So_Phieu_Nhap_Kho)
+    {
+        currentReportId = So_Phieu_Nhap_Kho;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300); // Đảm bảo có đủ thời gian cho việc render lại UI
+        await js.InvokeVoidAsync("PrintPhieuXuatKhoReport");
+    }
 }
+<script type="text/javascript">
+    function PrintPhieuXuatKhoReport() {
+        var printDivContent = document.getElementById("PrintDivXuatKhoReport").innerHTML;
+        var windowToPrint = window.open('', '', 'height=600,width=800');
+        windowToPrint.document.write('<html><head><title>Print</title></head>');
+        windowToPrint.document.write('<body>');
+        windowToPrint.document.write(printDivContent);
+        windowToPrint.document.write('</body></html>');
+        windowToPrint.document.close();
+        windowToPrint.focus();
+        setTimeout(function () {
+            windowToPrint.print();
+            windowToPrint.onafterprint = function () { windowToPrint.close(); };
+        }, 500); // Đảm bảo báo cáo được load đầy đủ trước khi in
+    }
+</script>

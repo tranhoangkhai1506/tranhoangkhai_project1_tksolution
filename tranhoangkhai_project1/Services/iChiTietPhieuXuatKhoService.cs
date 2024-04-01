@@ -6,7 +6,7 @@ namespace tranhoangkhai_project1.Services
     {
         Task<List<ChiTietPhieuXuatKhoModel>> GetAllChiTietPhieuXuatKhoAsync();
         Task<ChiTietPhieuXuatKhoModel> GetByIdAsync(string Xuat_Kho_ID, string San_Pham_ID);
-
+        Task<List<ChiTietPhieuXuatKhoModel>> GetAllChiTietByKhoIDAsync(string Xuat_Kho_ID);
         Task AddChiTietPhieuXuat(ChiTietPhieuXuatKhoModel chitietPXK);
         Task UpdateChiTietPhieuXuatAsync(ChiTietPhieuXuatKhoModel chitietPXK, string Xuat_Kho_ID, string San_Pham_ID);
         Task DeleteChiTietPhieuXuatAsync(string Xuat_Kho_ID, string San_Pham_ID);

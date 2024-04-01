@@ -1,0 +1,285 @@
+﻿@page "/phieuxuatkhoreportviewer/{So_Phieu_Xuat_Kho}"
+@inject iPhieuXuatKhoService PhieuXuatKhoService
+@inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
+@inject iSanPhamService SanPhamService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Export Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .form-title {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .form-date {
+            text-align: center;
+        }
+
+        .form-number {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: hsl(60, 95%, 48%);
+        }
+
+        .section-title {
+            background-color: #f2f2f2;
+            padding: 8px;
+        }
+
+        .info {
+            padding: 0 8px;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+        }
+
+        .signature {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 200px;
+            margin-top: 50px;
+        }
+
+        .info-section {
+            background-color: #f2f2f2;
+            padding: 8px;
+        }
+
+        .info {
+            margin-bottom: 4px;
+        }
+        /* Adjust bottom margin as needed */
+        textarea {
+            width: 100%; /* Makes the textarea span the full width of its container */
+            box-sizing: border-box; /* Ensures padding doesn't affect the overall width */
+            margin-top: 8px; /* Adds a little space above the textarea */
+            border: 1px solid #000; /* Gives the textarea a border similar to the input fields */
+            padding: 4px; /* Adds some padding inside the textarea */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-title"><h1>PHIẾU XUẤT KHO</h1></div>
+    <div class="form-date">Ngày 23 tháng 7 năm 2016</div>
+    <div class="form-number"><strong>Số: 38/2016</strong></div>
+
+    <div class="section-title"><strong>I. Thông tin chung</strong></div>
+    <div class="info-section">
+        <div class="info">1. Lệnh giao hàng: <strong>425/07</strong></div>
+        <div class="info">2. Cửa hàng: <strong>Khách lẻ</strong></div>
+        <div class="info">3. Kho: <strong> HIỆP TRÍ - THỦ ĐỨC</strong></div>
+        <div class="info">4. Ghi chú: <strong>Khách lẻ (Hiện gái)</strong></div>
+    </div>
+
+
+    <div class="section-title"><strong>II. Thông tin hàng</strong></div>
+    <table>
+        <tr>
+            <th>STT</th>
+            <th>Mã Hàng</th>
+            <th>Tên Hàng</th>
+            <th>PO</th>
+            <th>Số Chỉ Lệnh</th>
+            <th>SL</th>
+            <th>DVT</th>
+            <th>Kiểm Kê</th>
+            <th>Ghi Chú</th>
+        </tr>
+        
+        @{
+            int soThuTu = 01;
+            decimal total = 0;
+            foreach (var item in chitietPXKList)
+            {
+                SanPhamModel sanpham = sanphamList.Where(p => p.Ma_San_Pham.Equals(item.San_Pham_ID)).FirstOrDefault();
+                <tr>
+                    <td>@soThuTu</td>
+                    <td>@sanpham.Ma_San_Pham</td>
+                    <td>@sanpham.Ten_San_Pham</td>
+                    <td></td>
+                    <td></td>
+                    <td>@item.SL_Xuat.ToString("0")</td>
+                    <td>@sanpham.Don_Vi_Tinh_ID</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                soThuTu++;
+                total += item.SL_Xuat;
+            }
+            }                
+        
+        <!-- ... other rows ... -->
+    </table>
+
+    <div class="section-title">III. Kết luận</div>
+    <div class="info-section">
+        <div class="info">1. Tổng số lượng thực xuất (viết bằng số): @total.ToString("0")</div>
+        <div class="info">2. Tổng số lượng thực xuất (viết bằng chữ): 
+            @{
+                var numberToText = @total.ToString("0");
+                NumberToVietnameseWords(Convert.ToInt32(numberToText));
+            }
+        </div>
+        <div class="info">
+            3. Mô tả khác biệt:
+            <textarea name="moTaKhacBiet" rows="4" cols="50"></textarea>
+        </div>
+    </div>
+
+
+    <div class="signature-section">
+        <div class="signature">
+            <span class="signature-line"></span>
+            <strong>Người lập phiếu</strong>
+        </div>
+        <div class="signature">
+            <span class="signature-line"></span>
+            <strong>Người nhận hàng</strong>
+        </div>
+        <div class="signature">
+            <span class="signature-line"></span>
+            <strong>Điều phối</strong>
+        </div>
+        <div class="signature">
+            <span class="signature-line"></span>
+            <strong>Giám đốc</strong>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+@code {
+    [Parameter]
+    public string So_Phieu_Xuat_Kho { get; set; }
+    PhieuXuatKhoModel phieuXuat = new PhieuXuatKhoModel();
+    List<ChiTietPhieuXuatKhoModel> chitietPXKList = new List<ChiTietPhieuXuatKhoModel>();
+    List<SanPhamModel> sanphamList = new List<SanPhamModel>();
+    public string ErrorMessage { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (So_Phieu_Xuat_Kho is not null)
+        {
+            phieuXuat = await PhieuXuatKhoService.GetByIdAsync(So_Phieu_Xuat_Kho);
+            sanphamList = await SanPhamService.GetAllSanPhamAsync();
+        }
+
+        if (phieuXuat is not null)
+        {
+            chitietPXKList = await ChiTietPhieuXuatKhoService.GetAllChiTietByKhoIDAsync(phieuXuat.So_Phieu_Xuat_Kho);
+        }
+
+        if (chitietPXKList.Count <= 0)
+        {
+            ErrorMessage = "KHÔNG TÌM THẤY THÔNG TIN CHI TIẾT PHIẾU NHẬP!";
+        }
+    }
+
+    public static string NumberToVietnameseWords(int number)
+    {
+        if (number == 0)
+            return "không";
+
+        if (number < 0)
+            return "âm " + NumberToVietnameseWords(Math.Abs(number));
+
+        string[] unitWords = { "", "nghìn", "triệu", "tỷ" };
+        var parts = new List<string>();
+
+        int partNumber;
+        int unitIndex = 0;
+
+        while (number > 0)
+        {
+            partNumber = (int)(number % 1000);
+            number /= 1000;
+
+            if (partNumber > 0)
+            {
+                string partWord = ThreeDigitToVietnameseWords(partNumber) + " " + unitWords[unitIndex];
+                parts.Insert(0, partWord.Trim());
+            }
+
+            unitIndex++;
+            if (unitIndex == 4) // Reset after "tỷ" to support numbers larger than tỷ
+            {
+                unitIndex = 1;
+                unitWords[1] = "nghìn tỷ";
+                unitWords[2] = "triệu tỷ";
+                unitWords[3] = "tỷ tỷ";
+            }
+        }
+
+        return string.Join(" ", parts).Trim();
+    }
+
+    private static string ThreeDigitToVietnameseWords(int number)
+    {
+        string[] units = { "không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
+        string[] tens = { "mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín" };
+
+        string result = "";
+
+        int hundred = number / 100;
+        int ten = (number % 100) / 10;
+        int unit = number % 10;
+
+        if (hundred > 0)
+        {
+            result += units[hundred] + " trăm ";
+            if (ten == 0 && unit > 0) result += "linh ";
+        }
+
+        if (ten > 1)
+        {
+            result += units[ten] + " mươi ";
+            if (unit == 1) unit = -1; // "mốt" for "21", "31", etc.
+        }
+        else if (ten == 1)
+        {
+            result += tens[unit];
+            unit = -1; // Avoid appending unit
+        }
+
+        if (unit >= 0)
+        {
+            result += (unit == 5 && ten > 0 ? "lăm" : units[unit]);
+        }
+        else if (unit == -1)
+        {
+            result += "mốt";
+        }
+
+        return result.Trim();
+    }
+}

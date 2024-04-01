@@ -1,4 +1,4 @@
-﻿@page "/chitietphieunhapkho-list"
+﻿@page "/chitietphieunhapkho-list/{So_Phieu_Nhap_Kho}"
 @inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
 
 @inject NavigationManager nav
@@ -7,7 +7,7 @@
 <PageTitle>CHI TIẾT PHIÊU NHẬP KHO</PageTitle>
 <h1>CHI TIẾT PHIÊU NHẬP KHO</h1>
 <hr />
-<button class="btn btn-primary" @onclick="AddDVT">Thêm chi tiết</button>
+<button class="btn btn-primary" @onclick="@(() =>AddDVT(So_Phieu_Nhap_Kho))">Thêm chi tiết</button>
 @if (itemsQueryable is null)
 {
     <hr />
@@ -63,11 +63,13 @@ else
 }
 
 @code {
+    [Parameter]
+    public string? So_Phieu_Nhap_Kho { get; set; }
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<ChiTietPhieuNhapKho>? itemsQueryable;
     protected override async Task OnInitializedAsync()
     {
-        itemsQueryable = (await ChiTietPhieuNhapKhoService.GetAllChiTietPhieuNhapKhoAsync()).AsQueryable();
+        itemsQueryable = (await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(So_Phieu_Nhap_Kho)).AsQueryable();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
 
@@ -87,9 +89,9 @@ else
         nav.NavigateTo($"/edit-chitietphieunhapkho/{Nhap_Kho_ID}/{San_Pham_ID}");
     }
 
-    void AddDVT()
+    async Task AddDVT(string Nhap_Kho_ID)
     {
-        nav.NavigateTo($"/edit-chitietphieunhapkho");
+        nav.NavigateTo($"/edit-chitietphieunhapkho/{Nhap_Kho_ID}");
     }
     async Task DeleteCTPNK(string Nhap_Kho_ID, string San_Pham_ID)
     {

@@ -26,6 +26,11 @@ namespace tranhoangkhai_project1.Services
                 await _dataContext.SaveChangesAsync();
             }
         }
+        public async Task<List<ChiTietPhieuXuatKhoModel>> GetAllChiTietByKhoIDAsync(string Xuat_Kho_ID)
+        {
+            var result = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.Where(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID)).ToListAsync();
+            return result;
+        }
 
         public async Task<List<ChiTietPhieuXuatKhoModel>> GetAllChiTietPhieuXuatKhoAsync()
         {

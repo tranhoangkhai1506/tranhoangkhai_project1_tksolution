@@ -1,0 +1,189 @@
+﻿@inject iPhieuNhapKhoService PhieuNhapKhoService
+@inject iNhaCungCapService NhaCungCapSevice
+@inject iKhoService KhoSevice
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<div>
+    <dialog id="editPhieuNhapPhong" style="border: 2px solid #0b5ed7; min-width: 600px">
+        <EditForm Enhance Model="phieuNhapKho" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ErrorMessage
+                </div>
+            }
+            <div class="card">
+                <div class="card-header">@Title PHIẾU NHẬP KHO</div>
+                <div class="card-body">
+                    @if (!IsUpdateMode)
+                    {
+                        <div class="form-group">
+                            <label class="form-label" for="So_Phieu_Nhap_Kho">SỐ PHIẾU</label>
+                            <InputText class="form-control" id="So_Phieu_Nhap_Kho" @bind-Value="phieuNhapKho.So_Phieu_Nhap_Kho"></InputText>
+                            <ValidationMessage For="()=>phieuNhapKho.So_Phieu_Nhap_Kho"></ValidationMessage>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label class="form-label" for="Kho_ID">KHO ID</label>
+                        <InputSelect class="form-control" id="Kho_ID" @bind-Value="phieuNhapKho.Kho_ID">
+                            <option value=" " disabled selected>Chọn kho</option>
+                            @foreach (var kho in listKho)
+                            {
+                                <option value="@kho.Ten_Kho">@kho.Ten_Kho</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>phieuNhapKho.Kho_ID"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="NCC_ID">NHÀ CUNG CẤP ID</label>
+                        <InputSelect class="form-control" id="NCC_ID" @bind-Value="phieuNhapKho.NCC_ID">
+                            <option value=" " disabled selected>Chọn nhà cung cấp</option>
+                            @foreach (var nhacungcap in listNhaCC)
+                            {
+                                <option value="@nhacungcap.Ma_NCC">@nhacungcap.Ten_NCC</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>phieuNhapKho.NCC_ID"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Ngay_Nhap_Kho">NGÀY NHẬP KHO</label>
+                        <InputDate class="form-control" id="Ngay_Nhap_Kho" @bind-Value="phieuNhapKho.Ngay_Nhap_Kho"></InputDate>
+                        <ValidationMessage For="()=>phieuNhapKho.Ngay_Nhap_Kho"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Ghi_Chu">GHI CHÚ</label>
+                        <InputText class="form-control" id="Ghi_Chu" @bind-Value="phieuNhapKho.Ghi_Chu"></InputText>
+                        <ValidationMessage For="()=>phieuNhapKho.Ghi_Chu"></ValidationMessage>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="hstack gap-3 float-end">
+                        <form method="dialog">
+                            <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                        </form>
+                        <button class="btn btn-success" type="submit" >Lưu</button>
+                    </div>
+                </div>
+            </div>
+       </EditForm>
+    </dialog>
+</div>
+@code {
+    [Parameter] public PhieuNhapKhoModel phieuNhapKho { get; set; } = new();
+    public string Title { get; set; } = "THÊM";
+    public bool IsUpdateMode { get; set; } = false;
+    [Parameter] public EventCallback<PhieuNhapKhoModel> HandleAddPhieuNhapKhoEvent { get; set; }
+    public List<NhaCungCapModel> listNhaCC { get; set; } = new List<NhaCungCapModel>();
+    public List<KhoModel> listKho { get; set; } = new List<KhoModel>();
+    async Task FetchData()
+    {
+        listKho = await KhoSevice.GetAllKhoAsync();
+        listNhaCC = await NhaCungCapSevice.GetAllNhaCungCapAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await FetchData();                
+                ClearPhieuContainer();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi hoặc xử lý lỗi tại đây
+                Console.WriteLine($"Lỗi khi lấy dữ liệu: {ex.Message}");
+            }
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (string.IsNullOrWhiteSpace(phieuNhapKho.So_Phieu_Nhap_Kho))
+        {
+            ErrorMessage = "Số phiếu nhập kho không được để trống.";
+            StateHasChanged();
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(phieuNhapKho.Kho_ID))
+        {
+            ErrorMessage = "Kho không được để trống.";
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(phieuNhapKho.NCC_ID))
+        {
+            ErrorMessage = "Nhà cung cấp không được để trống.";
+            StateHasChanged();
+            return;
+        }
+
+
+        if (phieuNhapKho.Ngay_Nhap_Kho == default(DateTime))
+        {
+            ErrorMessage = "Ngày nhập kho không được để trống.";
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(phieuNhapKho.Ghi_Chu))
+        {
+            ErrorMessage = "Ghi chú không được để trống.";
+            StateHasChanged();
+            return;
+        }
+
+        var existingPNK = await PhieuNhapKhoService.GetByIdAsync(phieuNhapKho.So_Phieu_Nhap_Kho);
+        if (IsUpdateMode)
+        {           
+            await Update();
+            StateHasChanged();
+            ClearPhieuContainer();
+        }
+        else
+        {
+            if (existingPNK is not null)
+            {
+                ErrorMessage = "Phiếu nhập kho đã tồn tại!";
+                StateHasChanged();
+                return;
+            }
+            ErrorMessage = "";
+            StateHasChanged();
+            await Save();
+            ClearPhieuContainer();
+        }
+
+    }
+
+    string ErrorMessage;
+    private void OnClose(EventArgs e)
+    {
+        ClearPhieuContainer();
+    }
+
+    public void ClearPhieuContainer()
+    {
+        phieuNhapKho = new();
+    }
+
+    public void ChangeTitle(string title)
+    {
+        Title = title;
+    }
+
+
+    async Task Save()
+    {
+        if (phieuNhapKho!.So_Phieu_Nhap_Kho is null) return;
+        await HandleAddPhieuNhapKhoEvent.InvokeAsync(phieuNhapKho);
+    }
+    async Task Update()
+    {
+        await HandleAddPhieuNhapKhoEvent.InvokeAsync(phieuNhapKho);
+    }
+}

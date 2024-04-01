@@ -4,11 +4,18 @@
 @inject IJSRuntime js
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-
+<script src="~/js/dialog.js"></script>
 <PageTitle>PHIẾU NHẬP KHO</PageTitle>
 <h1>PHIẾU NHẬP KHO</h1>
 <hr />
-<button class="btn btn-primary" @onclick="AddPhieuNhapKho">Thêm phiếu nhập kho</button>
+<button class="btn btn-primary" @onclick="AddPhieuNhapHang">Thêm phiếu nhập kho</button>
+
+<EditPhieuNhapKhoDialog 
+    HandleAddPhieuNhapKhoEvent="HandleAddPhieuNhapKhoEvent" 
+    phieuNhapKho="phieuNhapKho"
+@ref="dialogPhieuNhapKho">
+
+</EditPhieuNhapKhoDialog>
 
 @if (itemsQueryable is null)
 {
@@ -40,9 +47,10 @@ else
             <PropertyColumn Property="@(c => c.Ngay_Nhap_Kho)" Sortable="true" Class="text-center date-column" Title="NGÀY NHẬP" Format="dd-MM-yyyy"/>
             <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Class="text-center" Title="GHI CHÚ" />
             <TemplateColumn Title="Actions" Class="text-center">
-                <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context.So_Phieu_Nhap_Kho))">Hiệu chỉnh</button>
+                <button class="btn btn-outline-success btn-sm me-1" @onclick="@(() => ChiTiet(context.So_Phieu_Nhap_Kho))">Chi tiết</button>
+                <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context))">Sửa</button>
                 <button class="btn btn-danger btn-sm me-1" @onclick="@(() => ConfirmDelete(context.So_Phieu_Nhap_Kho))">Xóa</button>
-                <button class="btn btn-primary btn-sm me-1" @onclick="@(() => ShowReportByID(context.So_Phieu_Nhap_Kho))">Xem Report</button>
+                @* <button class="btn btn-primary btn-sm me-1" @onclick="@(() => ShowReportByID(context.So_Phieu_Nhap_Kho))">Xem Report</button> *@
                 <button class="btn btn-secondary btn-sm" @onclick="@(() => Print(context.So_Phieu_Nhap_Kho))">In</button>
             </TemplateColumn>
         </QuickGrid>
@@ -70,10 +78,6 @@ else
 
 }
 <hr />
-@if (!string.IsNullOrWhiteSpace(ErrorMessage))
-{
-    <div class="alert alert-danger" role="alert">@ErrorMessage</div>
-}
 
 <div id="PrintDiv">
     @if (currentReportId != null)
@@ -87,15 +91,46 @@ else
     bool showBirthDate = false;
     private string ErrorMessage { get; set; }
     private string currentReportId;
+    EditPhieuNhapKhoDialog? dialogPhieuNhapKho;
+    PhieuNhapKhoModel phieuNhapKho = new();
     PaginationState pagination = new PaginationState { ItemsPerPage = 3 };
     IQueryable<PhieuNhapKhoModel>? itemsQueryable;
+
+    private async Task ChiTiet(string So_Phieu_Nhap_Kho)
+    {
+        nav.NavigateTo($"/chitietphieunhapkho-list/{So_Phieu_Nhap_Kho}");
+    }
+
+    private async void HandleAddPhieuNhapKhoEvent(PhieuNhapKhoModel comingPhieuNhapKho)
+    {
+        var check = itemsQueryable.FirstOrDefault(p => p.So_Phieu_Nhap_Kho.Equals(comingPhieuNhapKho.So_Phieu_Nhap_Kho));
+        if(check is null)
+        {
+            await PhieuNhapKhoService.AddPhieuNhapKhoAsync(comingPhieuNhapKho);
+            phieuNhapKho = new();
+            itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
+            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+        }
+        else
+        {
+            HieuChinhPhieuNhapKhoModel newHieuChinh = new HieuChinhPhieuNhapKhoModel();
+            newHieuChinh.So_Phieu_Nhap_Kho = phieuNhapKho.So_Phieu_Nhap_Kho;
+            newHieuChinh.Kho_ID = phieuNhapKho.Kho_ID;
+            newHieuChinh.NCC_ID = phieuNhapKho.NCC_ID;
+            newHieuChinh.Ngay_Nhap_Kho = phieuNhapKho.Ngay_Nhap_Kho;
+            newHieuChinh.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+            await HieuChinhPhieuNhapKhoService.UpdateHieuChinhPhieuNhapKhoAsync(newHieuChinh, phieuNhapKho.So_Phieu_Nhap_Kho);
+            phieuNhapKho = new();
+            itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
+            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
-
-    private void AddPhieuNhapKho() => nav.NavigateTo("/edit-phieunhapkho");
 
     private async Task ConfirmDelete(string maphieu)
     {
@@ -121,7 +156,19 @@ else
         }
     }
 
-    private void HieuChinh(string So_Phieu_Nhap_Kho) => nav.NavigateTo($"/edit-hieuchinhphieunhapkho/{So_Phieu_Nhap_Kho}");
+    private async void HieuChinh(PhieuNhapKhoModel phieuNhap)
+    {
+        dialogPhieuNhapKho.ChangeTitle("SỬA");
+        dialogPhieuNhapKho.IsUpdateMode = true;
+        phieuNhapKho = phieuNhap;
+        await ShowDiaLog();
+    }
+
+    private async void AddPhieuNhapHang()
+    {
+        dialogPhieuNhapKho.IsUpdateMode = false;
+        await ShowDiaLog();
+    }
 
     private RenderFragment DynamicComponent(string reportId) => builder =>
     {
@@ -143,7 +190,7 @@ else
         currentReportId = So_Phieu_Nhap_Kho;
         await InvokeAsync(StateHasChanged);
         await Task.Delay(300); // Đảm bảo có đủ thời gian cho việc render lại UI
-        await js.InvokeVoidAsync("PrintReport");
+        await js.InvokeVoidAsync("PrintPhieuNhapKhoReport");
     }
     private async Task GoToPageAsync(int pageIndex)
     {
@@ -155,10 +202,15 @@ else
 
     private string? AriaCurrentValue(int pageIndex)
         => pagination.CurrentPageIndex == pageIndex ? "page" : null;
+
+    private async Task ShowDiaLog()
+    {
+        await js.InvokeVoidAsync("myDialogFunction");
+    }
 }
 
 <script type="text/javascript">
-    function PrintReport() {
+    function PrintPhieuNhapKhoReport() {
         var printDivContent = document.getElementById("PrintDiv").innerHTML;
         var windowToPrint = window.open('', '', 'height=600,width=800');
         windowToPrint.document.write('<html><head><title>Print</title></head>');
@@ -171,6 +223,9 @@ else
             windowToPrint.print();
             windowToPrint.onafterprint = function () { windowToPrint.close(); };
         }, 500); // Đảm bảo báo cáo được load đầy đủ trước khi in
+    }
+    window.myDialogFunction = function () {
+        document.getElementById('editPhieuNhapPhong').showModal()
     }
 </script>
 

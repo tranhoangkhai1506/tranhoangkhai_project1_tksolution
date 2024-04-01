@@ -53,8 +53,8 @@
 }
 else
 {
-    <PageTitle>Chỉnh sửa "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</PageTitle>
-    <h3>Chỉnh sửa "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</h3>
+    <PageTitle>HIỆU CHỈNH "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</PageTitle>
+    <h1>HIỆU CHỈNH "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</h1>
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
@@ -62,33 +62,44 @@ else
         </div>
     }
     <hr />
-    <div class="d-flex justify-content-start info-section" style="align-items: flex-start;">
-        <div class="p-2" style="border-right: 1px solid #dee2e6;">
-            <h5>Thông tin Phiếu Nhập Kho</h5>
-            @foreach (PhieuXuatKhoModel phieu in phieuXuatKhoList)
-            {
-                if (phieu.So_Phieu_Xuat_Kho.Equals(CurrentCTPXK.Xuat_Kho_ID))
+    <div class="d-flex justify-content-start info-section mb-4">
+        <!-- Thông tin Phiếu Nhập Kho -->
+        <div class="card mr-2" style="flex: 1;">
+            <div class="card-header">
+                <h5>Thông tin Phiếu Nhập Kho</h5>
+            </div>
+            <div class="card-body">
+                @foreach (var phieu in phieuXuatKhoList)
                 {
-                    <p>Số phiếu nhập kho: @phieu.So_Phieu_Xuat_Kho</p>
-                    <p>ID Kho: @phieu.Kho_ID</p>
-                    <p>Ngày nhập kho: @phieu.Ngay_Nhap_Kho.ToShortDateString()</p>
-                    <p>Ghi chú: @phieu.Ghi_Chu</p>
+                    if (phieu.So_Phieu_Xuat_Kho.Equals(CurrentCTPXK.Xuat_Kho_ID))
+                    {
+                        <p class="card-text"><strong>Số phiếu nhập kho:</strong> @phieu.So_Phieu_Xuat_Kho</p>
+                        <p class="card-text"><strong>ID Kho:</strong> @phieu.Kho_ID</p>
+                        <p class="card-text"><strong>Ngày nhập kho:</strong> @phieu.Ngay_Nhap_Kho.ToShortDateString()</p>
+                        <p class="card-text"><strong>Ghi chú:</strong> @phieu.Ghi_Chu</p>
+                    }
                 }
-            }
+            </div>
         </div>
-        <div class="p-2" style="flex-grow: 1;">
-            <h5>Thông tin Sản Phẩm</h5>
-            @foreach (SanPhamModel sanpham in sanPhamList)
-            {
-                if (sanpham.Ma_San_Pham.Equals(CurrentCTPXK.San_Pham_ID))
+
+        <!-- Thông tin Sản Phẩm -->
+        <div class="card" style="flex: 2;">
+            <div class="card-header">
+                <h5>Thông tin Sản Phẩm</h5>
+            </div>
+            <div class="card-body">
+                @foreach (SanPhamModel sanpham in sanPhamList)
                 {
-                    <p>Mã sản phẩm: @sanpham.Ma_San_Pham</p>
-                    <p>Tên sản phẩm: @sanpham.Ten_San_Pham</p>
-                    <p>Mã loại sản phẩm: @sanpham.Loai_San_Pham_ID</p>
-                    <p>Mã đơn vị tính: @sanpham.Don_Vi_Tinh_ID</p>
-                    <p>Ghi chú: @sanpham.Ghi_Chu</p>
+                    if (sanpham.Ma_San_Pham.Equals(CurrentCTPXK.San_Pham_ID))
+                    {
+                        <p class="card-text"><strong>Mã sản phẩm:</strong> @sanpham.Ma_San_Pham</p>
+                        <p class="card-text"><strong>Tên sản phẩm:</strong> @sanpham.Ten_San_Pham</p>
+                        <p class="card-text"><strong>Mã loại sản phẩm:</strong> @sanpham.Loai_San_Pham_ID</p>
+                        <p class="card-text"><strong>Đơn vị tính:</strong> @sanpham.Don_Vi_Tinh_ID</p>
+                        <p class="card-text"><strong>Ghi chú:</strong> @sanpham.Ghi_Chu</p>
+                    }
                 }
-            }
+            </div>
         </div>
     </div>
     <hr />
