@@ -1,13 +1,15 @@
-﻿@page "/edit-chitietphieuxuatkho"
+﻿@page "/edit-chitietphieuxuatkho/{Xuat_Kho_ID}"
 @page "/edit-chitietphieuxuatkho/{Xuat_Kho_ID}/{San_Pham_ID}"
 
 @inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
 @inject iPhieuXuatKhoService PhieuXuatKhoService
 @inject iSanPhamService SanPhamSevice
 @inject NavigationManager nav
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@if (Xuat_Kho_ID is null && San_Pham_ID is null)
+@if (San_Pham_ID is null)
 {
     <PageTitle>THÊM CHI TIẾT PHIẾU NHẬP KHO</PageTitle>
     <h3>THÊM CHI TIẾT PHIẾU NHẬP KHO</h3>
@@ -19,7 +21,7 @@
     }
 
     <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
-        <div>
+        @* <div>
             <label for="Xuat_Kho_ID">Số Phiếu Nhập</label>
             <InputSelect class="form-control" id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID">
                 <option value="" disabled selected>Chọn mã phiếu nhập kho</option>
@@ -28,7 +30,7 @@
                     <option value="@kho.So_Phieu_Xuat_Kho">@kho.So_Phieu_Xuat_Kho</option>
                 }
             </InputSelect>
-        </div>
+        </div> *@
         <div>
             <label for="San_Pham_ID">Số Phiếu Nhập</label>
             <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID">
@@ -141,13 +143,14 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Xuat_Kho_ID is not null && San_Pham_ID is not null)
+        var ctPXK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Xuat_Kho_ID, San_Pham_ID);
+        if (ctPXK is not null)
         {
-            var ctPNK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Xuat_Kho_ID, San_Pham_ID);
-            if (ctPNK is not null)
-            {
-                CurrentCTPXK = ctPNK;
-            }
+            CurrentCTPXK = ctPXK;
+        }
+        else
+        {
+            CurrentCTPXK.Xuat_Kho_ID = Xuat_Kho_ID;
         }
     }
     protected override async Task OnInitializedAsync()
@@ -189,12 +192,21 @@ else
         if (Xuat_Kho_ID is not null && San_Pham_ID is not null)
         {
             await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, San_Pham_ID);
-            nav.NavigateTo("/chitietphieuxuatkho-list");
+            nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
         }
         else
         {
-            await ChiTietPhieuXuatKhoService.AddChiTietPhieuXuat(CurrentCTPXK);
-            nav.NavigateTo("/chitietphieuxuatkho-list");
+            var existPhieuXuat = await ChiTietPhieuXuatKhoService.GetByIdAsync(CurrentCTPXK.Xuat_Kho_ID, CurrentCTPXK.San_Pham_ID);
+            if (existPhieuXuat is null)
+            {
+                await ChiTietPhieuXuatKhoService.AddChiTietPhieuXuat(CurrentCTPXK);
+                nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
+            }
+            else
+            {
+                await SweetAlert.ShowMessage("Error", "Phiếu chi tiết của sản phẩm đã tồn tại", "Error");
+            }
+
         }
     }
 }

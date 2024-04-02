@@ -38,6 +38,11 @@ namespace tranhoangkhai_project1.Services
             var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ma_San_Pham.Equals(maSanPham));
             return sanPham;
         }
+        public async Task<SanPhamModel> GetByDVTAsync(string maDVT)
+        {
+            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Don_Vi_Tinh_ID.Equals(maDVT));
+            return sanPham;
+        }
 
         public async Task UpdateSanPhamAsync(SanPhamModel sanPham, string maSanPham)
         {

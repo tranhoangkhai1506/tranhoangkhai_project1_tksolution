@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using tranhoangkhai_project1.Components;
 using tranhoangkhai_project1.Data;
+using tranhoangkhai_project1.Helper;
 using tranhoangkhai_project1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,8 @@ builder.Services.AddScoped<iChiTietPhieuNhapKhoService, ChiTietPhiNhapKhoService
 builder.Services.AddScoped<iPhieuXuatKhoService, PhieuXuatKhoService>();
 builder.Services.AddScoped<iHieuChinhPhieuXuatKhoService, HieuChinhPhieuXuatKhoService>();
 builder.Services.AddScoped<iChiTietPhieuXuatKhoService, ChiTietPhieuXuatService>();
+builder.Services.AddScoped<ShowErrorMessage>();
+
 
 var app = builder.Build();
 

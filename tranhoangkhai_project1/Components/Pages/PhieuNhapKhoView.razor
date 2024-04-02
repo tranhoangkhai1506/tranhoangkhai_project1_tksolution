@@ -1,12 +1,14 @@
 ﻿@page "/phieunhapkho-list"
 @inject iPhieuNhapKhoService PhieuNhapKhoService
 @inject iHieuChinhPhieuNhapKhoService HieuChinhPhieuNhapKhoService
+@inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
 @inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 <script src="~/js/dialog.js"></script>
 <PageTitle>PHIẾU NHẬP KHO</PageTitle>
-<h1>PHIẾU NHẬP KHO</h1>
+<h2>PHIẾU NHẬP KHO</h2>
 <hr />
 <button class="btn btn-primary" @onclick="AddPhieuNhapHang">Thêm phiếu nhập kho</button>
 
@@ -32,10 +34,10 @@ else
     <div class="page-size-chooser mb-3">
         Items per page:
         <select class="form-select form-select-sm" style="width: auto; display: inline-block;" @bind="@pagination.ItemsPerPage">
-            <option>3</option>
             <option>5</option>
             <option>10</option>
             <option>15</option>
+            <option>25</option>
         </select>
     </div>
 
@@ -49,7 +51,7 @@ else
             <TemplateColumn Title="Actions" Class="text-center">
                 <button class="btn btn-outline-success btn-sm me-1" @onclick="@(() => ChiTiet(context.So_Phieu_Nhap_Kho))">Chi tiết</button>
                 <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context))">Sửa</button>
-                <button class="btn btn-danger btn-sm me-1" @onclick="@(() => ConfirmDelete(context.So_Phieu_Nhap_Kho))">Xóa</button>
+                <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeletePhieuNhapKho(context.So_Phieu_Nhap_Kho))">Xóa</button>
                 @* <button class="btn btn-primary btn-sm me-1" @onclick="@(() => ShowReportByID(context.So_Phieu_Nhap_Kho))">Xem Report</button> *@
                 <button class="btn btn-secondary btn-sm" @onclick="@(() => Print(context.So_Phieu_Nhap_Kho))">In</button>
             </TemplateColumn>
@@ -79,7 +81,14 @@ else
 }
 <hr />
 
-<div id="PrintDiv">
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
+
+<div id="PrintDiv" style="display: none;">
     @if (currentReportId != null)
     {
         @DynamicComponent(currentReportId)
@@ -91,9 +100,9 @@ else
     bool showBirthDate = false;
     private string ErrorMessage { get; set; }
     private string currentReportId;
-    EditPhieuNhapKhoDialog? dialogPhieuNhapKho;
+    EditPhieuNhapKhoDialog? dialogPhieuNhapKho; 
     PhieuNhapKhoModel phieuNhapKho = new();
-    PaginationState pagination = new PaginationState { ItemsPerPage = 3 };
+    PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<PhieuNhapKhoModel>? itemsQueryable;
 
     private async Task ChiTiet(string So_Phieu_Nhap_Kho)
@@ -110,6 +119,8 @@ else
             phieuNhapKho = new();
             itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
             pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+
+            await SweetAlert.ShowToast("Thêm thành công", "Success", 1000);
         }
         else
         {
@@ -123,6 +134,7 @@ else
             phieuNhapKho = new();
             itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
             pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
         }
     }
 
@@ -132,27 +144,24 @@ else
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
 
-    private async Task ConfirmDelete(string maphieu)
-    {
-        var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
-        if (confirmed)
-        {
-            await DeletePhieuNhapKho(maphieu);
-        }
-    }
-
     private async Task DeletePhieuNhapKho(string maphieu)
     {
         var hieuchinhPhieuNhapKho = await HieuChinhPhieuNhapKhoService.GetByIdAsync(maphieu);
-        if (hieuchinhPhieuNhapKho is null)
+        var chitietPhieuNhapKho = await ChiTietPhieuNhapKhoService.GetChiTietByKhoIDAsync(maphieu);
+        if (hieuchinhPhieuNhapKho is null && chitietPhieuNhapKho is null)
         {
-            await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
-            itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
-            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
+            if (confirmed)
+            {
+                await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
+                itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
+                await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
+                pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            }          
         }
         else
         {
-            ErrorMessage = "Không thể xóa phiếu nhập!";
+            await SweetAlert.ShowMessage("Error", "Không thể xóa phiếu nhập!", "Error");
         }
     }
 
@@ -187,10 +196,20 @@ else
 
     private async Task Print(string So_Phieu_Nhap_Kho)
     {
-        currentReportId = So_Phieu_Nhap_Kho;
-        await InvokeAsync(StateHasChanged);
-        await Task.Delay(300); // Đảm bảo có đủ thời gian cho việc render lại UI
-        await js.InvokeVoidAsync("PrintPhieuNhapKhoReport");
+        var chitietPhieuNhapKho = await ChiTietPhieuNhapKhoService.GetChiTietByKhoIDAsync(So_Phieu_Nhap_Kho);
+        if (chitietPhieuNhapKho is not null)
+        {
+            ErrorMessage = "";
+            currentReportId = So_Phieu_Nhap_Kho;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(300); // Đảm bảo có đủ thời gian cho việc render lại UI
+            await js.InvokeVoidAsync("PrintPhieuNhapKhoReport");
+        }
+        else
+        {
+            await SweetAlert.ShowMessage("Error", "Không có chi tiết nào cho phiếu nhập!", "Error");
+        }
+        
     }
     private async Task GoToPageAsync(int pageIndex)
     {

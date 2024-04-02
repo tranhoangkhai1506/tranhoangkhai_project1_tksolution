@@ -141,15 +141,15 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-            var ctPNK = await ChiTietPhieuNhapKhoService.GetByIdAsync(Nhap_Kho_ID, San_Pham_ID);
-            if (ctPNK is not null)
-            {
-                CurrentCTPNK = ctPNK;
-            }
-            else
-            {
-                CurrentCTPNK.Nhap_Kho_ID = Nhap_Kho_ID;
-            }
+        var ctPNK = await ChiTietPhieuNhapKhoService.GetByIdAsync(Nhap_Kho_ID, San_Pham_ID);
+        if (ctPNK is not null)
+        {
+            CurrentCTPNK = ctPNK;
+        }
+        else
+        {
+            CurrentCTPNK.Nhap_Kho_ID = Nhap_Kho_ID;
+        }
     }
     protected override async Task OnInitializedAsync()
     {
@@ -159,14 +159,8 @@ else
 
     async Task HandleSubmit()
     {
-        if (string.IsNullOrWhiteSpace(CurrentCTPNK.Nhap_Kho_ID))
-        {
-            ErrorMessage = "Số phiếu nhập kho được để trống.";
-            return;
-        }
-
         var existingUnitCode = await ChiTietPhieuNhapKhoService.GetByIdAsync(CurrentCTPNK.Nhap_Kho_ID, CurrentCTPNK.San_Pham_ID);
-        if (existingUnitCode != null && Nhap_Kho_ID is null && San_Pham_ID is null)
+        if (existingUnitCode != null && San_Pham_ID is null)
         {
             ErrorMessage = "Phiếu nhập của sản phẩm đã tồn tại.";
             return;
@@ -190,11 +184,11 @@ else
         if (Nhap_Kho_ID is not null && San_Pham_ID is not null)
         {
             await ChiTietPhieuNhapKhoService.UpdateChiTietPhieuNhapAsync(CurrentCTPNK, Nhap_Kho_ID, San_Pham_ID);
-            nav.NavigateTo("/chitietphieunhapkho-list");
+            nav.NavigateTo($"/chitietphieunhapkho-list/{CurrentCTPNK.Nhap_Kho_ID}");
         }
         else
         {
-            await ChiTietPhieuNhapKhoService.AddChiTietPhieuNhap(CurrentCTPNK);
+            await ChiTietPhieuNhapKhoService.AddChiTietPhieuNhap(CurrentCTPNK);            
             nav.NavigateTo($"/chitietphieunhapkho-list/{CurrentCTPNK.Nhap_Kho_ID}");
         }
     }

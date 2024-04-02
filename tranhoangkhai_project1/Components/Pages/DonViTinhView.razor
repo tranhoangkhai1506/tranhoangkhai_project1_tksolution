@@ -1,9 +1,9 @@
 ﻿@page "/donvitinh-list"
 @inject iDonViTinhService DonViTinhSevice
-
+@inject iSanPhamService SanPhamService
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-
+@inject IJSRuntime js
 <PageTitle>ĐƠN VỊ TÍNH</PageTitle>
 <h1>ĐƠN VỊ TÍNH</h1>
 <hr />
@@ -56,12 +56,21 @@ else
 
         }
     </div>
+    <hr/>
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
     
 }
 
 @code {
     PaginationState pagination = new PaginationState { ItemsPerPage = 3 };
     IQueryable<DonViTinhModel>? itemsQueryable;
+    private string ErrorMessage { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         itemsQueryable = (await DonViTinhSevice.GetAllDonViTinhAsync()).AsQueryable();
@@ -79,9 +88,23 @@ else
     }
     async Task DeleteDVT(string tendonvi)
     {
-        await DonViTinhSevice.DeleteDonViTinhAsync(tendonvi);
-        itemsQueryable = (await DonViTinhSevice.GetAllDonViTinhAsync()).AsQueryable();
-        pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+        ErrorMessage = "";
+        var existSanPham = await SanPhamService.GetByDVTAsync(tendonvi);
+        if (existSanPham is null)
+        {
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa đơn vị tính này?");
+            if (confirmed)
+            {
+                await DonViTinhSevice.DeleteDonViTinhAsync(tendonvi);
+                itemsQueryable = (await DonViTinhSevice.GetAllDonViTinhAsync()).AsQueryable();
+                pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            }
+        }
+        else
+        {
+            ErrorMessage = "Không thể xóa đơn vị tính!";
+        }
+        
     }
     private async Task GoToPageAsync(int pageIndex)
     {

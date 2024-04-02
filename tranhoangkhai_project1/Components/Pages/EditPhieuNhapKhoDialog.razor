@@ -1,6 +1,8 @@
 ﻿@inject iPhieuNhapKhoService PhieuNhapKhoService
 @inject iNhaCungCapService NhaCungCapSevice
 @inject iKhoService KhoSevice
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 <div>
     <dialog id="editPhieuNhapPhong" style="border: 2px solid #0b5ed7; min-width: 600px">

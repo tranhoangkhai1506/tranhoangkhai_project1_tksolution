@@ -6,6 +6,7 @@ namespace tranhoangkhai_project1.Services
     {
         Task<List<SanPhamModel>> GetAllSanPhamAsync();
         Task<SanPhamModel> GetByIdAsync(string maSanPham);
+        Task<SanPhamModel> GetByDVTAsync(string maDVT);
 
         Task AddSanPham(SanPhamModel sanPham);
         Task UpdateSanPhamAsync(SanPhamModel sanPham, string maSanPham);

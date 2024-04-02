@@ -1,6 +1,6 @@
 ﻿@page "/chitietphieunhapkho-list/{So_Phieu_Nhap_Kho}"
 @inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
-
+@inject IJSRuntime js
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
@@ -95,8 +95,13 @@ else
     }
     async Task DeleteCTPNK(string Nhap_Kho_ID, string San_Pham_ID)
     {
-        await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(Nhap_Kho_ID, San_Pham_ID);
-        itemsQueryable = (await ChiTietPhieuNhapKhoService.GetAllChiTietPhieuNhapKhoAsync()).AsQueryable();
-        pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+        var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
+        if (confirmed)
+        {
+            await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(Nhap_Kho_ID, San_Pham_ID);
+            itemsQueryable = (await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(Nhap_Kho_ID)).AsQueryable();
+            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+        }
+        
     }
 }
