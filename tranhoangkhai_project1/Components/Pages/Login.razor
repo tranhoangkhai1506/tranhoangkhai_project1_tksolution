@@ -1,24 +1,37 @@
 ﻿@page "/login/{tenKho}"
 @inject NavigationManager NavigationManager
 @inject IAuthenticationService AuthenticationService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
+@inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-<h3>Đăng nhập</h3>
+<h1 style="text-align: center;"><strong>ĐĂNG NHẬP</strong></h1>
+<hr />
 
-@if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-header text-center"><strong>ĐĂNG NHẬP</strong></div>
+                <div class="card-body">
+                    <EditForm Model="loginModel" OnValidSubmit="@HandleLogin">
+                        <div class="mb-3">
+                            <label for="Ma_Dang_Nhap" class="form-label"><strong>MÃ ĐĂNG NHẬP</strong></label>
+                            <InputText id="Ma_Dang_Nhap" @bind-Value="loginModel.Ma_Dang_Nhap" class="form-control" />
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-danger" @onclick="OnClose">TRỞ VỀ</button>
+                    <button class="btn btn-success" @onclick="HandleLogin">ĐĂNG NHẬP</button>
+                </div>
+            </div>
+        </div>
     </div>
-}
+</div>
 
-<EditForm Model="loginModel" OnValidSubmit="@HandleLogin">
-    <div>
-        <label for="Ma_Dang_Nhap">Mã Đăng Nhập:</label>
-        <InputText id="Ma_Dang_Nhap" @bind-Value="loginModel.Ma_Dang_Nhap" class="form-control" />
-    </div>
-    <br />
-    <button type="submit" class="btn btn-primary">Đăng nhập</button>
-</EditForm>
+
+
 
 
 
@@ -38,17 +51,26 @@
 
     private async Task HandleLogin()
     {
-        await AuthenticationService.LoginAsync(loginModel.Ma_Dang_Nhap, loginModel.Kho_ID);
-        bool isAuthenticated = IsAuthStatic.IsAuthenticated;
-        if (isAuthenticated)
+        if (string.IsNullOrWhiteSpace(loginModel.Ma_Dang_Nhap))
         {
-            NavigationManager.NavigateTo($"/edit-kho/{loginModel.Kho_ID}");
+            await SweetAlert.ShowMessage("Error", "Mã đăng nhập không được để trống.", "Error");
         }
         else
         {
-            errorMessage = "Đăng nhập không thành công. Vui lòng kiểm tra mã đăng nhập.";
-        }
+            await AuthenticationService.LoginAsync(loginModel.Ma_Dang_Nhap, loginModel.Kho_ID);
+            bool isAuthenticated = IsAuthStatic.IsAuthenticated;
+            if (isAuthenticated)
+            {
+                NavigationManager.NavigateTo("/kho-list");
+            }
+            else
+            {
+                await SweetAlert.ShowMessage("Error", "Đăng nhập không thành công. Vui lòng kiểm tra mã đăng nhập.", "Error");
+            }
+        }        
     }
-
-    
+    private void OnClose(EventArgs e)
+    {
+        nav.NavigateTo("/kho-list");
+    }  
 }

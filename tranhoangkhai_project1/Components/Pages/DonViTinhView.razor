@@ -1,13 +1,17 @@
 ﻿@page "/donvitinh-list"
 @inject iDonViTinhService DonViTinhSevice
 @inject iSanPhamService SanPhamService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 @inject IJSRuntime js
+
+
 <PageTitle>ĐƠN VỊ TÍNH</PageTitle>
-<h1>ĐƠN VỊ TÍNH</h1>
+<h1 style="text-align: center;"><strong>ĐƠN VỊ TÍNH</strong></h1>
 <hr />
-<button class="btn btn-primary" @onclick="AddDVT">Thêm đơn vị tính</button>
+
 @if (itemsQueryable is null)
 {
     <hr />
@@ -15,47 +19,59 @@
 }
 else
 {
-    <hr />
     <div class="page-size-chooser mb-3">
-        Items per page:
+        ITEMS PER PAGE:
         <select class="form-select form-select-sm" style="width: auto; display: inline-block;" @bind="@pagination.ItemsPerPage">
-            <option>3</option>
             <option>5</option>
             <option>10</option>
             <option>15</option>
+            <option>25</option>
         </select>
     </div>
-
-    <div class="table-responsive">
-        <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
-            <PropertyColumn Property="@(c => c.Ten_Don_Vi_Tinh)" Sortable="true"  Title="MÃ PHIẾU" />
-            <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
-            <TemplateColumn Title="Actions" Class="text-center">
-                <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditDVT(context.Ten_Don_Vi_Tinh))">Hiệu chỉnh</button>
-                <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteDVT(context.Ten_Don_Vi_Tinh))">Xóa</button>
-            </TemplateColumn>
-        </QuickGrid>
-    </div>
-    @*  <Paginator State="@pagination" /> *@
-    <div class="page-buttons d-flex justify-content-around">
-        Page:
-        @if (pagination.TotalItemCount.HasValue)
-        {
-            <div class="btn-group">
-                @for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
-                {
-                    var capturedIndex = pageIndex;
-                    <button @onclick="@(() => GoToPageAsync(capturedIndex))"
-                            class="@PageButtonClass(capturedIndex) btn btn-secondary mx-1"
-                            aria-current="@AriaCurrentValue(capturedIndex)"
-                            aria-label="Go to page @(pageIndex + 1)">
-                        @(pageIndex + 1)
-                    </button>
-                }
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>THÔNG TIN ĐƠN VỊ TÍNH</strong>
+            <button class="btn btn-outline-success" @onclick="AddDVT">THÊM ĐƠN VỊ TÍNH</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
+                    <PropertyColumn Property="@(c => c.Ten_Don_Vi_Tinh)" Sortable="true" Title="MÃ PHIẾU" />
+                    <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
+                    <TemplateColumn Title="Actions" Class="text-left">
+                        <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditDVT(context.Ten_Don_Vi_Tinh))">Hiệu chỉnh</button>
+                        <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteDVT(context.Ten_Don_Vi_Tinh))">Xóa</button>
+                    </TemplateColumn>
+                </QuickGrid>
             </div>
+        </div>
+        <div class="card-footer">
+            <div class="hstack gap-3 float-end">
+                <div class="page-buttons d-flex justify-content-around">
+                    @if (pagination.TotalItemCount.HasValue)
+                    {
+                        <div class="btn-group">
+                            @for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
+                            {
+                                var capturedIndex = pageIndex;
+                                <button @onclick="@(() => GoToPageAsync(capturedIndex))"
+                                        class="@PageButtonClass(capturedIndex) btn btn-secondary mx-1"
+                                        aria-current="@AriaCurrentValue(capturedIndex)"
+                                        aria-label="Go to page @(pageIndex + 1)">
+                                    @(pageIndex + 1)
+                                </button>
+                            }
+                        </div>
 
-        }
+                    }
+                </div>
+            </div>
+        </div>
     </div>
+
+    
+    @*  <Paginator State="@pagination" /> *@
+    
     <hr/>
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
@@ -67,7 +83,7 @@ else
 }
 
 @code {
-    PaginationState pagination = new PaginationState { ItemsPerPage = 3 };
+    PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<DonViTinhModel>? itemsQueryable;
     private string ErrorMessage { get; set; }
 
@@ -96,13 +112,15 @@ else
             if (confirmed)
             {
                 await DonViTinhSevice.DeleteDonViTinhAsync(tendonvi);
+                await SweetAlert.ShowToast("Xóa thành công!", "Success", 1000);
                 itemsQueryable = (await DonViTinhSevice.GetAllDonViTinhAsync()).AsQueryable();
                 pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+
             }
         }
         else
         {
-            ErrorMessage = "Không thể xóa đơn vị tính!";
+            await SweetAlert.ShowToast("Không thể xóa Đơn vị tính!", "Error", 1000);
         }
         
     }

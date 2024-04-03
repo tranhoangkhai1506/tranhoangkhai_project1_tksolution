@@ -1,51 +1,88 @@
 ﻿@page "/edit-donvitinh"
 @page "/edit-donvitinh/{Ten_Don_Vi_Tinh}"
 @inject iDonViTinhService DonViTinhSevice
-
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @if (Ten_Don_Vi_Tinh is null)
 {
-    <PageTitle>Thêm đơn vị tính</PageTitle>
-    <h3>Thêm đơn vị tính</h3>
+    <PageTitle>THÊM ĐƠN VỊ TÍNH</PageTitle>
+    <h1 style="text-align: center;"><strong>THÊM ĐƠN VỊ TÍNH</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
     }
-
-    <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
-        <div>
-            <label for="Ten_Don_Vi_Tinh">Tên Đơn vị tính</label>
-            <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control"></InputText>
-            <label for="Ghi_Chu">Ghi chú</label>
-            <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN ĐƠN VỊ TÍNH</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ten_Don_Vi_Tinh"><strong>Tên đơn vị tính</strong></label>
+                                <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control"></InputText>
+                                <label for="Ghi_Chu"><strong>Ghi chú</strong></label>
+                                <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+    </div>
+    
 }
 else
 {
-    <PageTitle>Chỉnh sửa "@CurrentDVT.Ten_Don_Vi_Tinh"</PageTitle>
-    <h3>Chỉnh sửa "@CurrentDVT.Ten_Don_Vi_Tinh"</h3>
+    <PageTitle>CHỈNH SỬA "@CurrentDVT.Ten_Don_Vi_Tinh"</PageTitle>
+    <h1 style="text-align: center;"><strong>SỬA ĐƠN VỊ TÍNH</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
     }
-
-    <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
-        <div>
-            <label for="Ghi_Chu">Ghi chú</label>
-            <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN ĐƠN VỊ TÍNH</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ghi_Chu"><strong>Ghi Chú</strong></label>
+                                <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+    </div>
+    
 }
 
 @code {
@@ -89,12 +126,23 @@ else
         if (Ten_Don_Vi_Tinh is not null)
         {
             await DonViTinhSevice.UpdateDonViTinhAsync(CurrentDVT, Ten_Don_Vi_Tinh);
+            await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
             nav.NavigateTo("/donvitinh-list");
         }
         else
         {
             await DonViTinhSevice.AddDonViTinh(CurrentDVT);
+            await SweetAlert.ShowToast("Thêm thành công", "Success", 1000);
             nav.NavigateTo("/donvitinh-list");
         }
+    }
+    private void OnClose(EventArgs e)
+    {
+        ClearPhieuContainer();
+        nav.NavigateTo("/donvitinh-list");
+    }
+    public void ClearPhieuContainer()
+    {
+        CurrentDVT = new();
     }
 }

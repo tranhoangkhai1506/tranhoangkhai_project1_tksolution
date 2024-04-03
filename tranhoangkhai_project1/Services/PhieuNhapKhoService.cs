@@ -39,11 +39,23 @@ namespace tranhoangkhai_project1.Services
             return phieuNhapKho;
         }
 
+        public async Task<PhieuNhapKhoModel> GetByKhoIDAsync(string Kho_ID)
+        {
+            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.Kho_ID.Equals(Kho_ID));
+            return phieuNhapKho;
+        }
+
+        public async Task<PhieuNhapKhoModel> GetByNCCIDAsync(string NCC_ID)
+        {
+            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.NCC_ID.Equals(NCC_ID));
+            return phieuNhapKho;
+        }
+
         //public async Task UpdatePhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho, string So_Phieu_Nhap_Kho)
         //{
         //    var dbPhieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.So_Phieu_Nhap_Kho.Equals(So_Phieu_Nhap_Kho));
         //    if(dbPhieuNhapKho != null){
-                
+
         //    }
         //}
     }

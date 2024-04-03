@@ -1,70 +1,81 @@
 ﻿ @page "/loaisanpham-list"
 @inject iLoaiSanPhamService LoaiSanPhamSevice
-
+@inject iSanPhamService SanPhamService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 <PageTitle>LOẠI SẢN PHẨM</PageTitle>
-<h1>LOẠI SẢN PHẨM</h1>
+
+<h1 style="text-align: center;"><strong>LOẠI SẢN PHẨM</strong></h1>
 <hr />
-<button class="btn btn-primary" @onclick="AddDVT">Thêm loại sản phẩm</button>
-@if (itemsQueryable is null)
+
+@if (itemCount == 0)
 {
     <hr />
     <p>Chưa tìm thấy loại sản phẩm nào! Vui lòng thêm loại sản phẩm!</p>
 }
 else
 {
-    <hr />
     <div class="page-size-chooser mb-3">
-        Items per page:
+        ITEMS PER PAGE:
         <select class="form-select form-select-sm" style="width: auto; display: inline-block;" @bind="@pagination.ItemsPerPage">
-            <option>3</option>
             <option>5</option>
             <option>10</option>
             <option>15</option>
+            <option>25</option>
         </select>
     </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>THÔNG TIN LOẠI SẢN PHẨM</strong>
+            <button class="btn btn-outline-success" @onclick="AddDVT">THÊM LOẠI SẢN PHẨM</button>
+        </div>
+        <div class="table-responsive">
+            <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
+                <PropertyColumn Property="@(c => c.Ma_LSP)" Sortable="true" Title="MÃ LOẠI" />
+                <PropertyColumn Property="@(c => c.Ten_LSP)" Sortable="true" Title="TÊN LOẠI" />
+                <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
+                <TemplateColumn Title="Actions" Class="text-left">
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditDVT(context.Ma_LSP))">Hiệu chỉnh</button>
+                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteDVT(context.Ma_LSP, context.Ma_LSP))">Xóa</button>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+        <div class="card-footer">
+            <div class="hstack gap-3 float-end">
+                <div class="page-buttons d-flex justify-content-around">
+                    @if (pagination.TotalItemCount.HasValue)
+                    {
+                        <div class="btn-group">
+                            @for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
+                            {
+                                var capturedIndex = pageIndex;
+                                <button @onclick="@(() => GoToPageAsync(capturedIndex))"
+                                        class="@PageButtonClass(capturedIndex) btn btn-secondary mx-1"
+                                        aria-current="@AriaCurrentValue(capturedIndex)"
+                                        aria-label="Go to page @(pageIndex + 1)">
+                                    @(pageIndex + 1)
+                                </button>
+                            }
+                        </div>
 
-    <div class="table-responsive">
-        <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
-            <PropertyColumn Property="@(c => c.Ma_LSP)" Sortable="true" Title="MÃ LOẠI" />
-            <PropertyColumn Property="@(c => c.Ten_LSP)" Sortable="true" Title="TÊN LOẠI" />
-            <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
-            <TemplateColumn Title="Actions" Class="text-center">
-                <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditDVT(context.Ma_LSP))">Hiệu chỉnh</button>
-                <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteDVT(context.Ma_LSP))">Xóa</button>
-            </TemplateColumn>
-        </QuickGrid>
-    </div>
-    @*  <Paginator State="@pagination" /> *@
-    <div class="page-buttons d-flex justify-content-around">
-        Page:
-        @if (pagination.TotalItemCount.HasValue)
-        {
-            <div class="btn-group">
-                @for (var pageIndex = 0; pageIndex <= pagination.LastPageIndex; pageIndex++)
-                {
-                    var capturedIndex = pageIndex;
-                    <button @onclick="@(() => GoToPageAsync(capturedIndex))"
-                            class="@PageButtonClass(capturedIndex) btn btn-secondary mx-1"
-                            aria-current="@AriaCurrentValue(capturedIndex)"
-                            aria-label="Go to page @(pageIndex + 1)">
-                        @(pageIndex + 1)
-                    </button>
-                }
+                    }
+                </div>
             </div>
-
-        }
+        </div>
     </div>
 }
 
 @code {
-    PaginationState pagination = new PaginationState { ItemsPerPage = 3 };
+    PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<LoaiSanPhamModel>? itemsQueryable;
+    private int itemCount = 0;
     protected override async Task OnInitializedAsync()
     {
         itemsQueryable = (await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync()).AsQueryable();
+        itemCount = itemsQueryable.Count();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
 
@@ -88,10 +99,25 @@ else
     {
         nav.NavigateTo($"/edit-loaisanpham");
     }
-    async Task DeleteDVT(string ma_lsp)
+    async Task DeleteDVT(string ma_lsp, string maLoai)
     {
-        await LoaiSanPhamSevice.DeleteLoaiSanPhamAsync(ma_lsp);
-        itemsQueryable = (await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync()).AsQueryable();
-        pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+        var existChildrenOfLoai = await SanPhamService.GetByLoaiSanPhamAsync(maLoai);
+        if(existChildrenOfLoai is null)
+        {
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa loại sản phẩm này?");
+            if (confirmed)
+            {
+                await LoaiSanPhamSevice.DeleteLoaiSanPhamAsync(ma_lsp);
+                await SweetAlert.ShowToast("Xóa loại sản phẩm thành công!", "Success", 1000);
+                itemsQueryable = (await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync()).AsQueryable();
+                pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+
+            }
+        }
+        else
+        {
+            await SweetAlert.ShowToast("Không thể xóa loại sản phẩm!", "Error", 1000);
+        }
+
     }
 }

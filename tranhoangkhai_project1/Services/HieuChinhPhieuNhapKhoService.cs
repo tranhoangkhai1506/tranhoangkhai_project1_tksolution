@@ -24,6 +24,18 @@ namespace tranhoangkhai_project1.Services
             return dbHieuChinhPhieuNhapKho;        
         }
 
+        public async Task<HieuChinhPhieuNhapKhoModel> GetByKhoIDAsync(string Kho_ID)
+        {
+            var dbHieuChinhPhieuNhapKho = await _dataContext.tbl_XNK_Nhap_Kho.FirstOrDefaultAsync(p => p.Kho_ID.Equals(Kho_ID));
+            return dbHieuChinhPhieuNhapKho;
+        }
+
+        public async Task<HieuChinhPhieuNhapKhoModel> GetByNCCIDAsync(string NCC_ID)
+        {
+            var dbHieuChinhPhieuNhapKho = await _dataContext.tbl_XNK_Nhap_Kho.FirstOrDefaultAsync(p => p.NCC_ID.Equals(NCC_ID));
+            return dbHieuChinhPhieuNhapKho;
+        }
+
         public async Task UpdateHieuChinhPhieuNhapKhoAsync(HieuChinhPhieuNhapKhoModel phieuNhapKho, string So_Phieu_Nhap_Kho)
         {
 

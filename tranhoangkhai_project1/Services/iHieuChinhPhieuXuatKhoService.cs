@@ -6,6 +6,7 @@ namespace tranhoangkhai_project1.Services
     {
         Task<List<HieuChinhPhieuXuatKhoModel>> GetAllHieuChinhPhieuXuatKhoAsync();
         Task<HieuChinhPhieuXuatKhoModel> GetByIdAsync(string So_Phieu_Xuat_Kho);
+        Task<HieuChinhPhieuXuatKhoModel> GetByKhoIDAsync(string Kho_ID);
         Task UpdateHieuChinhPhieuXuatKhoAsync(HieuChinhPhieuXuatKhoModel phieuXuatKho, string So_Phieu_Xuat_Kho);
     }
 }

@@ -21,7 +21,7 @@ namespace tranhoangkhai_project1.Helper
         {
             await _jsRuntime.InvokeVoidAsync("Swal.fire", new
             {
-                position = "top-right",
+                position = "center",
                 icon = icon.ToLower(),
                 title = title,
                 showConfirmButton = false,

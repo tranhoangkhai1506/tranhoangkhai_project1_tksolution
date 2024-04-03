@@ -1,58 +1,99 @@
 ﻿@page "/edit-loaisanpham"
 @page "/edit-loaisanpham/{Ma_LSP}"
 @inject iLoaiSanPhamService LoaiSanPhamSevice
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @if (Ma_LSP is null)
 {
-    <PageTitle>Thêm đơn vị tính</PageTitle>
-    <h3>Thêm đơn vị tính</h3>
+    <PageTitle>THÊM LOẠI SẢN PHẨM</PageTitle>
+    <h1 style="text-align: center;"><strong>THÊM LOẠI SẢN PHẨM</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
     }
-    <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
-        <div>
-            <label for="Ma_LSP">Mã Loại</label>
-            <InputText id="Ma_LSP" @bind-Value="CurrentLSP.Ma_LSP" class="form-control"></InputText>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN LOẠI SẢN PHẨM</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ma_LSP"><strong>Mã Loại</strong></label>
+                                <InputText id="Ma_LSP" @bind-Value="CurrentLSP.Ma_LSP" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Ten_LSP"><strong>Tên Loại Sản Phẩm</strong></label>
+                                <InputText id="Ten_LSP" @bind-Value="CurrentLSP.Ten_LSP" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Ghi_Chu"><strong>Ghi chú</strong></label>
+                                <InputText id="Ghi_Chu" @bind-Value="CurrentLSP.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="Ten_LSP">Tên Loại Sản Phẩm</label>
-            <InputText id="Ten_LSP" @bind-Value="CurrentLSP.Ten_LSP" class="form-control"></InputText>
-        </div>
-        <div>
-            <label for="Ghi_Chu">Ghi chú</label>
-            <InputText id="Ghi_Chu" @bind-Value="CurrentLSP.Ghi_Chu" class="form-control"></InputText>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+    </div>
+    
+    
 }
 else
 {
-    <PageTitle>Chỉnh sửa "@CurrentLSP."</PageTitle>
-    <h3>Chỉnh sửa "@CurrentLSP.Ten_LSP"</h3>
+    <PageTitle>CHỈNH SỬA "@CurrentLSP."</PageTitle>
+    <h1 style="text-align: center;"><strong>SỬA LOẠI SẢN PHẨM</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
     }
-    <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
-        <div>
-            <label for="Ten_LSP">Ten SP</label>
-            <InputText id="Ten_LSP" @bind-Value="CurrentLSP.Ten_LSP" class="form-control"></InputText>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN LOẠI SẢN PHẨM</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ten_LSP"><strong>Tên Loại Sản Phẩm</strong></label>
+                                <InputText id="Ten_LSP" @bind-Value="CurrentLSP.Ten_LSP" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Ghi_Chu"><strong>Ghi chú</strong></label>
+                                <InputText id="Ghi_Chu" @bind-Value="CurrentLSP.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="Ghi_Chu">Ghi chú</label>
-            <InputText id="Ghi_Chu" @bind-Value="CurrentLSP.Ghi_Chu" class="form-control"></InputText>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+    </div>
+    
 }
 
 @code {
@@ -71,6 +112,15 @@ else
                 CurrentLSP = loaiSanPham;
             }
         }
+    }
+    private void OnClose(EventArgs e)
+    {
+        ClearPhieuContainer();
+        nav.NavigateTo("/loaisanpham-list");
+    }
+    public void ClearPhieuContainer()
+    {
+        CurrentLSP = new();
     }
 
     async Task HandleSubmit()
@@ -108,11 +158,13 @@ else
         if (Ma_LSP is not null)
         {
             await LoaiSanPhamSevice.UpdateLoaiSanPhamAsync(CurrentLSP, Ma_LSP);
+            await SweetAlert.ShowToast("Sửa thành công!", "Success", 1000);
             nav.NavigateTo("/loaisanpham-list");
         }
         else
         {
             await LoaiSanPhamSevice.AddLoaiSanPham(CurrentLSP);
+            await SweetAlert.ShowToast("Thêm thành công!", "Success", 1000);
             nav.NavigateTo("/loaisanpham-list");
         }
     }

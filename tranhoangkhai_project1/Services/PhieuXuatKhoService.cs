@@ -38,5 +38,11 @@ namespace tranhoangkhai_project1.Services
             var phieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.FirstOrDefaultAsync(p => p.So_Phieu_Xuat_Kho.Equals(So_Phieu_Xuat_Kho));
             return phieuXuatKho;
         }
+
+        public async Task<PhieuXuatKhoModel> GetByKhoIDAsync(string Kho_ID)
+        {
+            var phieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.FirstOrDefaultAsync(p => p.Kho_ID.Equals(Kho_ID));
+            return phieuXuatKho;
+        }
     }
 }

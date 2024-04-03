@@ -3,64 +3,85 @@
 @inject iSanPhamService SanPhamSevice
 @inject iLoaiSanPhamService LoaiSanPhamSevice
 @inject iDonViTinhService DonViTinhSevice
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
 @if (maSanPham is null)
 {
     <PageTitle>Thêm Sản Phẩm</PageTitle>
-    <h1>Thêm Sản Phẩm</h1>
+    <h1 style="text-align: center;"><strong>THÊM SẢN PHẨM</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
     }
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN SẢN PHẨM</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentSP" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ma_San_Pham"><strong>Mã Sản Phẩm</strong></label>
+                                <InputText id="Ma_San_Pham" @bind-Value="CurrentSP.Ma_San_Pham" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Ten_San_Pham"><strong>Tên Sản Phẩm</strong></label>
+                                <InputText id="Ten_San_Pham" @bind-Value="CurrentSP.Ten_San_Pham" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Loai_San_Pham_ID"><strong>Loại Sản Phẩm</strong></label>
+                                <InputSelect class="form-control" id="Loai_San_Pham_ID" @bind-Value="CurrentSP.Loai_San_Pham_ID">
+                                    <option value="" disabled selected>Chọn loại sản phẩm nhập kho</option>
+                                    @foreach (var loaiSanPham in danhSachLoaiSanPham)
+                                    {
+                                        <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ten_LSP</option>
+                                    }
+                                </InputSelect>
+                            </div>
 
+                            <div>
+                                <label for="Don_Vi_Tinh_ID"><strong>Đơn Vị Tính</strong></label>
+                                <InputSelect class="form-control" id="Don_Vi_Tinh_ID" @bind-Value="CurrentSP.Don_Vi_Tinh_ID">
+                                    <option value="" disabled selected>Chọn đơn vị tính</option>
+                                    @foreach (var donViTinh in danhSachDonViTinh)
+                                    {
+                                        <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>
+                                    }
+                                </InputSelect>
 
-    <EditForm Model="CurrentSP" OnSubmit="HandleSubmit">
-        <div>
-            <label for="Ma_San_Pham">Mã Sản Phẩm</label>
-            <InputText id="Ma_San_Pham" @bind-Value="CurrentSP.Ma_San_Pham" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Ghi_Chu"><strong>Ghi Chú</strong></label>
+                                <InputText id="Ghi_Chu" @bind-Value="CurrentSP.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="Ten_San_Pham">Tên Sản Phẩm</label>
-            <InputText id="Ten_San_Pham" @bind-Value="CurrentSP.Ten_San_Pham" class="form-control"></InputText>
-        </div>
-        <div>
-            <label for="Loai_San_Pham_ID">Loại Sản Phẩm</label>
-            <InputSelect class="form-control" id="Loai_San_Pham_ID" @bind-Value="CurrentSP.Loai_San_Pham_ID">
-                <option value="" disabled selected>Chọn loại sản phẩm nhập kho</option>
-                @foreach (var loaiSanPham in danhSachLoaiSanPham)
-                {
-                    <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ma_LSP</option>
-                }
-            </InputSelect>
-        </div>
+    </div>
 
-        <div>
-            <label for="Don_Vi_Tinh_ID">Đơn Vị Tính</label>
-            <InputSelect class="form-control" id="Don_Vi_Tinh_ID" @bind-Value="CurrentSP.Don_Vi_Tinh_ID">
-                <option value="" disabled selected>Chọn đơn vị tính</option>
-                @foreach (var donViTinh in danhSachDonViTinh)
-                {
-                    <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>
-                }
-            </InputSelect>
-            
-        </div>       
-        <div>
-            <label for="Ghi_Chu">Ghi Chú</label>
-            <InputText id="Ghi_Chu" @bind-Value="CurrentSP.Ghi_Chu" class="form-control"></InputText>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+      
 }
 else
 {
     <PageTitle>Chỉnh sửa "@CurrentSP."</PageTitle>
-    <h3>Chỉnh sửa "@CurrentSP.Ten_San_Pham"</h3>
+    <h1 style="text-align: center;"><strong>SỬA SẢN PHẨM</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
@@ -68,38 +89,59 @@ else
         </div>
     }
 
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN SẢN PHẨM</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentSP" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ten_San_Pham"><strong>Tên Sản Phẩm</strong></label>
+                                <InputText id="Ten_San_Pham" @bind-Value="CurrentSP.Ten_San_Pham" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Loai_San_Pham_ID"><strong>Loại Sản Phẩm</strong></label>
+                                <InputSelect class="form-control" id="Loai_San_Pham_ID" @bind-Value="CurrentSP.Loai_San_Pham_ID">
+                                    <option value="" disabled selected>Chọn loại sản phẩm nhập kho</option>
+                                    @foreach (var loaiSanPham in danhSachLoaiSanPham)
+                                    {
+                                        <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ten_LSP</option>
+                                    }
+                                </InputSelect>
+                            </div>
 
-    <EditForm Model="CurrentSP" OnSubmit="HandleSubmit">
-        <div>
-            <label for="Ten_San_Pham">Tên Sản Phẩm</label>
-            <InputText  id="Ten_San_Pham" @bind-Value="CurrentSP.Ten_San_Pham" class="form-control"></InputText>
+                            <div>
+                                <label for="Don_Vi_Tinh_ID"><strong>Đơn Vị Tính</strong></label>
+                                <InputSelect class="form-control" id="Don_Vi_Tinh_ID" @bind-Value="CurrentSP.Don_Vi_Tinh_ID">
+                                    <option value="" disabled selected>Chọn đơn vị tính</option>
+                                    @foreach (var donViTinh in danhSachDonViTinh)
+                                    {
+                                        <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>
+                                    }
+                                </InputSelect>
+
+                            </div>
+                            <div>
+                                <label for="Ghi_Chu"><strong>Ghi Chú</strong></label>
+                                <InputText id="Ghi_Chu" @bind-Value="CurrentSP.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="Loai_San_Pham_ID">Loại Sản Phẩm</label>
-            <InputSelect class="form-control" id="Loai_San_Pham_ID" @bind-Value="CurrentSP.Loai_San_Pham_ID">
-                @foreach (var loaiSanPham in danhSachLoaiSanPham)
-                {
-                    <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ten_LSP</option>
-                }
-            </InputSelect>
-            
-        </div>       
-        <div>
-            <label for="Don_Vi_Tinh_ID">Đơn Vị Tính</label>
-            <InputSelect class="form-control" id="Don_Vi_Tinh_ID" @bind-Value="CurrentSP.Don_Vi_Tinh_ID">
-                @foreach (var donViTinh in danhSachDonViTinh)
-                {
-                    <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>
-                }
-            </InputSelect>
-        </div>
-        <div>
-            <label for="Ghi_Chu">Ghi Chú</label>
-            <InputText id="Ghi_Chu" @bind-Value="CurrentSP.Ghi_Chu" class="form-control"></InputText>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+    </div>
+
+    
 }
 
 @code {
@@ -170,12 +212,23 @@ else
         if (maSanPham is not null)
         {
             await SanPhamSevice.UpdateSanPhamAsync(CurrentSP, maSanPham);
+            await SweetAlert.ShowToast("Sửa sản phẩm thành công!", "Success", 1000);
             nav.NavigateTo("/sanpham-list");
         }
         else
         {
             await SanPhamSevice.AddSanPham(CurrentSP);
+            await SweetAlert.ShowToast("Thêm sản phẩm thành công!", "Success", 1000);
             nav.NavigateTo("/sanpham-list");
         }
+    }
+    private void OnClose(EventArgs e)
+    {
+        ClearPhieuContainer();
+        nav.NavigateTo("/sanpham-list");
+    }
+    public void ClearPhieuContainer()
+    {
+        CurrentSP = new();
     }
 }
