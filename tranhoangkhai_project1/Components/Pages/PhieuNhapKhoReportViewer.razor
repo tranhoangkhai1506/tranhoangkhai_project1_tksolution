@@ -333,42 +333,29 @@
             }
 
             // Hàng chục và hàng đơn vị
-            if (remainder < 20 && remainder > 0)
-            {
-                result += tens[remainder];
-            }
-            else
-            {
-                var tensPlace = remainder / 10;
-                var unitsPlace = remainder % 10;
+            var tensPlace = remainder / 10;
+            var unitsPlace = remainder % 10;
 
-                if (tensPlace > 0)
-                {
-                    if (tensPlace > 1)
-                    {
-                        result += unitNumbers[tensPlace] + " mươi ";
-                    }
-                    else
-                    {
-                        result += "mười ";
-                    }
-                }
-
+            if (remainder >= 20)
+            {
+                result += (tensPlace > 1 ? unitNumbers[tensPlace] : "mười") + " mươi ";
                 if (unitsPlace > 0)
                 {
-                    if (tensPlace > 0 && unitsPlace == 5)
-                    {
-                        result += "lăm";
-                    }
-                    else
-                    {
-                        result += unitNumbers[unitsPlace];
-                    }
+                    result += (unitsPlace == 5 ? "lăm" : unitNumbers[unitsPlace]);
                 }
+            }
+            else if (remainder >= 10)
+            {
+                result += tens[remainder - 10];
+            }
+            else if (remainder > 0)
+            {
+                result += unitNumbers[unitsPlace];
             }
 
             return result.Trim();
         }
+
     }
 
 

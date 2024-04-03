@@ -19,114 +19,137 @@
             @ErrorMessage
         </div>
     }
-
-    <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
-        @* <div>
-            <label for="Xuat_Kho_ID">Số Phiếu Nhập</label>
-            <InputSelect class="form-control" id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID">
-                <option value="" disabled selected>Chọn mã phiếu nhập kho</option>
-                @foreach (var kho in phieuXuatKhoList)
-                {
-                    <option value="@kho.So_Phieu_Xuat_Kho">@kho.So_Phieu_Xuat_Kho</option>
-                }
-            </InputSelect>
-        </div> *@
-        <div>
-            <label for="San_Pham_ID">Số Phiếu Nhập</label>
-            <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID">
-                <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
-                @foreach (var sanpham in sanPhamList)
-                {
-                    <option value="@sanpham.Ma_San_Pham">@sanpham.Ten_San_Pham</option>
-                }
-            </InputSelect>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN ĐƠN VỊ TÍNH</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
+                            @* <div>
+                        <label for="Xuat_Kho_ID">Số Phiếu Nhập</label>
+                        <InputSelect class="form-control" id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID">
+                        <option value="" disabled selected>Chọn mã phiếu nhập kho</option>
+                        @foreach (var kho in phieuXuatKhoList)
+                        {
+                        <option value="@kho.So_Phieu_Xuat_Kho">@kho.So_Phieu_Xuat_Kho</option>
+                        }
+                        </InputSelect>
+                        </div> *@
+                            <div>
+                                <label for="San_Pham_ID">Số Phiếu Nhập</label>
+                                <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID">
+                                    <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
+                                    @foreach (var sanpham in sanPhamList)
+                                    {
+                                        <option value="@sanpham.Ma_San_Pham">@sanpham.Ten_San_Pham</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div>
+                                <label for="SL_Xuat">Số lượng nhập</label>
+                                <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
+                            </div>
+                            <div>
+                                <label for="Don_Gia_Nhap">Đơn giá</label>
+                                <InputNumber id="Don_Gia_Nhap" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="SL_Xuat">Số lượng nhập</label>
-            <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
-        </div>
-        <div>
-            <label for="Don_Gia_Nhap">Đơn giá</label>
-            <InputNumber id="Don_Gia_Nhap" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
+    </div>
+    
 }
 else
 {
     <PageTitle>HIỆU CHỈNH "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</PageTitle>
-    <h1>HIỆU CHỈNH "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</h1>
-    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
-    {
-        <div class="alert alert-danger" role="alert">
-            @ErrorMessage
-        </div>
-    }
-    <hr />
-    <div class="d-flex justify-content-start info-section mb-4">
-        <!-- Thông tin Phiếu Nhập Kho -->
-        <div class="card mr-2" style="flex: 1;">
-            <div class="card-header">
-                <h5>Thông tin Phiếu Nhập Kho</h5>
+    <div class="container">
+        <h4 style="text-align: center;"><strong>HIỆU CHỈNH "@CurrentCTPXK.Xuat_Kho_ID - @CurrentCTPXK.San_Pham_ID"</strong></h4>
+        <hr />
+        <!-- Information Section -->
+        <div class="row">
+            <!-- Left Column: Thông tin Phiếu Nhập Kho and Thông tin Sản Phẩm -->
+            <div class="col-lg-6 mb-4">
+                <!-- Thông tin Phiếu Xuất Kho -->
+                <div class="card mb-3">
+                    <div class="card-header" style="background-color: #e9ecef; color: #333;">
+                        <strong>THÔNG TIN PHIẾU XUẤT KHO</strong>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var phieu in phieuXuatKhoList)
+                        {
+                            if (phieu.So_Phieu_Xuat_Kho.Equals(CurrentCTPXK.Xuat_Kho_ID))
+                            {
+                                <p class="card-text"><strong>Số phiếu xuất kho:</strong> @phieu.So_Phieu_Xuat_Kho</p>
+                                <p class="card-text"><strong>ID Kho:</strong> @phieu.Kho_ID</p>
+                                <p class="card-text"><strong>Ngày xuất kho:</strong> @phieu.Ngay_Nhap_Kho.ToShortDateString()</p>
+                                <p class="card-text"><strong>Ghi chú:</strong> @phieu.Ghi_Chu</p>
+                            }
+                        }
+                    </div>
+                </div>
+                <!-- Thông tin Sản Phẩm -->
+                <div class="card">
+                    <div class="card-header" style="background-color: #e9ecef; color: #333;">
+                        <strong>THÔNG TIN SẢN PHẨM</strong>
+                    </div>
+                    <div class="card-body">
+                        @foreach (SanPhamModel sanpham in sanPhamList)
+                        {
+                            if (sanpham.Ma_San_Pham.Equals(CurrentCTPXK.San_Pham_ID))
+                            {
+                                <p class="card-text"><strong>Mã sản phẩm:</strong> @sanpham.Ma_San_Pham</p>
+                                <p class="card-text"><strong>Tên sản phẩm:</strong> @sanpham.Ten_San_Pham</p>
+                                <p class="card-text"><strong>Mã loại sản phẩm:</strong> @sanpham.Loai_San_Pham_ID</p>
+                                <p class="card-text"><strong>Đơn vị tính:</strong> @sanpham.Don_Vi_Tinh_ID</p>
+                                <p class="card-text"><strong>Ghi chú:</strong> @sanpham.Ghi_Chu</p>
+                            }
+                        }
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                @foreach (var phieu in phieuXuatKhoList)
-                {
-                    if (phieu.So_Phieu_Xuat_Kho.Equals(CurrentCTPXK.Xuat_Kho_ID))
-                    {
-                        <p class="card-text"><strong>Số phiếu nhập kho:</strong> @phieu.So_Phieu_Xuat_Kho</p>
-                        <p class="card-text"><strong>ID Kho:</strong> @phieu.Kho_ID</p>
-                        <p class="card-text"><strong>Ngày nhập kho:</strong> @phieu.Ngay_Nhap_Kho.ToShortDateString()</p>
-                        <p class="card-text"><strong>Ghi chú:</strong> @phieu.Ghi_Chu</p>
-                    }
-                }
-            </div>
-        </div>
+            <!-- Right Column: Form to enter details -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>NHẬP THÔNG TIN CHỈNH SỬA</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
 
-        <!-- Thông tin Sản Phẩm -->
-        <div class="card" style="flex: 2;">
-            <div class="card-header">
-                <h5>Thông tin Sản Phẩm</h5>
-            </div>
-            <div class="card-body">
-                @foreach (SanPhamModel sanpham in sanPhamList)
+                            <div>
+                                <label for="SL_Xuat">Số Lượng Xuất</label>
+                                <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
+                            </div>
+                            <div>
+                                <label for="Don_Gia_Xuat">Đơn giá</label>
+                                <InputNumber id="Don_Gia_Xuat" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                        <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                    </div>
+                </div>
+                <br />
+                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
                 {
-                    if (sanpham.Ma_San_Pham.Equals(CurrentCTPXK.San_Pham_ID))
-                    {
-                        <p class="card-text"><strong>Mã sản phẩm:</strong> @sanpham.Ma_San_Pham</p>
-                        <p class="card-text"><strong>Tên sản phẩm:</strong> @sanpham.Ten_San_Pham</p>
-                        <p class="card-text"><strong>Mã loại sản phẩm:</strong> @sanpham.Loai_San_Pham_ID</p>
-                        <p class="card-text"><strong>Đơn vị tính:</strong> @sanpham.Don_Vi_Tinh_ID</p>
-                        <p class="card-text"><strong>Ghi chú:</strong> @sanpham.Ghi_Chu</p>
-                    }
+                    <div class="alert alert-danger" role="alert">
+                        @ErrorMessage
+                    </div>
                 }
             </div>
         </div>
     </div>
-    <hr />
-
-    <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
-        @* <div>
-    <label for="Xuat_Kho_ID">Tên Đơn vị tính</label>
-    <InputText id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID" class="form-control"></InputText>
-    </div>
-    <div>
-    <label for="San_Pham_ID">Tên Đơn vị tính</label>
-    <InputText id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID" class="form-control"></InputText>
-    </div> *@
-
-        <div>
-            <label for="SL_Xuat">Số Lượng Xuất</label>
-            <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
-        </div>
-        <div>
-            <label for="Don_Gia_Xuat">Đơn giá</label>
-            <InputNumber id="Don_Gia_Xuat" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Lưu</button>
-    </EditForm>
 }
 
 @code {
@@ -170,43 +193,65 @@ else
         var existingUnitCode = await ChiTietPhieuXuatKhoService.GetByIdAsync(CurrentCTPXK.Xuat_Kho_ID, CurrentCTPXK.San_Pham_ID);
         if (existingUnitCode != null && Xuat_Kho_ID is null && San_Pham_ID is null)
         {
-            ErrorMessage = "Phiếu nhập của sản phẩm đã tồn tại.";
+            await SweetAlert.ShowMessage("Error", "Phiếu xuất của sản phẩm đã tồn tại.", "Error");
             return;
         }
         if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID))
         {
-            ErrorMessage = "Mã sản phẩm không được để trống.";
+            await SweetAlert.ShowMessage("Error", "Mã sản phẩm không được để trống.", "Error");
             return;
         }
         if (CurrentCTPXK.SL_Xuat <= 0)
         {
-            ErrorMessage = "Số lượng phải lớn hơn 0.";
+            await SweetAlert.ShowMessage("Error", "Số lượng phải lớn hơn 0.", "Error");
             return;
         }
         if (CurrentCTPXK.Don_Gia_Xuat <= 0)
         {
-            ErrorMessage = "Đơn giá phải lớn hơn 0.";
+            await SweetAlert.ShowMessage("Error", "Đơn giá phải lớn hơn 0.", "Error");
             return;
         }
 
         if (Xuat_Kho_ID is not null && San_Pham_ID is not null)
         {
-            await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, San_Pham_ID);
-            nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
+            try
+            {
+                await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, San_Pham_ID);
+                await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
+                nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
+            }
+            catch (Exception e)
+            {
+                await SweetAlert.ShowMessage("Error", e.ToString(), "Error");
+            }
+            
         }
         else
         {
             var existPhieuXuat = await ChiTietPhieuXuatKhoService.GetByIdAsync(CurrentCTPXK.Xuat_Kho_ID, CurrentCTPXK.San_Pham_ID);
             if (existPhieuXuat is null)
             {
-                await ChiTietPhieuXuatKhoService.AddChiTietPhieuXuat(CurrentCTPXK);
-                nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
+                try
+                {
+                    await ChiTietPhieuXuatKhoService.AddChiTietPhieuXuat(CurrentCTPXK);
+                    await SweetAlert.ShowToast("Thêm thành công", "Success", 1000);
+                    nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
+                }
+                catch (Exception e)
+                {
+                    await SweetAlert.ShowMessage("Error", e.ToString(), "Error");
+                }
+                
             }
             else
             {
                 await SweetAlert.ShowMessage("Error", "Phiếu chi tiết của sản phẩm đã tồn tại", "Error");
             }
 
-        }
+        }   
+    }
+    private void OnClose(EventArgs e)
+    {
+        nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
     }
 }
