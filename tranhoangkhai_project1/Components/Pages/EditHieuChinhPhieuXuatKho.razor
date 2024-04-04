@@ -11,10 +11,11 @@
 @if (So_Phieu_Xuat_Kho is not null)
 {
     <PageTitle>HIỆU CHỈNH PHIẾU XUẤT</PageTitle>
-    <h1>HIỆU CHỈNH PHIẾU XUẤT</h1>
+    <h1 style="text-align: center;"><strong>HIỆU CHỈNH PHIẾU XUẤT</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role="alert"> 
             @ErrorMessage
         </div>
     }
@@ -43,9 +44,7 @@
                             <div>
                                 <label for="Ghi_Chu">Ghi Chú</label>
                                 <InputText id="Ghi_Chu" @bind-Value="phieuXuatKho.Ghi_Chu" class="form-control"></InputText>
-                            </div>
-                            <br />
-                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>P
                         </EditForm>
                     </div>
                     <div class="card-footer">

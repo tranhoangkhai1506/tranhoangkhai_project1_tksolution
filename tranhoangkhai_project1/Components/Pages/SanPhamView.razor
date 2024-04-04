@@ -33,9 +33,15 @@ else
             <button class="btn btn-outline-success" @onclick="AddSanPham">THÊM LOẠI SẢN PHẨM</button>
         </div>
         <div class="table-responsive">
-            <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
+            <QuickGrid Items="@FilteredSanPham" Pagination="@pagination" class="table table-striped table-hover">
                 <PropertyColumn Property="@(c => c.Ma_San_Pham)" Sortable="true" Align="Align.Left" Title="MÃ SẢN PHẨM" />
-                <PropertyColumn Property="@(c => c.Ten_San_Pham)" Sortable="true" Align="Align.Left" Title="TÊN SẢN PHẨM" />
+                <PropertyColumn Property="@(c => c.Ten_San_Pham)" Sortable="true" Class="country-name" Title="TÊN SẢN PHẨM">
+                    <ColumnOptions>
+                        <div class="search-box">
+                            <input type="search" autofocus @bind="nameFilter" @bind:event="oninput" placeholder="Tên sản phẩm..." />
+                        </div>
+                    </ColumnOptions>
+                </PropertyColumn>
                 <PropertyColumn Property="@(c => c.Don_Vi_Tinh_ID)" Sortable="true" Align="Align.Left" Title="ĐƠN VỊ TÍNH" />
                 <TemplateColumn Title="LOẠI SẢN PHẨM" Align="Align.Left">
                     @GetProductTypeName(context)
@@ -78,7 +84,20 @@ else
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<SanPhamModel>? itemsQueryable;
     private int itemCount = 0;
+    string nameFilter;
+    IQueryable<SanPhamModel> FilteredSanPham
+    {
+        get
+        {
+            var result = itemsQueryable;
+            if (!string.IsNullOrEmpty(nameFilter))
+            {
+                result = itemsQueryable.Where(c => c.Ten_San_Pham.Contains(nameFilter, StringComparison.CurrentCultureIgnoreCase));
+            }
 
+            return result;
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         danhSachLoaiSanPham = await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync();

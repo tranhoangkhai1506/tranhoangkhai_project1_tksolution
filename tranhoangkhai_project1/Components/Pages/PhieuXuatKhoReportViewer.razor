@@ -143,11 +143,8 @@
     <div class="section-title">III. Kết luận</div>
     <div class="info-section">
         <div class="info">1. Tổng số lượng thực xuất (viết bằng số): @total.ToString("0")</div>
-        <div class="info">2. Tổng số lượng thực xuất (viết bằng chữ): 
-            @{
-                var numberToText = @total.ToString("0");
-                NumberToVietnameseWords(Convert.ToInt32(numberToText));
-            }
+        <div class="info">2. Tổng số lượng thực xuất (viết bằng chữ):                           
+            @NumberToVietnamese(Convert.ToInt32(total)).ToString()
         </div>
         <div class="info">
             3. Mô tả khác biệt:
@@ -205,79 +202,78 @@
         }
     }
 
-    public static string NumberToVietnameseWords(int number)
+    static string NumberToVietnamese(decimal number)
     {
-        if (number == 0)
-            return "không";
+        if (number == 0) return "không";
+        if (number < 0) return "âm " + NumberToVietnamese(-number);
 
-        if (number < 0)
-            return "âm " + NumberToVietnameseWords(Math.Abs(number));
+        long integerPart = (long)number;
+        int decimalPart = (int)((number - integerPart) * 100);
+        string result = ConvertIntegerPartToVietnamese(integerPart);
 
-        string[] unitWords = { "", "nghìn", "triệu", "tỷ" };
-        var parts = new List<string>();
+        if (decimalPart > 0)
+        {
+            result += " phẩy " + ConvertIntegerPartToVietnamese(decimalPart);
+        }
 
-        int partNumber;
-        int unitIndex = 0;
+        return result;
+    }
+
+    static string ConvertIntegerPartToVietnamese(long number)
+    {
+        string[] units = { "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
+        string[] places = { "", "nghìn", "triệu", "tỷ" };
+        string result = "";
+
+        int place = 0;
 
         while (number > 0)
         {
-            partNumber = (int)(number % 1000);
+            int n = (int)(number % 1000);
+            if (n > 0)
+            {
+                string part = ConvertLessThanOneThousand(n, units);
+                result = part + (string.IsNullOrEmpty(result) ? "" : " ") + places[place] + (string.IsNullOrEmpty(result) ? "" : ", ") + result;
+            }
             number /= 1000;
-
-            if (partNumber > 0)
-            {
-                string partWord = ThreeDigitToVietnameseWords(partNumber) + " " + unitWords[unitIndex];
-                parts.Insert(0, partWord.Trim());
-            }
-
-            unitIndex++;
-            if (unitIndex == 4) // Reset after "tỷ" to support numbers larger than tỷ
-            {
-                unitIndex = 1;
-                unitWords[1] = "nghìn tỷ";
-                unitWords[2] = "triệu tỷ";
-                unitWords[3] = "tỷ tỷ";
-            }
+            place++;
         }
 
-        return string.Join(" ", parts).Trim();
+        return result.TrimEnd(',', ' ');
     }
 
-    private static string ThreeDigitToVietnameseWords(int number)
+    static string ConvertLessThanOneThousand(int number, string[] units)
     {
-        string[] units = { "không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
-        string[] tens = { "mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín" };
-
         string result = "";
 
-        int hundred = number / 100;
-        int ten = (number % 100) / 10;
-        int unit = number % 10;
-
-        if (hundred > 0)
+        // Hundreds
+        if (number >= 100)
         {
-            result += units[hundred] + " trăm ";
-            if (ten == 0 && unit > 0) result += "linh ";
+            result += units[number / 100] + " trăm";
+            number %= 100;
+            if (number > 0) result += " ";
         }
 
-        if (ten > 1)
+        // Tens
+        if (number >= 20)
         {
-            result += units[ten] + " mươi ";
-            if (unit == 1) unit = -1; // "mốt" for "21", "31", etc.
+            result += units[number / 10] + " mươi";
+            number %= 10;
+            if (number > 0) result += " ";
         }
-        else if (ten == 1)
+        else if (number >= 10)
         {
-            result += tens[unit];
-            unit = -1; // Avoid appending unit
+            result += "mười";
+            number %= 10;
+            if (number > 0) result += " ";
         }
 
-        if (unit >= 0)
+        // Units
+        if (number > 0)
         {
-            result += (unit == 5 && ten > 0 ? "lăm" : units[unit]);
-        }
-        else if (unit == -1)
-        {
-            result += "mốt";
+            if (result.EndsWith("mươi ") && number == 1) result += "mốt";
+            else if (result.EndsWith("mươi ") && number == 5) result += "lăm";
+            else result += units[number];
         }
 
         return result.Trim();

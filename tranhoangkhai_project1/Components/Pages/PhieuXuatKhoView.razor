@@ -34,8 +34,14 @@ else
             <button class="btn btn-outline-success" @onclick="AddPhieuXuatKho">THÊM PHIẾU XUẤT KHO</button>
         </div>
         <div class="table-responsive">
-            <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
-                <PropertyColumn Property="@(c => c.So_Phieu_Xuat_Kho)" Sortable="true" Title="MÃ PHIẾU" />
+            <QuickGrid Items="@FilteredPhieuXuatKho" Pagination="@pagination" class="table table-striped table-hover">
+                <PropertyColumn Property="@(c => c.So_Phieu_Xuat_Kho)" Sortable="true" Class="country-name" Title="MÃ PHIẾU">
+                    <ColumnOptions>
+                        <div class="search-box">
+                            <input type="search" autofocus @bind="nameFilter" @bind:event="oninput" placeholder="Mã phiếu..." />
+                        </div>
+                    </ColumnOptions>
+                </PropertyColumn>
                 <PropertyColumn Property="@(c => c.Kho_ID)" Sortable="true" Title="MÃ KHO" />
                 <PropertyColumn Property="@(c => c.Ngay_Nhap_Kho)" Format="dd-MM-yyyy" Sortable="true" Title="NGÀY NHẬP" />
                 <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
@@ -86,7 +92,20 @@ else
     private string currentReportId;
     private int itemCount = 0;
     IQueryable<PhieuXuatKhoModel>? itemsQueryable;
+    string nameFilter;
+    IQueryable<PhieuXuatKhoModel> FilteredPhieuXuatKho
+    {
+        get
+        {
+            var result = itemsQueryable;
+            if (!string.IsNullOrEmpty(nameFilter))
+            {
+                result = itemsQueryable.Where(c => c.So_Phieu_Xuat_Kho.Contains(nameFilter, StringComparison.CurrentCultureIgnoreCase));
+            }
 
+            return result;
+        }
+    }
 
     private async Task ChiTiet(string So_Phieu_Nhap_Kho)
     {

@@ -78,7 +78,7 @@
     [Parameter] public EventCallback<PhieuNhapKhoModel> HandleAddPhieuNhapKhoEvent { get; set; }
     public List<NhaCungCapModel> listNhaCC { get; set; } = new List<NhaCungCapModel>();
     public List<KhoModel> listKho { get; set; } = new List<KhoModel>();
-    async Task FetchData()
+    public async Task FetchData()
     {
         listKho = await KhoSevice.GetAllKhoAsync();
         listNhaCC = await NhaCungCapSevice.GetAllNhaCungCapAsync();

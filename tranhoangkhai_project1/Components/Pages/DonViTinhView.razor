@@ -12,6 +12,7 @@
 <h1 style="text-align: center;"><strong>ĐƠN VỊ TÍNH</strong></h1>
 <hr />
 
+
 @if (itemsQueryable is null)
 {
     <hr />
@@ -35,8 +36,14 @@ else
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
-                    <PropertyColumn Property="@(c => c.Ten_Don_Vi_Tinh)" Sortable="true" Title="MÃ PHIẾU" />
+                <QuickGrid Items="@FilteredDonViTinh" Pagination="@pagination" class="table table-striped table-hover">
+                    <PropertyColumn Property="@(c => c.Ten_Don_Vi_Tinh)" Sortable="true" Class="country-name" Title="TÊN ĐƠN VỊ">
+                        <ColumnOptions>
+                            <div class="search-box">
+                                <input type="search" autofocus @bind="nameFilter" @bind:event="oninput" placeholder="Tên đơn vị..." />
+                            </div>
+                        </ColumnOptions>
+                    </PropertyColumn>
                     <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
                     <TemplateColumn Title="Actions" Class="text-left">
                         <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditDVT(context.Ten_Don_Vi_Tinh))">Hiệu chỉnh</button>
@@ -85,7 +92,21 @@ else
 @code {
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<DonViTinhModel>? itemsQueryable;
+    string nameFilter;
     private string ErrorMessage { get; set; }
+    IQueryable<DonViTinhModel> FilteredDonViTinh
+    {
+        get
+        {
+            var result = itemsQueryable;
+            if (!string.IsNullOrEmpty(nameFilter))
+            {
+                result = itemsQueryable.Where(c => c.Ten_Don_Vi_Tinh.Contains(nameFilter, StringComparison.CurrentCultureIgnoreCase));
+            }
+
+            return result;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
