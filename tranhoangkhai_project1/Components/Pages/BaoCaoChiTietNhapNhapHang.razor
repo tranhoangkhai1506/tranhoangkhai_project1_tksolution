@@ -6,29 +6,57 @@
 @inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-<PageTitle>BÁO CÁO CHI TIẾT NHẬP KHO</PageTitle>
-<h1 style="text-align: center;"><strong>PHIẾU NHẬP KHO</strong></h1>
+<PageTitle>BÁO CÁO CHI TIẾT HÀNG NHẬP</PageTitle>
+<h1 style="text-align: center;"><strong>BÁO CÁO CHI TIẾT HÀNG NHẬP</strong></h1>
 <hr />
+<style>
+
+    .search-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .btn-custom {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+
+</style>
 
 <div class="search-container">
-    <h2>Tìm Kiếm Báo Cáo Hàng Nhập</h2>
-    <label for="from-date">Từ ngày:</label>
-    <InputDate id="from-date" @bind-Value="currentDateFrom" />
+    <h4>Tìm Kiếm Báo Cáo Hàng Nhập</h4>
+    <div class="d-flex justify-content-between align-items-end flex-wrap">
+        <div class="form-group mb-0">
+            <label for="from-date"><strong>Từ ngày:</strong></label>
+            <InputDate id="from-date" class="form-control" @bind-Value="currentDateFrom" />
+        </div>
 
-    <label for="to-date">Đến ngày:</label>
-    <InputDate id="to-date" @bind-Value="currentDateTo" />
+        <div class="form-group mb-0">
+            <label for="to-date"><strong>Đến ngày:</strong></label>
+            <InputDate id="to-date" class="form-control" @bind-Value="currentDateTo" />
+        </div>
 
-    <button @onclick="ApplyDateFilter">Áp dụng</button>
+        <button class="btn btn-success" @onclick="Print">Print</button>
+    </div>
 </div>
-<button @onclick="Print">Print</button>
 
 <div id="PrintDiv">
     @DynamicComponent(currentDateFrom, currentDateTo)
 </div>
 
+
 @code {
-    private DateTime currentDateFrom { get; set; } 
-    private DateTime currentDateTo { get; set; }
+    private DateTime currentDateFrom { get; set; } = DateTime.Today.AddMonths(-1);
+    private DateTime currentDateTo { get; set; } = DateTime.Today;
 
     private void ApplyDateFilter()
     {

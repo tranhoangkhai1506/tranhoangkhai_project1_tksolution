@@ -14,74 +14,96 @@
     <title>Report - Hàng Nhập</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', sans-serif; /* Consider using a modern font */
+            background-color: #f8f9fa; /* A light background color for contrast */
         }
 
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+        .table {
+            background-color: #ffffff; /* Ensure table background is white for readability */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #007bff; /* Or another color of your choice */
+            color: #000; /* Black text color */
+            text-align: center; /* Center-align the header text */
         }
+
+
+        .table-responsive {
+            border-radius: .25rem; /* Rounded corners for the table container */
+        }
+
+        /* Custom styles for the table to make it more modern */
+        .table-hover tbody tr:hover {
+            background-color: #f2f2f2; /* Lighter shade on row hover for interactivity */
+        }
+
+        .search-container {
+            padding: 1rem;
+            background-color: #ffffff; /* White background for search area */
+            border: 1px solid #ddd; /* Slight border for definition */
+            border-radius: .25rem; /* Matching rounded corners */
+            margin-bottom: 20px; /* Spacing below the search container */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+        }
+
     </style>
 </head>
 <body>
-    <div class="result-container">
-        <h2>Kết Quả Báo Cáo</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Ngày Nhập</th>
-                    <th>Số Phiếu Nhập</th>
-                    <th>NCC</th>
-                    <th>Mã Sản Phẩm</th>
-                    <th>Tên Sản Phẩm</th>
-                    <th>SL Nhập</th>
-                    <th>Đơn Giá</th>
-                    <th>Trị Giá</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in phieuNhapDisplayList)
-                {
-                    bool isFirstDetail = true;
-                    foreach (var chitiet in item.ChiTiets)
-                    {
-                        var total = chitiet.Don_Gia_Nhap * chitiet.SL_Nhap;
+    @if (phieuNhapDisplayList.Count == 0)
+    {
+        <h2 style="text-align: center;"><strong>Không Tìm Thấy Báo Cáo Chi Tiết Nhập Hàng Từ @DateFrom.ToString("dd/MM/yyyy") Đến @DateTo.ToString("dd/MM/yyyy")</strong></h2>
+        <hr />
+    }
+    else
+    {
+        <div class="result-container">
+            <h2 style="text-align: center;"><strong>Báo Cáo Chi Tiết Nhập Hàng Từ @DateFrom.ToString("dd/MM/yyyy") Đến @DateTo.ToString("dd/MM/yyyy")</strong></h2>
+            <hr />
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
                         <tr>
-                            @if (isFirstDetail)
-                            {
-                                <td rowspan="@item.ChiTiets.Count">@item.PhieuNhap.Ngay_Nhap_Kho.ToShortDateString()</td>
-                                <td rowspan="@item.ChiTiets.Count">@item.PhieuNhap.So_Phieu_Nhap_Kho</td>
-                                <td rowspan="@item.ChiTiets.Count">@item.PhieuNhap.NCC_ID</td>
-                                isFirstDetail = false;
-                            }
-                            <td>@(sanPhamMap.TryGetValue(chitiet.San_Pham_ID, out var sanPham) ? sanPham.Ma_San_Pham : "N/A")</td>
-                            <td>@(sanPham?.Ten_San_Pham ?? "N/A")</td>
-                            <td>@chitiet.SL_Nhap</td>
-                            <td>@chitiet.Don_Gia_Nhap.ToString("N2")</td>
-                            <td>@total.ToString("0.00")</td>
+                            <th>Ngày Nhập</th>
+                            <th>Số Phiếu Nhập</th>
+                            <th>NCC</th>
+                            <th>Mã Sản Phẩm</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>SL Nhập</th>
+                            <th>Đơn Giá</th>
+                            <th>Trị Giá</th>
                         </tr>
-                    }
-                }
-            </tbody>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in phieuNhapDisplayList)
+                        {
+                            bool isFirstDetail = true;
+                            foreach (var chitiet in item.ChiTiets)
+                            {
+                                var total = chitiet.Don_Gia_Nhap * chitiet.SL_Nhap;
+                                <tr>
+                                    @if (isFirstDetail)
+                                    {
+                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.Ngay_Nhap_Kho.ToShortDateString()</td>
+                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.So_Phieu_Nhap_Kho</td>
+                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.NCC_ID</td>
+                                        isFirstDetail = false;
+                                    }
+                                    <td style="text-align: center;">@(sanPhamMap.TryGetValue(chitiet.San_Pham_ID, out var sanPham) ? sanPham.Ma_San_Pham : "N/A")</td>
+                                    <td>@(sanPham?.Ten_San_Pham ?? "N/A")</td>
+                                    <td style="text-align: center;">@chitiet.SL_Nhap</td>
+                                    <td style="text-align: right;">@chitiet.Don_Gia_Nhap.ToString("N2")</td>
+                                    <td style="text-align: right;">@total.ToString("0.00")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 
-
-        </table>
-    </div>
-    <br />
-    
 </body>
 </html>
 
@@ -91,9 +113,6 @@
 
     [Parameter]
     public DateTime DateTo { get; set; }
-
-    private List<PhieuNhapKhoModel> phieuNhapKhoList = new List<PhieuNhapKhoModel>();
-    private Dictionary<string, List<ChiTietPhieuNhapKho>> chiTietPhieuMap = new Dictionary<string, List<ChiTietPhieuNhapKho>>();
     private Dictionary<string, SanPhamModel> sanPhamMap = new Dictionary<string, SanPhamModel>();
     public string ErrorMessage { get; set; }
     private List<PhieuNhapKhoDisplayModel> phieuNhapDisplayList = new();
@@ -111,9 +130,9 @@
             sanPhamMap = sanPhams.ToDictionary(sp => sp.Ma_San_Pham);
 
             var phieuNhaps = await PhieuNhapKhoService.GetByDateAsync(DateFrom, DateTo);
+            if (phieuNhaps.Count() > 0)
             foreach (var phieuNhap in phieuNhaps)
-            {
-                var chiTiets = await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(phieuNhap.So_Phieu_Nhap_Kho);
+            {                var chiTiets = await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(phieuNhap.So_Phieu_Nhap_Kho);
                 phieuNhapDisplayList.Add(new PhieuNhapKhoDisplayModel
                     {
                         PhieuNhap = phieuNhap,
