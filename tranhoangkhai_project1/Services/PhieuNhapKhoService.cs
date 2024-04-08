@@ -33,6 +33,12 @@ namespace tranhoangkhai_project1.Services
             return result;
         }
 
+        public async Task<List<PhieuNhapKhoModel>> GetByDateAsync(DateTime DateFrom, DateTime DateTo)
+        {
+            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.Where(p => p.Ngay_Nhap_Kho >= DateFrom && p.Ngay_Nhap_Kho <= DateTo).ToListAsync();
+            return phieuNhapKho;
+        }
+
         public async Task<PhieuNhapKhoModel> GetByIdAsync(string So_Phieu_Nhap_Kho)
         {
             var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.So_Phieu_Nhap_Kho.Equals(So_Phieu_Nhap_Kho));

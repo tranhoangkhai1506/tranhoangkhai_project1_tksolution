@@ -1,0 +1,140 @@
+﻿@page "/baocaochitietnhaphangreportviewer/{currentDateFrom}/{currentDateTo}"
+@inject iPhieuNhapKhoService PhieuNhapKhoService
+@inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
+@inject iSanPhamService SanPhamService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report - Hàng Nhập</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h2>Kết Quả Báo Cáo</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày Nhập</th>
+                    <th>Số Phiếu Nhập</th>
+                    <th>NCC</th>
+                    <th>Mã Sản Phẩm</th>
+                    <th>Tên Sản Phẩm</th>
+                    <th>SL Nhập</th>
+                    <th>Đơn Giá</th>
+                    <th>Trị Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in phieuNhapDisplayList)
+                {
+                    bool isFirstDetail = true;
+                    foreach (var chitiet in item.ChiTiets)
+                    {
+                        var total = chitiet.Don_Gia_Nhap * chitiet.SL_Nhap;
+                        <tr>
+                            @if (isFirstDetail)
+                            {
+                                <td rowspan="@item.ChiTiets.Count">@item.PhieuNhap.Ngay_Nhap_Kho.ToShortDateString()</td>
+                                <td rowspan="@item.ChiTiets.Count">@item.PhieuNhap.So_Phieu_Nhap_Kho</td>
+                                <td rowspan="@item.ChiTiets.Count">@item.PhieuNhap.NCC_ID</td>
+                                isFirstDetail = false;
+                            }
+                            <td>@(sanPhamMap.TryGetValue(chitiet.San_Pham_ID, out var sanPham) ? sanPham.Ma_San_Pham : "N/A")</td>
+                            <td>@(sanPham?.Ten_San_Pham ?? "N/A")</td>
+                            <td>@chitiet.SL_Nhap</td>
+                            <td>@chitiet.Don_Gia_Nhap.ToString("N2")</td>
+                            <td>@total.ToString("0.00")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+
+
+        </table>
+    </div>
+    <br />
+    
+</body>
+</html>
+
+@code {
+    [Parameter]
+    public DateTime DateFrom { get; set; }
+
+    [Parameter]
+    public DateTime DateTo { get; set; }
+
+    private List<PhieuNhapKhoModel> phieuNhapKhoList = new List<PhieuNhapKhoModel>();
+    private Dictionary<string, List<ChiTietPhieuNhapKho>> chiTietPhieuMap = new Dictionary<string, List<ChiTietPhieuNhapKho>>();
+    private Dictionary<string, SanPhamModel> sanPhamMap = new Dictionary<string, SanPhamModel>();
+    public string ErrorMessage { get; set; }
+    private List<PhieuNhapKhoDisplayModel> phieuNhapDisplayList = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        phieuNhapDisplayList = new();
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            var sanPhams = await SanPhamService.GetAllSanPhamAsync();
+            sanPhamMap = sanPhams.ToDictionary(sp => sp.Ma_San_Pham);
+
+            var phieuNhaps = await PhieuNhapKhoService.GetByDateAsync(DateFrom, DateTo);
+            foreach (var phieuNhap in phieuNhaps)
+            {
+                var chiTiets = await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(phieuNhap.So_Phieu_Nhap_Kho);
+                phieuNhapDisplayList.Add(new PhieuNhapKhoDisplayModel
+                    {
+                        PhieuNhap = phieuNhap,
+                        ChiTiets = chiTiets
+                    });
+            }
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = $"Error preparing data: {e.Message}";
+            await SweetAlert.ShowMessage("Error", ErrorMessage, "error");
+        }
+    }
+
+    public class PhieuNhapKhoDisplayModel
+    {
+        public PhieuNhapKhoModel PhieuNhap { get; set; }
+        public List<ChiTietPhieuNhapKho> ChiTiets { get; set; }
+        public decimal TongTriGia => ChiTiets?.Sum(ct => ct.SL_Nhap * ct.Don_Gia_Nhap) ?? 0;
+    }
+
+}
+
+

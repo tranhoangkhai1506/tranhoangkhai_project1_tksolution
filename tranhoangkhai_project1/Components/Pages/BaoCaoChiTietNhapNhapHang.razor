@@ -1,0 +1,84 @@
+﻿@page "/baocaochitietnhaphang"
+@inject iPhieuNhapKhoService PhieuNhapKhoService
+@inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
+@inject iSanPhamService SanPhamService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<PageTitle>BÁO CÁO CHI TIẾT NHẬP KHO</PageTitle>
+<h1 style="text-align: center;"><strong>PHIẾU NHẬP KHO</strong></h1>
+<hr />
+
+<div class="search-container">
+    <h2>Tìm Kiếm Báo Cáo Hàng Nhập</h2>
+    <label for="from-date">Từ ngày:</label>
+    <InputDate id="from-date" @bind-Value="currentDateFrom" />
+
+    <label for="to-date">Đến ngày:</label>
+    <InputDate id="to-date" @bind-Value="currentDateTo" />
+
+    <button @onclick="ApplyDateFilter">Áp dụng</button>
+</div>
+<button @onclick="Print">Print</button>
+
+<div id="PrintDiv">
+    @DynamicComponent(currentDateFrom, currentDateTo)
+</div>
+
+@code {
+    private DateTime currentDateFrom { get; set; } 
+    private DateTime currentDateTo { get; set; }
+
+    private void ApplyDateFilter()
+    {
+        setDateRequest(currentDateFrom, currentDateTo);        
+    }
+
+    void setDateRequest(DateTime dateFrom, DateTime dateTo)
+    {
+        currentDateFrom = dateFrom;
+        currentDateTo = dateTo;
+
+        // ShowReportByID();
+    }
+
+    private RenderFragment DynamicComponent(DateTime datefrom, DateTime dateto) => builder =>
+    {
+    builder.OpenComponent(0, typeof(BaoCaoChiTietNhapHangReportViewer));
+    builder.AddAttribute(1, "DateFrom", datefrom); // Sử dụng tên của thuộc tính trong component
+    builder.AddAttribute(2, "DateTo", dateto);     // Sử dụng tên của thuộc tính trong component
+    builder.CloseComponent();
+    };
+
+
+    private async Task ShowReportByID()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Print()
+    {
+        await ShowReportByID();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300);
+        await js.InvokeVoidAsync("PrintBaoCaoChiTietNhapHang");
+    }
+}
+
+<script type="text/javascript">
+    function PrintBaoCaoChiTietNhapHang() {
+        var printDivContent = document.getElementById("PrintDiv").innerHTML;
+        var windowToPrint = window.open('', '', 'height=600,width=800');
+        windowToPrint.document.write('<html><head><title>Print</title></head>');
+        windowToPrint.document.write('<body>');
+        windowToPrint.document.write(printDivContent);
+        windowToPrint.document.write('</body></html>');
+        windowToPrint.document.close();
+        windowToPrint.focus();
+        setTimeout(function () {
+            windowToPrint.print();
+            windowToPrint.onafterprint = function () { windowToPrint.close(); };
+        }, 500);
+    }
+</script>
