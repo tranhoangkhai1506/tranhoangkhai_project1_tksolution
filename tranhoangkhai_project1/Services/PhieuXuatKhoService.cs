@@ -16,6 +16,11 @@ namespace tranhoangkhai_project1.Services
             _dataContext.tbl_DM_Xuat_Kho.Add(phieuXuatKho);
             await _dataContext.SaveChangesAsync();
         }
+        public async Task<List<PhieuXuatKhoModel>> GetByDateAsync(DateTime DateFrom, DateTime DateTo)
+        {
+            var phieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.Where(p => p.Ngay_Nhap_Kho >= DateFrom && p.Ngay_Nhap_Kho <= DateTo).ToListAsync();
+            return phieuXuatKho;
+        }
 
         public async Task DeletePhieuXuatKhoAsync(string So_Phieu_Xuat_Kho)
         {

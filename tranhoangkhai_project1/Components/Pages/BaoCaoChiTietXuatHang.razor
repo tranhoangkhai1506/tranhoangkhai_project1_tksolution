@@ -1,0 +1,106 @@
+﻿@page "/baocaochitietxuathang"
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<PageTitle>BÁO CÁO CHI TIẾT HÀNG XUẤT</PageTitle>
+<h1 style="text-align: center;"><strong>BÁO CÁO CHI TIẾT HÀNG XUẤT</strong></h1>
+<hr />
+<style>
+
+    .search-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .btn-custom {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+</style>
+
+<div class="search-container">
+    <h4>Tìm Kiếm Báo Cáo Hàng Xuất</h4>
+    <div class="d-flex justify-content-between align-items-end flex-wrap">
+        <div class="form-group mb-0">
+            <label for="from-date"><strong>Từ ngày:</strong></label>
+            <InputDate id="from-date" class="form-control" @bind-Value="currentDateFrom" />
+        </div>
+
+        <div class="form-group mb-0">
+            <label for="to-date"><strong>Đến ngày:</strong></label>
+            <InputDate id="to-date" class="form-control" @bind-Value="currentDateTo" />
+        </div>
+
+        <button class="btn btn-success" @onclick="Print">Print</button>
+    </div>
+</div>
+
+<div id="PrintDiv">
+    @DynamicComponent(currentDateFrom, currentDateTo)
+</div>
+
+
+@code {
+    private DateTime currentDateFrom { get; set; } = DateTime.Today.AddMonths(-1);
+    private DateTime currentDateTo { get; set; } = DateTime.Today;
+
+    private void ApplyDateFilter()
+    {
+        setDateRequest(currentDateFrom, currentDateTo);
+    }
+
+    void setDateRequest(DateTime dateFrom, DateTime dateTo)
+    {
+        currentDateFrom = dateFrom;
+        currentDateTo = dateTo;
+    }
+
+    private RenderFragment DynamicComponent(DateTime datefrom, DateTime dateto) => builder =>
+    {
+        builder.OpenComponent(0, typeof(BaoCaoChiTietXuatHangReportViewer));
+        builder.AddAttribute(1, "DateFrom", datefrom); // Sử dụng tên của thuộc tính trong component
+        builder.AddAttribute(2, "DateTo", dateto);     // Sử dụng tên của thuộc tính trong component
+        builder.CloseComponent();
+    };
+
+
+    private async Task ShowReportByID()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Print()
+    {
+        await ShowReportByID();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300);
+        await js.InvokeVoidAsync("PrintBaoCaoChiTietXuatHang");
+    }
+}
+
+<script type="text/javascript">
+    function PrintBaoCaoChiTietXuatHang() {
+        var printDivContent = document.getElementById("PrintDiv").innerHTML;
+        var windowToPrint = window.open('', '', 'height=600,width=800');
+        windowToPrint.document.write('<html><head><title>Print</title></head>');
+        windowToPrint.document.write('<body>');
+        windowToPrint.document.write(printDivContent);
+        windowToPrint.document.write('</body></html>');
+        windowToPrint.document.close();
+        windowToPrint.focus();
+        setTimeout(function () {
+            windowToPrint.print();
+            windowToPrint.onafterprint = function () { windowToPrint.close(); };
+        }, 500);
+    }
+</script>
