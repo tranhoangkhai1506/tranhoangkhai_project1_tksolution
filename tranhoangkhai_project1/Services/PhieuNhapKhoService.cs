@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tranhoangkhai_project1.Data;
 using tranhoangkhai_project1.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace tranhoangkhai_project1.Services
 {
@@ -31,6 +32,12 @@ namespace tranhoangkhai_project1.Services
         {
             var result = await _dataContext.tbl_DM_Nhap_Kho.ToListAsync();
             return result;
+        }
+
+        public async Task<List<PhieuNhapKhoModel>> GetByAfterDateAsync(DateTime AfterDate)
+        {
+            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.Where(p => p.Ngay_Nhap_Kho < AfterDate).ToListAsync();
+            return phieuNhapKho;
         }
 
         public async Task<List<PhieuNhapKhoModel>> GetByDateAsync(DateTime DateFrom, DateTime DateTo)

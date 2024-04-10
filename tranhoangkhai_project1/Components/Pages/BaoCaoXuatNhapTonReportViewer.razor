@@ -1,0 +1,231 @@
+﻿@page "/baocaochitietxuathangreportviewer/{currentDateFrom}/{currentDateTo}"
+@inject iPhieuNhapKhoService PhieuNhapKhoService
+@inject iPhieuXuatKhoService PhieuXuatKhoService
+@inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
+@inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
+@inject iSanPhamService SanPhamService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
+@inject NavigationManager nav
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report - Hàng Xuất</title>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif; /* Consider using a modern font */
+            background-color: #f8f9fa; /* A light background color for contrast */
+        }
+
+        .table {
+            background-color: #ffffff; /* Ensure table background is white for readability */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+        }
+
+        th {
+            background-color: #007bff; /* Or another color of your choice */
+            color: #000; /* Black text color */
+            text-align: center; /* Center-align the header text */
+        }
+
+
+        .table-responsive {
+            border-radius: .25rem; /* Rounded corners for the table container */
+        }
+
+        /* Custom styles for the table to make it more modern */
+        .table-hover tbody tr:hover {
+            background-color: #f2f2f2; /* Lighter shade on row hover for interactivity */
+        }
+
+        .search-container {
+            padding: 1rem;
+            background-color: #ffffff; /* White background for search area */
+            border: 1px solid #ddd; /* Slight border for definition */
+            border-radius: .25rem; /* Matching rounded corners */
+            margin-bottom: 20px; /* Spacing below the search container */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+        }
+
+    </style>
+</head>
+<body>
+    @if (reportItems != null && reportItems.Count > 0)
+    {
+        <div class="result-container">
+            <h2 style="text-align: center;"><strong>Báo Cáo Chi Tiết Xuất Hàng Từ @DateFrom.ToString("dd/MM/yyyy") Đến @DateTo.ToString("dd/MM/yyyy")</strong></h2>
+            <hr />
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã Sản Phẩm</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>SL Đầu Kỳ</th>
+                            <th>SL Nhập</th>
+                            <th>SL Xuất</th>
+                            <th>SL Cuối Kỳ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in reportItems)
+                        {
+                            <tr>
+                                <td style="text-align: center;">@item.ProductId</td>
+                                <td style ="text-align: center;">@item.ProductName</td>
+                                <td style="text-align: center;">@item.StartingInventory</td>
+                                <td style="text-align: center;">@item.QuantityIn</td>
+                                <td style="text-align: center;">@item.QuantityOut</td>
+                                <td style="text-align: center;">@item.EndingInventory</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h2 style="text-align: center;"><strong>Không Tìm Thấy Báo Cáo Xuất Nhập Tồn Từ @DateFrom.ToString("dd/MM/yyyy") Đến @DateTo.ToString("dd/MM/yyyy")</strong></h2>
+        <hr />
+    }
+
+</body>
+</html>
+
+@code {
+    [Parameter]
+    public DateTime DateFrom { get; set; }
+
+    [Parameter]
+    public DateTime DateTo { get; set; }
+    private List<SanPhamModel> sanPhamList = new List<SanPhamModel>();
+    private List<ChiTietPhieuXuatKhoModel> chitietPhieuXuatList = new List<ChiTietPhieuXuatKhoModel>();
+    private List<ChiTietPhieuNhapKho> chitietPhieuNhapList = new List<ChiTietPhieuNhapKho>();
+    List<ProductInventoryReportItem> reportItems = new List<ProductInventoryReportItem>();
+    List<ProductInventoryReportItem> reportItemsStartingInventory = new List<ProductInventoryReportItem>();
+    public string ErrorMessage { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        chitietPhieuNhapList = new();
+        chitietPhieuXuatList = new();
+        reportItems = new();
+        reportItemsStartingInventory = new();
+        await LoadDataAsync();
+
+    }
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            sanPhamList = await SanPhamService.GetAllSanPhamAsync();
+            var phieuNhaps = await PhieuNhapKhoService.GetByDateAsync(DateFrom, DateTo);
+            var phieuXuats = await PhieuXuatKhoService.GetByDateAsync(DateFrom, DateTo);
+            foreach (var phieuNhap in phieuNhaps)
+            {
+                foreach (var sanpham in sanPhamList)
+                {
+                    var detail = await ChiTietPhieuNhapKhoService.GetByIdAsync(phieuNhap.So_Phieu_Nhap_Kho, sanpham.Ma_San_Pham);
+                    if (detail != null)
+                    {
+                        chitietPhieuNhapList.Add(detail);
+                    }
+                }                
+            }
+            foreach (var phieuXuat in phieuXuats)
+            {
+                foreach (var sanpham in sanPhamList)
+                {
+                    var detail = await ChiTietPhieuXuatKhoService.GetByIdAsync(phieuXuat.So_Phieu_Xuat_Kho, sanpham.Ma_San_Pham);
+                    if (detail != null)
+                    {
+                        chitietPhieuXuatList.Add(detail);
+                    }
+                }
+            }
+            reportItems = new List<ProductInventoryReportItem>();
+            foreach (var sanpham in sanPhamList)
+            {
+                var startingInventory = await getStartingInventoryOfProduct(sanpham.Ma_San_Pham);
+                var reportItem = new ProductInventoryReportItem
+                    {
+                        ProductId = sanpham.Ma_San_Pham,
+                        ProductName = sanpham.Ten_San_Pham,
+                        StartingInventory = startingInventory,
+                    };
+
+                if (chitietPhieuNhapList is not null && chitietPhieuXuatList is not null)
+                {
+                    foreach (var detail in chitietPhieuNhapList.Where(d => d.San_Pham_ID == sanpham.Ma_San_Pham))
+                    {
+                        reportItem.QuantityIn += detail.SL_Nhap;
+                    }
+                    foreach (var detail in chitietPhieuXuatList.Where(d => d.San_Pham_ID == sanpham.Ma_San_Pham))
+                    {
+                        reportItem.QuantityOut += detail.SL_Xuat;
+                    }
+                }
+                reportItems.Add(reportItem);
+            }
+
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = $"Error preparing data: {e.Message}";
+            await SweetAlert.ShowMessage("Error", ErrorMessage, "error");
+        }
+    }
+
+    private async Task<decimal> getStartingInventoryOfProduct(string productId)
+    {
+        try
+        {
+            var startingInventory = 0m;
+
+            var phieuNhaps = await PhieuNhapKhoService.GetByAfterDateAsync(DateFrom);
+            var phieuXuats = await PhieuXuatKhoService.GetByAfterDateAsync(DateFrom);
+
+            foreach (var phieuNhap in phieuNhaps)
+            {
+                var detail = await ChiTietPhieuNhapKhoService.GetByIdAsync(phieuNhap.So_Phieu_Nhap_Kho, productId);
+                if (detail != null)
+                {
+                    startingInventory += detail.SL_Nhap;
+                }
+            }
+            foreach (var phieuXuat in phieuXuats)
+            {
+                var detail = await ChiTietPhieuXuatKhoService.GetByIdAsync(phieuXuat.So_Phieu_Xuat_Kho, productId);
+                if (detail != null)
+                {
+                    startingInventory -= detail.SL_Xuat;
+                }
+            }
+            return startingInventory;
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = $"Error calculating starting inventory for product {productId}: {e.Message}";
+            await SweetAlert.ShowMessage("Error", ErrorMessage, "error");
+            return 0;
+        }
+    }
+
+    
+    public class ProductInventoryReportItem
+    {
+        public string ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal StartingInventory { get; set; } = 0;     
+        public decimal QuantityIn { get; set; } = 0;
+        public decimal QuantityOut { get; set; } = 0;
+        public decimal EndingInventory => StartingInventory + QuantityIn - QuantityOut;
+    }
+
+}
+
+

@@ -49,5 +49,11 @@ namespace tranhoangkhai_project1.Services
             var phieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.FirstOrDefaultAsync(p => p.Kho_ID.Equals(Kho_ID));
             return phieuXuatKho;
         }
+
+        public async Task<List<PhieuXuatKhoModel>> GetByAfterDateAsync(DateTime AfterDate)
+        {
+            var phieuNhapKho = await _dataContext.tbl_DM_Xuat_Kho.Where(p => p.Ngay_Nhap_Kho < AfterDate).ToListAsync();
+            return phieuNhapKho;
+        }
     }
 }

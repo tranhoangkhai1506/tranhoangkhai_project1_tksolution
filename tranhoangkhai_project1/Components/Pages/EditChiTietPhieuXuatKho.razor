@@ -37,9 +37,9 @@
                         </InputSelect>
                         </div> *@
                             <div>
-                                <label for="San_Pham_ID">Số Phiếu Nhập</label>
+                                <label for="San_Pham_ID">Số Phiếu Xuất</label>
                                 <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID">
-                                    <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
+                                    <option value="" disabled selected>Chọn sản phẩm xuất kho</option>
                                     @foreach (var sanpham in sanPhamList)
                                     {
                                         <option value="@sanpham.Ma_San_Pham">@sanpham.Ten_San_Pham</option>
@@ -47,11 +47,11 @@
                                 </InputSelect>
                             </div>
                             <div>
-                                <label for="SL_Xuat">Số lượng nhập</label>
+                                <label for="SL_Xuat">Số lượng xuất</label>
                                 <InputNumber id="SL_Xuat" @bind-Value="CurrentCTPXK.SL_Xuat" class="form-control"></InputNumber>
                             </div>
                             <div>
-                                <label for="Don_Gia_Nhap">Đơn giá</label>
+                                <label for="Don_Gia_Nhap">Đơn giá xuất</label>
                                 <InputNumber id="Don_Gia_Nhap" @bind-Value="CurrentCTPXK.Don_Gia_Xuat" class="form-control"></InputNumber>
                             </div>
                         </EditForm>
