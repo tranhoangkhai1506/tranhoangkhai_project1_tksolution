@@ -131,10 +131,10 @@ else
             return;
         }
 
-        var existingUnitCode = await LoaiSanPhamSevice.GetByIdAsync(CurrentLSP.Ma_LSP);
-        if (existingUnitCode != null && Ma_LSP is null)
+        var existingUnitCode = await LoaiSanPhamSevice.GetByNameAsync(CurrentLSP.Ten_LSP);
+        if (existingUnitCode is not null && existingUnitCode.Ma_LSP != Ma_LSP)
         {
-            ErrorMessage = "Mã loại sản phẩm đã tồn tại.";
+            ErrorMessage = "Tên loại sản phẩm đã tồn tại.";
             return;
         }
 
@@ -148,11 +148,6 @@ else
         if (existingUni != null && Ma_LSP is null)
         {
             ErrorMessage = "Mã sản phẩm đã tồn tại.";
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentLSP.Ghi_Chu))
-        {
-            ErrorMessage = "Ghi chú không được để trống.";
             return;
         }
         if (Ma_LSP is not null)

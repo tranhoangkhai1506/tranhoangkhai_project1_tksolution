@@ -121,22 +121,30 @@ else
 
         if (string.IsNullOrWhiteSpace(CurrentNCC.Ma_NCC))
         {
-            ErrorMessage = "Mã sản phẩm không được để trống.";
+            ErrorMessage = "Mã nhà cung cấp không được để trống.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(CurrentNCC.Ten_NCC))
+        {
+            ErrorMessage = "Tên nhà cung cấp không được để trống.";
             return;
         }
 
         var existingProduct = await NhaCungCapSevice.GetByIdAsync(CurrentNCC.Ma_NCC);
         if (existingProduct != null && maNCC is null)
         {
-            ErrorMessage = "Mã sản phẩm đã tồn tại.";
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentNCC.Ghi_Chu))
-        {
-            ErrorMessage = "Ghi chú không được để trống.";
+            ErrorMessage = "Mã nhà cung cấp đã tồn tại.";
             return;
         }
 
+
+        var existingNCCName = await NhaCungCapSevice.GetByNameAsync(CurrentNCC.Ten_NCC);
+        if (existingNCCName != null && existingNCCName.Ma_NCC != maNCC)
+        {
+            ErrorMessage = "Tên nhà cung cấp đã tồn tại.";
+            return;
+        }
         // Nếu không có lỗi, tiến hành cập nhật hoặc thêm mới sản phẩm
         if (maNCC is not null)
         {

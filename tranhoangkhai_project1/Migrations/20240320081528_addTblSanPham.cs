@@ -19,7 +19,7 @@ namespace tranhoangkhai_project1.Migrations
                     Ma_San_Pham = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Ten_San_Pham = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Loai_San_Pham_ID = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Don_Vi_Tinh_ID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Don_Vi_Tinh_ID = table.Column<string>(type: "int", nullable: false),
                     Ghi_Chu = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

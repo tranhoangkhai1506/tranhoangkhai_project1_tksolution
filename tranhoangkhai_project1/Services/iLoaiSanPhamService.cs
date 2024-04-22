@@ -6,6 +6,7 @@ namespace tranhoangkhai_project1.Services
     {
         Task<List<LoaiSanPhamModel>> GetAllLoaiSanPhamAsync();
         Task<LoaiSanPhamModel> GetByIdAsync(string Ten_Don_Vi_Tinh);
+        Task<LoaiSanPhamModel> GetByNameAsync(string Ten_Loai_San_Pham);
 
         Task AddLoaiSanPham(LoaiSanPhamModel donViTinh);
         Task UpdateLoaiSanPhamAsync(LoaiSanPhamModel donViTinh, string Ten_Don_Vi_Tinh);

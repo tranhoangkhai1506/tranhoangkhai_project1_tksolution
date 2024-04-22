@@ -126,12 +126,6 @@ else
             await SweetAlert.ShowMessage("Error", "Ngày xuất kho không được để trống.", "Error");
             return;
         }
-
-        if (string.IsNullOrWhiteSpace(phieuXuatKho.Ghi_Chu))
-        {
-            await SweetAlert.ShowMessage("Error", "Ghi chú không được để trống.", "Error");
-            return;
-        }
         else
         {
             await PhieuXuatKhoService.AddPhieuXuatKhoAsync(phieuXuatKho);

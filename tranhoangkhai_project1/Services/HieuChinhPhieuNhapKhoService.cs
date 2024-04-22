@@ -45,7 +45,14 @@ namespace tranhoangkhai_project1.Services
                 dbHieuChinhPhieuNhapKho.Kho_ID = phieuNhapKho.Kho_ID;
                 dbHieuChinhPhieuNhapKho.NCC_ID = phieuNhapKho.NCC_ID;
                 dbHieuChinhPhieuNhapKho.Ngay_Nhap_Kho = phieuNhapKho.Ngay_Nhap_Kho;
-                dbHieuChinhPhieuNhapKho.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                if (phieuNhapKho.Ghi_Chu is null || phieuNhapKho.Ghi_Chu == "")
+                {
+                    dbHieuChinhPhieuNhapKho.Ghi_Chu = "U/N";
+                }
+                else
+                {
+                    dbHieuChinhPhieuNhapKho.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                }
                 await _dataContext.SaveChangesAsync();
             }
             else
@@ -55,7 +62,14 @@ namespace tranhoangkhai_project1.Services
                 newHieuChinh.Kho_ID = phieuNhapKho.Kho_ID;
                 newHieuChinh.NCC_ID = phieuNhapKho.NCC_ID;
                 newHieuChinh.Ngay_Nhap_Kho = phieuNhapKho.Ngay_Nhap_Kho;
-                newHieuChinh.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                if (phieuNhapKho.Ghi_Chu is null || phieuNhapKho.Ghi_Chu == "")
+                {
+                    newHieuChinh.Ghi_Chu = "U/N";
+                }
+                else
+                {
+                    newHieuChinh.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                }
 
                 _dataContext.tbl_XNK_Nhap_Kho.Add(newHieuChinh);
                 await _dataContext.SaveChangesAsync();

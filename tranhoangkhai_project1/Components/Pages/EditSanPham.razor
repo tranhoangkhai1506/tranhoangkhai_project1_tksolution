@@ -51,7 +51,7 @@
                                     <option value="" disabled selected>Chọn đơn vị tính</option>
                                     @foreach (var donViTinh in danhSachDonViTinh)
                                     {
-                                        <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>
+                                        <option value="@donViTinh.DonViTinhID">@donViTinh.Ten_Don_Vi_Tinh</option>
                                     }
                                 </InputSelect>
 
@@ -117,7 +117,7 @@ else
                                     <option value="" disabled selected>Chọn đơn vị tính</option>
                                     @foreach (var donViTinh in danhSachDonViTinh)
                                     {
-                                        <option value="@donViTinh.Ten_Don_Vi_Tinh">@donViTinh.Ten_Don_Vi_Tinh</option>
+                                        <option value="@donViTinh.DonViTinhID">@donViTinh.Ten_Don_Vi_Tinh</option>
                                     }
                                 </InputSelect>
 
@@ -197,14 +197,9 @@ else
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(CurrentSP.Don_Vi_Tinh_ID))
+        if (string.IsNullOrWhiteSpace(CurrentSP.Don_Vi_Tinh_ID.ToString()))
         {
             ErrorMessage = "Đơn vị tính không được để trống.";
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentSP.Ghi_Chu))
-        {
-            ErrorMessage = "Ghi chú không được để trống.";
             return;
         }
 

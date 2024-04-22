@@ -27,17 +27,6 @@ else
             <option>15</option>
             <option>25</option>
         </select>
-        <div>
-            @if (IsAuthStatic.IsAuthenticated)
-            {
-                <span>Xin chào, @IsAuthStatic.UserLogin.Ma_Dang_Nhap! (@IsAuthStatic.UserLogin.Kho_ID) </span>
-                <button class="btn btn-warning ml-2" @onclick="Logout">Đăng xuất</button>
-            }
-            else
-            {
-                <span>Bạn chưa đăng nhập.</span>
-            }
-        </div>
     </div>
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -124,15 +113,16 @@ else
 
     async void EditKho(string tenKho)
     {
-        if (isAuthenticated && isAccountAuthenticated.Kho_ID.Equals(tenKho))
-        {
-            nav.NavigateTo($"/edit-kho/{tenKho}");
-        }
-        else
-        {
-            await SweetAlert.ShowToast("Bạn không có quyền sửa, Hãy đăng nhập!", "Error", 1000);
-            nav.NavigateTo($"/login/{tenKho}");
-        }
+        nav.NavigateTo($"/edit-kho/{tenKho}");
+        // if (isAuthenticated && isAccountAuthenticated.Kho_ID.Equals(tenKho))
+        // {
+            
+        // }
+        // else
+        // {
+        //     await SweetAlert.ShowToast("Bạn không có quyền sửa, Hãy đăng nhập!", "Error", 1000);
+        //     nav.NavigateTo($"/login/{tenKho}");
+        // }
 
     }
 
@@ -142,35 +132,36 @@ else
     }
     async Task DeleteKho(string tenKho)
     {
-
-        if (isAuthenticated && isAccountAuthenticated.Kho_ID.Equals(tenKho))
+        var existChildrenOfPhieuNhapKho = await PhieuNhapKhoService.GetByKhoIDAsync(tenKho);
+        var existChildrenOfPhieuXuatKho = await PhieuXuatKhoService.GetByKhoIDAsync(tenKho);
+        var existChildrenOfHieuChinhPhieuNhapKho = await HieuChinhPhieuNhapKhoService.GetByKhoIDAsync(tenKho);
+        var existChildrenOfHieuChinhXuatNhapKho = await HieuChinhPhieuXuatKhoService.GetByKhoIDAsync(tenKho);
+        if (existChildrenOfPhieuNhapKho is null && existChildrenOfPhieuXuatKho is null && existChildrenOfHieuChinhPhieuNhapKho is null && existChildrenOfHieuChinhXuatNhapKho is null)
         {
-            var existChildrenOfPhieuNhapKho = await PhieuNhapKhoService.GetByKhoIDAsync(tenKho);
-            var existChildrenOfPhieuXuatKho = await PhieuXuatKhoService.GetByKhoIDAsync(tenKho);
-            var existChildrenOfHieuChinhPhieuNhapKho = await HieuChinhPhieuNhapKhoService.GetByKhoIDAsync(tenKho);
-            var existChildrenOfHieuChinhXuatNhapKho = await HieuChinhPhieuXuatKhoService.GetByKhoIDAsync(tenKho);
-            if (existChildrenOfPhieuNhapKho is null && existChildrenOfPhieuXuatKho is null && existChildrenOfHieuChinhPhieuNhapKho is null && existChildrenOfHieuChinhXuatNhapKho is null)
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa loại sản phẩm này?");
+            if (confirmed)
             {
-                var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa loại sản phẩm này?");
-                if (confirmed)
-                {
-                    await KhoService.DeleteKhoAsync(tenKho);
-                    itemsQueryable = (await KhoService.GetAllKhoAsync()).AsQueryable();
-                    pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
-                    await SweetAlert.ShowToast("Xóa kho thành công!", "Success", 1000);
-                }
+                await KhoService.DeleteKhoAsync(tenKho);
+                itemsQueryable = (await KhoService.GetAllKhoAsync()).AsQueryable();
+                pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+                await SweetAlert.ShowToast("Xóa kho thành công!", "Success", 1000);
             }
-            else
-            {
-                await SweetAlert.ShowToast("Không thể xóa kho!", "Error", 1000);
-            }
-            
         }
         else
         {
-            await SweetAlert.ShowToast("Bạn không có quyền xoá, Hãy đăng nhập!", "Error", 1000);
-            nav.NavigateTo($"/login/{tenKho}");
+            await SweetAlert.ShowToast("Không thể xóa kho!", "Error", 1000);
         }
+
+
+        // if (isAuthenticated && isAccountAuthenticated.Kho_ID.Equals(tenKho))
+        // {
+            
+        // }
+        // else
+        // {
+        //     await SweetAlert.ShowToast("Bạn không có quyền xoá, Hãy đăng nhập!", "Error", 1000);
+        //     nav.NavigateTo($"/login/{tenKho}");
+        // }
         
     }
     void Logout()

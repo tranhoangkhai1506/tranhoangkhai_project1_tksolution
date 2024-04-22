@@ -23,12 +23,18 @@
                 <div class="card">
                     <div class="card-header"><strong>THÔNG TIN ĐƠN VỊ TÍNH</strong></div>
                     <div class="card-body">
-                        <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
-                            <div>
-                                <label for="Ten_Don_Vi_Tinh"><strong>Tên đơn vị tính</strong></label>
-                                <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control"></InputText>
-                                <label for="Ghi_Chu"><strong>Ghi chú</strong></label>
-                                <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
+                        <EditForm Model="CurrentDVT" OnValidSubmit="HandleSubmit">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="mb-3">
+                                <label for="Ten_Don_Vi_Tinh" class="form-label">Mã Đơn Vị Tính</label>
+                                <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Ghi_Chu" class="form-label">Ghi Chú</label>
+                                <InputTextArea id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control" />
                             </div>
                         </EditForm>
                     </div>
@@ -65,6 +71,8 @@ else
                     <div class="card-body">
                         <EditForm Model="CurrentDVT" OnSubmit="HandleSubmit">
                             <div>
+                                <label for="Ten_Don_Vi_Tinh"><strong>Tên đơn vị tính</strong></label>
+                                <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control"></InputText>
                                 <label for="Ghi_Chu"><strong>Ghi Chú</strong></label>
                                 <InputText id="Ghi_Chu" @bind-Value="CurrentDVT.Ghi_Chu" class="form-control"></InputText>
                             </div>
@@ -95,7 +103,7 @@ else
     {
         if (Ten_Don_Vi_Tinh is not null)
         {
-            var dvt = await DonViTinhSevice.GetByIdAsync(Ten_Don_Vi_Tinh);
+            var dvt = await DonViTinhSevice.GetByIdAsync(Int16.Parse(Ten_Don_Vi_Tinh));
             if (dvt is not null)
             {
                 CurrentDVT = dvt;
@@ -111,21 +119,16 @@ else
             return;
         }
 
-        var existingUnitCode = await DonViTinhSevice.GetByIdAsync(CurrentDVT.Ten_Don_Vi_Tinh);
-        if (existingUnitCode != null && Ten_Don_Vi_Tinh is null)
+        var existingUnitCode = await DonViTinhSevice.GetByNameAsync(CurrentDVT.Ten_Don_Vi_Tinh);
+        if (existingUnitCode is not null && Convert.ToInt16(Ten_Don_Vi_Tinh) != (existingUnitCode.DonViTinhID))
         {
             ErrorMessage = "Tên đơn vị tính đã tồn tại.";
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentDVT.Ghi_Chu))
-        {
-            ErrorMessage = "Ghi chú không được để trống.";
             return;
         }
 
         if (Ten_Don_Vi_Tinh is not null)
         {
-            await DonViTinhSevice.UpdateDonViTinhAsync(CurrentDVT, Ten_Don_Vi_Tinh);
+            await DonViTinhSevice.UpdateDonViTinhAsync(CurrentDVT, Int16.Parse(Ten_Don_Vi_Tinh));
             await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
             nav.NavigateTo("/donvitinh-list");
         }

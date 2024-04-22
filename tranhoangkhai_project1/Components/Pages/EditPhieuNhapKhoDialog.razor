@@ -132,13 +132,6 @@
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(phieuNhapKho.Ghi_Chu))
-        {
-            ErrorMessage = "Ghi chú không được để trống.";
-            StateHasChanged();
-            return;
-        }
-
         var existingPNK = await PhieuNhapKhoService.GetByIdAsync(phieuNhapKho.So_Phieu_Nhap_Kho);
         if (IsUpdateMode)
         {           

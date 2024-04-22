@@ -13,11 +13,11 @@ namespace tranhoangkhai_project1.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<DonViTinhModel>().HasData(
-                new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_01", Ghi_Chu = "Ghi chu 1" },
-                new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_02", Ghi_Chu = "Ghi chu 2" },
-                new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_03", Ghi_Chu = "Ghi chu 3" }
-            );
+            //modelBuilder.Entity<DonViTinhModel>().HasData(
+            //    new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_01", Ghi_Chu = "Ghi chu 1" },
+            //    new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_02", Ghi_Chu = "Ghi chu 2" },
+            //    new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_03", Ghi_Chu = "Ghi chu 3" }
+            //);
 
             modelBuilder.Entity<LoaiSanPhamModel>().HasData(
                 new LoaiSanPhamModel { Ma_LSP = "lsp_01",Ten_LSP = "Loai 1", Ghi_Chu = "Ghi chu 1" },
@@ -25,11 +25,6 @@ namespace tranhoangkhai_project1.Data
                 new LoaiSanPhamModel { Ma_LSP = "lsp_03", Ten_LSP = "Loai 3", Ghi_Chu = "Ghi chu 3" }
             );
 
-            modelBuilder.Entity<SanPhamModel>().HasData(
-                new SanPhamModel { Ma_San_Pham = "sp_01", Ten_San_Pham = "San Pham 1", Loai_San_Pham_ID = "lsp_01",Don_Vi_Tinh_ID = "dvt_01", Ghi_Chu = "Ghi chu 1" },
-                new SanPhamModel { Ma_San_Pham = "sp_02", Ten_San_Pham = "San Pham 1 2", Loai_San_Pham_ID = "lsp_02", Don_Vi_Tinh_ID = "dvt_02", Ghi_Chu = "Ghi chu 2" },
-                new SanPhamModel { Ma_San_Pham = "sp_03", Ten_San_Pham = "San Pham 1 3", Loai_San_Pham_ID = "lsp_03", Don_Vi_Tinh_ID = "dvt_02", Ghi_Chu = "Ghi chu 3" }
-            );
             modelBuilder.Entity<NhaCungCapModel>().HasData(
                 new NhaCungCapModel { Ma_NCC = "ncc_01", Ten_NCC = "Nha cung cap 1", Ghi_Chu = "Ghi chu 1" },
                 new NhaCungCapModel { Ma_NCC = "ncc_02", Ten_NCC = "Nha cung cap 2", Ghi_Chu = "Ghi chu 2" },
@@ -80,7 +75,6 @@ namespace tranhoangkhai_project1.Data
                 new ChiTietPhieuXuatKhoModel { Xuat_Kho_ID = "px_03", San_Pham_ID = "sp_03", SL_Xuat = 300, Don_Gia_Xuat = 5000000 }
                );
         }
-
         public DbSet<DonViTinhModel> tbl_DM_Don_Vi_Tinh { get; set; }
         public DbSet<LoaiSanPhamModel> tbl_DM_Loai_San_Pham { get; set; }
         public DbSet<SanPhamModel> tbl_DM_San_Pham { get; set; }

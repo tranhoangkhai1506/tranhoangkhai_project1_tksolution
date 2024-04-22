@@ -71,6 +71,10 @@ else
                     <div class="card-body">
                         <EditForm Model="CurrentKho" OnSubmit="HandleSubmit">
                             <div>
+                                <label for="Ten_Kho">Tên Kho</label>
+                                <InputText id="Ten_Kho" @bind-Value="CurrentKho.Ten_Kho" class="form-control"></InputText>
+                            </div>
+                            <div>
                                 <label for="Ghi_Chu">Ghi Chú</label>
                                 <InputText id="Ghi_Chu" @bind-Value="CurrentKho.Ghi_Chu" class="form-control"></InputText>
                             </div>

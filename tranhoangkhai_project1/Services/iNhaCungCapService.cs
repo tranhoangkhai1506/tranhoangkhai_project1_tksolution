@@ -6,6 +6,7 @@ namespace tranhoangkhai_project1.Services
     {
         Task<List<NhaCungCapModel>> GetAllNhaCungCapAsync();
         Task<NhaCungCapModel> GetByIdAsync(string maNCC);
+        Task<NhaCungCapModel> GetByNameAsync(string Ten_NhaCC);
 
         Task AddNhaCungCap(NhaCungCapModel nhaCungCap);
         Task UpdateNhaCungCapAsync(NhaCungCapModel nhaCungCap, string maNCC);

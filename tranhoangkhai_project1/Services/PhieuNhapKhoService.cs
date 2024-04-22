@@ -14,6 +14,10 @@ namespace tranhoangkhai_project1.Services
         }
         public async Task AddPhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho)
         {
+            if (phieuNhapKho.Ghi_Chu is null)
+            {
+                phieuNhapKho.Ghi_Chu = "U/N";
+            }
             _dataContext.tbl_DM_Nhap_Kho.Add(phieuNhapKho);
             await _dataContext.SaveChangesAsync();
         }
