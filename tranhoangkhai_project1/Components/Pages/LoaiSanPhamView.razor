@@ -38,7 +38,7 @@ else
         </div>
         <div class="table-responsive">
             <QuickGrid Items="@FilteredLoaiSanPham" Pagination="@pagination" class="table table-striped table-hover">
-                <PropertyColumn Property="@(c => c.Ma_LSP)" Sortable="true" Title="MÃ LOẠI" />
+                <PropertyColumn Property="@(c => c.Ma_LSP)" Sortable="true" Align="Align.Center" Title="MÃ LOẠI" />
                 <PropertyColumn Property="@(c => c.Ten_LSP)" Sortable="true" Class="country-name" Title="TÊN LOẠI">
                     <ColumnOptions>
                         <div class="search-box">

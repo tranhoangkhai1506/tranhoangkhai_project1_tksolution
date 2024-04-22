@@ -44,9 +44,9 @@ namespace tranhoangkhai_project1.Services
             return phieuXuatKho;
         }
 
-        public async Task<PhieuXuatKhoModel> GetByKhoIDAsync(string Kho_ID)
+        public async Task<PhieuXuatKhoModel> GetByKhoIDAsync(int Kho_ID)
         {
-            var phieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.FirstOrDefaultAsync(p => p.Kho_ID.Equals(Kho_ID));
+            var phieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.FirstOrDefaultAsync(p => p.Kho_ID == Kho_ID);
             return phieuXuatKho;
         }
 
@@ -54,6 +54,18 @@ namespace tranhoangkhai_project1.Services
         {
             var phieuNhapKho = await _dataContext.tbl_DM_Xuat_Kho.Where(p => p.Ngay_Nhap_Kho < AfterDate).ToListAsync();
             return phieuNhapKho;
+        }
+
+        public async Task UpdatePhieuXuatKhoAsync(PhieuXuatKhoModel phieuXuatKho, string So_Phieu_Xuat_Kho)
+        {
+            var dbPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho.FirstOrDefaultAsync(p => p.So_Phieu_Xuat_Kho.Equals(So_Phieu_Xuat_Kho));
+            if (dbPhieuXuatKho != null)
+            {
+                dbPhieuXuatKho.Ngay_Nhap_Kho = phieuXuatKho.Ngay_Nhap_Kho;
+                dbPhieuXuatKho.Kho_ID = phieuXuatKho.Kho_ID;
+                dbPhieuXuatKho.Ghi_Chu = phieuXuatKho.Ghi_Chu;
+                await _dataContext.SaveChangesAsync();
+            }
         }
     }
 }

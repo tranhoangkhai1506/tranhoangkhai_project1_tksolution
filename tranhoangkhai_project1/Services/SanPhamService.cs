@@ -73,5 +73,11 @@ namespace tranhoangkhai_project1.Services
             var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Loai_San_Pham_ID.Equals(maLoai));
             return sanPham;
         }
+
+        public async Task<SanPhamModel> GetByNameAsync(string Ten_San_Pham)
+        {
+            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ten_San_Pham.Equals(Ten_San_Pham));
+            return sanPham;
+        }
     }
 }

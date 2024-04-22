@@ -12,7 +12,7 @@
 {
     <hr />
     <p>Chưa tìm thấy phiếu nhập kho nào! Vui lòng thêm phiếu nhập kho!</p>
-    <button class="btn btn-outline-success" @onclick="@(() =>AddDVT(So_Phieu_Nhap_Kho))">THÊM PHIẾU NHẬP KHO</button>
+    <button class="btn btn-outline-success" @onclick="@(() =>AddDVT(So_Phieu_Nhap_Kho))">THÊM CHI TIẾT PHIẾU NHẬP KHO</button>
 }
 else
 {
@@ -27,8 +27,8 @@ else
     </div>
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>THÔNG TIN PHIẾU NHẬP KHO</strong>
-            <button class="btn btn-outline-success" @onclick="@(() =>AddDVT(So_Phieu_Nhap_Kho))">THÊM PHIẾU NHẬP KHO</button>
+            <strong>THÔNG TIN PHIẾU CHI TIẾT NHẬP KHO</strong>
+            <button class="btn btn-outline-success" @onclick="@(() =>AddDVT(So_Phieu_Nhap_Kho))">THÊM CHI TIẾT PHIẾU NHẬP KHO</button>
         </div>
         <div class="table-responsive">
             <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">

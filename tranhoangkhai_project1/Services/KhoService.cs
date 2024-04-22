@@ -17,9 +17,9 @@ namespace tranhoangkhai_project1.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task DeleteKhoAsync(string tenKho)
+        public async Task DeleteKhoAsync(int khoId)
         {
-            var kho = await _dataContext.tbl_DM_Kho.FirstOrDefaultAsync(p => p.Ten_Kho.Equals(tenKho));
+            var kho = await _dataContext.tbl_DM_Kho.FirstOrDefaultAsync(p => p.KhoId == khoId);
             if (kho != null)
             {
                 _dataContext.tbl_DM_Kho.Remove(kho);
@@ -33,18 +33,21 @@ namespace tranhoangkhai_project1.Services
             return result;
         }
 
-        public async Task<KhoModel> GetByIdAsync(string tenKho)
+        public async Task<KhoModel> GetByIdAsync(int khoId)
         {
-            var kho = await _dataContext.tbl_DM_Kho.FirstOrDefaultAsync(p => p.Ten_Kho.Equals(tenKho));
-            return kho;
+            return await _dataContext.tbl_DM_Kho
+                                      .AsNoTracking()
+                                      .FirstOrDefaultAsync(p => p.KhoId==khoId);
         }
 
-        public async Task UpdateKhoAsync(KhoModel kho, string tenKho)
+        public async Task UpdateKhoAsync(KhoModel kho, int khoId)
         {
-            var dbKho = await _dataContext.tbl_DM_Kho.FirstOrDefaultAsync(p => p.Ten_Kho.Equals(tenKho));
-            if(dbKho != null)
+            var existingKho = await _dataContext.tbl_DM_Kho.FindAsync(khoId);
+
+            if (existingKho != null)
             {
-                dbKho.Ghi_Chu = kho.Ghi_Chu;
+                _dataContext.tbl_DM_Kho.Remove(existingKho);
+                _dataContext.tbl_DM_Kho.Add(kho);
                 await _dataContext.SaveChangesAsync();
             }
         }

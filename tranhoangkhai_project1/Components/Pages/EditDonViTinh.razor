@@ -28,7 +28,7 @@
                             <ValidationSummary />
 
                             <div class="mb-3">
-                                <label for="Ten_Don_Vi_Tinh" class="form-label">Mã Đơn Vị Tính</label>
+                                <label for="Ten_Don_Vi_Tinh" class="form-label">Tên Đơn Vị Tính</label>
                                 <InputText id="Ten_Don_Vi_Tinh" @bind-Value="CurrentDVT.Ten_Don_Vi_Tinh" class="form-control" />
                             </div>
 
@@ -115,14 +115,14 @@ else
     {
         if (string.IsNullOrWhiteSpace(CurrentDVT.Ten_Don_Vi_Tinh))
         {
-            ErrorMessage = "Tên đơn vị tính không được để trống.";
+            await SweetAlert.ShowToast("Tên đơn vị tính không được để trống.", "Error", 1000);
             return;
         }
 
         var existingUnitCode = await DonViTinhSevice.GetByNameAsync(CurrentDVT.Ten_Don_Vi_Tinh);
         if (existingUnitCode is not null && Convert.ToInt16(Ten_Don_Vi_Tinh) != (existingUnitCode.DonViTinhID))
         {
-            ErrorMessage = "Tên đơn vị tính đã tồn tại.";
+            await SweetAlert.ShowToast("Tên đơn vị tính đã tồn tại.", "Error", 1000);
             return;
         }
 

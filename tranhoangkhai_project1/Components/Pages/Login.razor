@@ -1,4 +1,4 @@
-﻿@page "/login/{tenKho}"
+﻿@* @page "/login/{tenKho}"
 @inject NavigationManager NavigationManager
 @inject IAuthenticationService AuthenticationService
 @inject IJSRuntime js
@@ -38,10 +38,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (tenKho is not null)
-        {
-            loginModel.Kho_ID = tenKho;
-        }
+        // if (tenKho is not null)
+        // {
+        //     loginModel.Kho_ID = tenKho;
+        // }
     }
 
     private async Task HandleLogin()
@@ -69,3 +69,4 @@
         nav.NavigateTo("/kho-list");
     }  
 }
+ *@

@@ -1,6 +1,7 @@
 ﻿@page "/baocaochitietnhaphangreportviewer/{currentDateFrom}/{currentDateTo}"
 @inject iPhieuNhapKhoService PhieuNhapKhoService
 @inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
+@inject iNhaCungCapService NhaCungCapService
 @inject iSanPhamService SanPhamService
 @inject IJSRuntime js
 @inject ShowErrorMessage SweetAlert
@@ -87,14 +88,14 @@
                                     {
                                         <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.Ngay_Nhap_Kho.ToShortDateString()</td>
                                         <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.So_Phieu_Nhap_Kho</td>
-                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.NCC_ID</td>
+                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@GetTenNhaCC(@item.PhieuNhap.NCC_ID)</td>
                                         isFirstDetail = false;
                                     }
                                     <td style="text-align: center;">@(sanPhamMap.TryGetValue(chitiet.San_Pham_ID, out var sanPham) ? sanPham.Ma_San_Pham : "N/A")</td>
-                                    <td>@(sanPham?.Ten_San_Pham ?? "N/A")</td>
+                                    <td style="text-align: center;">@(sanPham?.Ten_San_Pham ?? "N/A")</td>
                                     <td style="text-align: center;">@chitiet.SL_Nhap</td>
-                                    <td style="text-align: right;">@chitiet.Don_Gia_Nhap.ToString("N2")</td>
-                                    <td style="text-align: right;">@total.ToString("0.00")</td>
+                                    <td style="text-align: center;">@chitiet.Don_Gia_Nhap.ToString("N2")</td>
+                                    <td style="text-align: center;">@total.ToString("0.00")</td>
                                 </tr>
                             }
                         }
@@ -114,10 +115,12 @@
     [Parameter]
     public DateTime DateTo { get; set; }
     private Dictionary<string, SanPhamModel> sanPhamMap = new Dictionary<string, SanPhamModel>();
+    public List<NhaCungCapModel> danhSachNCC { get; set; } = new List<NhaCungCapModel>();
     public string ErrorMessage { get; set; }
     private List<PhieuNhapKhoDisplayModel> phieuNhapDisplayList = new();
     protected override async Task OnParametersSetAsync()
     {
+        danhSachNCC = await NhaCungCapService.GetAllNhaCungCapAsync();
         phieuNhapDisplayList = new();
         await LoadDataAsync();
     }
@@ -145,6 +148,11 @@
             ErrorMessage = $"Error preparing data: {e.Message}";
             await SweetAlert.ShowMessage("Error", ErrorMessage, "error");
         }
+    }
+    string GetTenNhaCC(string NCC_ID)
+    {
+        var loaiSanPham = danhSachNCC.FirstOrDefault(l => l.Ma_NCC.Equals(NCC_ID));
+        return loaiSanPham?.Ten_NCC ?? "N/A";
     }
 
     public class PhieuNhapKhoDisplayModel

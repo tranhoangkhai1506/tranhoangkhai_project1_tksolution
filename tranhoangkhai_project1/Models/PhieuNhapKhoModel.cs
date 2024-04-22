@@ -7,9 +7,7 @@ namespace tranhoangkhai_project1.Models
     {
         [Key]
         public string So_Phieu_Nhap_Kho { get; set; }
-        public string Kho_ID { get; set; }
-        [ForeignKey("Kho_ID")]
-        public KhoModel Kho { get; set; }
+        public int Kho_ID { get; set; }
         public string NCC_ID { get; set; }
         [ForeignKey("NCC_ID")]
         public NhaCungCapModel NhaCungCap { get; set; }

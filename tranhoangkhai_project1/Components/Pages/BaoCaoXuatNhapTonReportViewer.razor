@@ -125,6 +125,7 @@
             sanPhamList = await SanPhamService.GetAllSanPhamAsync();
             var phieuNhaps = await PhieuNhapKhoService.GetByDateAsync(DateFrom, DateTo);
             var phieuXuats = await PhieuXuatKhoService.GetByDateAsync(DateFrom, DateTo);
+
             foreach (var phieuNhap in phieuNhaps)
             {
                 foreach (var sanpham in sanPhamList)
@@ -134,7 +135,7 @@
                     {
                         chitietPhieuNhapList.Add(detail);
                     }
-                }                
+                }
             }
             foreach (var phieuXuat in phieuXuats)
             {
@@ -147,6 +148,7 @@
                     }
                 }
             }
+
             reportItems = new List<ProductInventoryReportItem>();
             foreach (var sanpham in sanPhamList)
             {
@@ -169,9 +171,13 @@
                         reportItem.QuantityOut += detail.SL_Xuat;
                     }
                 }
-                reportItems.Add(reportItem);
-            }
 
+                // Only add the item if there is any inventory movement or remaining stock
+                if (reportItem.StartingInventory != 0 || reportItem.QuantityIn != 0 || reportItem.QuantityOut != 0 || reportItem.EndingInventory != 0)
+                {
+                    reportItems.Add(reportItem);
+                }
+            }
         }
         catch (Exception e)
         {
@@ -179,6 +185,7 @@
             await SweetAlert.ShowMessage("Error", ErrorMessage, "error");
         }
     }
+
 
     private async Task<decimal> getStartingInventoryOfProduct(string productId)
     {

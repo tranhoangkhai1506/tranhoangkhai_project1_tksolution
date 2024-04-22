@@ -5,10 +5,10 @@ namespace tranhoangkhai_project1.Services
     public interface iKhoService
     {
         Task<List<KhoModel>> GetAllKhoAsync();
-        Task<KhoModel> GetByIdAsync(string tenKho);
+        Task<KhoModel> GetByIdAsync(int khoId);
 
         Task AddKho(KhoModel kho);
-        Task UpdateKhoAsync(KhoModel kho, string tenKho);
-        Task DeleteKhoAsync(string tenKho);
+        Task UpdateKhoAsync(KhoModel kho, int khoId);
+        Task DeleteKhoAsync(int khoId);
     }
 }

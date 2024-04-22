@@ -36,7 +36,7 @@
                                     <option value="" disabled selected>Chọn kho</option>
                                     @foreach (var kho in listKho)
                                     {
-                                        <option value="@kho.Ten_Kho">@kho.Ten_Kho</option>
+                                        <option value="@kho.KhoId">@kho.Ten_Kho</option>
                                     }
                                 </InputSelect>
                             </div>
@@ -68,14 +68,67 @@
 }
 else
 {
+    <PageTitle>SỬA PHIẾU XUẤT KHO</PageTitle>
+
+    <h1 style="text-align: center;"><strong>SỬA PHIẾU XUẤT KHO</strong></h1>
+    <hr />
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
     }
-}
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN PHIẾU XUẤT KHO</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="phieuXuatKho" OnSubmit="HandleSubmit">
+                            @* <div>
+                                <label for="So_Phieu_Xuat_Kho">Số Phiếu xuất Kho</label>
+                                <InputText id="So_Phieu_Xuat_Kho" @bind-Value="phieuXuatKho.So_Phieu_Xuat_Kho" class="form-control"></InputText>
+                            </div> *@
+                            <div>
+                                <label for="Kho_ID">Kho</label>
+                                <InputSelect class="form-control" id="Kho_ID" @bind-Value="phieuXuatKho.Kho_ID">
+                                    <option value="" disabled selected>Chọn kho</option>
+                                    @foreach (var kho in listKho)
+                                    {
+                                        <option value="@kho.KhoId">@kho.Ten_Kho</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div>
+                                <label for="ngayNhapKho">Ngày xuất Kho</label>
+                                <InputDate id="ngayNhapKho" @bind-Value="phieuXuatKho.Ngay_Nhap_Kho" class="form-control"></InputDate>
+                            </div>
 
+                            <div>
+                                <label for="Ghi_Chu">Ghi Chú</label>
+                                <InputText id="Ghi_Chu" @bind-Value="phieuXuatKho.Ghi_Chu" class="form-control"></InputText>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
 @code {
     [Parameter]
     public string? So_Phieu_Xuat_Kho { get; set; }
@@ -115,7 +168,7 @@ else
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(phieuXuatKho.Kho_ID))
+        if (string.IsNullOrWhiteSpace(phieuXuatKho.Kho_ID.ToString()))
         {
             await SweetAlert.ShowMessage("Error", "Kho không được để trống.", "Error");
             return;
@@ -126,11 +179,24 @@ else
             await SweetAlert.ShowMessage("Error", "Ngày xuất kho không được để trống.", "Error");
             return;
         }
+        if (So_Phieu_Xuat_Kho is not null)
+        {
+            try
+            {
+                await PhieuXuatKhoService.UpdatePhieuXuatKhoAsync(phieuXuatKho, So_Phieu_Xuat_Kho);
+                await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
+                nav.NavigateTo("/phieuxuatKho-list");
+            }
+            catch (Exception e)
+            {
+                await SweetAlert.ShowToast(e.ToString(), "Error", 1000);
+            }
+        }
         else
         {
             await PhieuXuatKhoService.AddPhieuXuatKhoAsync(phieuXuatKho);
             await SweetAlert.ShowToast("Thêm thành công!", "Success", 1000);
-            nav.NavigateTo("/phieuXuatKho-list");
+            nav.NavigateTo("/phieuxuatKho-list");
         }
     }
     private void OnClose(EventArgs e)

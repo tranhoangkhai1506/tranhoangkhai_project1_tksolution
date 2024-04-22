@@ -1,8 +1,8 @@
 ﻿ @page "/phieuxuatkho-list"
 
 @inject iPhieuXuatKhoService PhieuXuatKhoService
-@inject iHieuChinhPhieuXuatKhoService HieuChinhXuatNhapKhoService
 @inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
+@inject iKhoService KhoService
 @inject IJSRuntime js
 @inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
@@ -42,7 +42,9 @@ else
                         </div>
                     </ColumnOptions>
                 </PropertyColumn>
-                <PropertyColumn Property="@(c => c.Kho_ID)" Sortable="true" Title="MÃ KHO" />
+                <TemplateColumn Title="KHO" Align="Align.Center">
+                    @GetKhoName(context)
+                </TemplateColumn>
                 <PropertyColumn Property="@(c => c.Ngay_Nhap_Kho)" Format="dd-MM-yyyy" Sortable="true" Title="NGÀY NHẬP" />
                 <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
                 <TemplateColumn Title="Actions" Class="text-center">
@@ -89,6 +91,7 @@ else
 
 @code {
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
+    public List<KhoModel> danhSachKho { get; set; } = new List<KhoModel>();
     private string currentReportId;
     private int itemCount = 0;
     IQueryable<PhieuXuatKhoModel>? itemsQueryable;
@@ -113,6 +116,7 @@ else
     }
     protected override async Task OnInitializedAsync()
     {
+        danhSachKho = await KhoService.GetAllKhoAsync();
         itemsQueryable = (await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync()).AsQueryable();
         itemCount = itemsQueryable.Count();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
@@ -123,6 +127,11 @@ else
         await pagination.SetCurrentPageIndexAsync(pageIndex);
     }
 
+    string GetKhoName(dynamic context)
+    {
+        var unit = danhSachKho.FirstOrDefault(u => u.KhoId == context.Kho_ID);
+        return unit?.Ten_Kho ?? "N/A";
+    }
     private string? PageButtonClass(int pageIndex)
         => pagination.CurrentPageIndex == pageIndex ? "current" : null;
 
@@ -136,9 +145,8 @@ else
     }
     async Task DeletePhieuXuatKho(string maphieu)
     {
-        var hieuchinhXuatKho = await HieuChinhXuatNhapKhoService.GetByIdAsync(maphieu);
         var chitietPhieuXuat = await ChiTietPhieuXuatKhoService.GetAllChiTietByKhoIDAsync(maphieu);
-        if (hieuchinhXuatKho is null && chitietPhieuXuat.Count() == 0)
+        if (chitietPhieuXuat.Count() == 0)
         {
 
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
@@ -155,11 +163,10 @@ else
             await SweetAlert.ShowMessage("Error", "Không thể xóa phiếu!", "Error");
             return;
         }
-
     }
     async Task HieuChinh(string So_Phieu_Xuat_Kho)
     {
-        nav.NavigateTo($"/edit-hieuchinhphieuxuat/{So_Phieu_Xuat_Kho}");
+        nav.NavigateTo($"/edit-phieuxuatkho/{So_Phieu_Xuat_Kho}");
     }
 
     private RenderFragment DynamicComponent(string reportId) => builder =>

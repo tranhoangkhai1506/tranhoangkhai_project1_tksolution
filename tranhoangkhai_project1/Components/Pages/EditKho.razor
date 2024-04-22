@@ -104,7 +104,7 @@ else
     {
         if (TenKho is not null)
         {
-            var dvt = await KhoService.GetByIdAsync(TenKho);
+            var dvt = await KhoService.GetByIdAsync(Int32.Parse(TenKho));
             if (dvt is not null)
             {
                 CurrentKho = dvt;
@@ -120,7 +120,7 @@ else
             return;
         }
 
-        var existingUnitCode = await KhoService.GetByIdAsync(CurrentKho.Ten_Kho);
+        var existingUnitCode = await KhoService.GetByIdAsync(CurrentKho.KhoId);
         if (existingUnitCode != null && TenKho is null)
         {
             ErrorMessage = "Tên kho đã tồn tại.";
@@ -134,7 +134,7 @@ else
 
         if (TenKho is not null)
         {
-            await KhoService.UpdateKhoAsync(CurrentKho, TenKho);
+            await KhoService.UpdateKhoAsync(CurrentKho, Int32.Parse(TenKho));
             await SweetAlert.ShowToast("Sửa thành công!", "Success", 1000);
             nav.NavigateTo("/kho-list");
         }

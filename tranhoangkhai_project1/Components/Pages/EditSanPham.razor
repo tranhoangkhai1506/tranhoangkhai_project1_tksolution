@@ -171,39 +171,45 @@ else
 
     async Task HandleSubmit()
     {
-
         if (string.IsNullOrWhiteSpace(CurrentSP.Ma_San_Pham))
         {
-            ErrorMessage = "Mã sản phẩm không được để trống.";
+            await SweetAlert.ShowToast("Mã sản phẩm không được để trống.", "Error", 1000);
             return;
         }
 
         var existingProduct = await SanPhamSevice.GetByIdAsync(CurrentSP.Ma_San_Pham);
         if (existingProduct != null && maSanPham is null)
         {
-            ErrorMessage = "Mã sản phẩm đã tồn tại.";
+            await SweetAlert.ShowToast("Mã sản phẩm đã tồn tại.", "Error", 1000);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(CurrentSP.Loai_San_Pham_ID))
         {
-            ErrorMessage = "Loại sản phẩm không được để trống.";
+            await SweetAlert.ShowToast("Loại sản phẩm không được để trống.", "Error", 1000);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(CurrentSP.Ten_San_Pham))
         {
-            ErrorMessage = "Tên sản phẩm không được để trống.";
+            await SweetAlert.ShowToast("Tên sản phẩm không được để trống.", "Error", 1000);
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(CurrentSP.Don_Vi_Tinh_ID.ToString()))
+        var existingProductName = await SanPhamSevice.GetByNameAsync(CurrentSP.Ten_San_Pham);
+        if (existingProductName != null && maSanPham is null)
         {
-            ErrorMessage = "Đơn vị tính không được để trống.";
+            await SweetAlert.ShowToast("Tên sản phẩm đã tồn tại.", "Error", 1000);
             return;
         }
 
-        // Nếu không có lỗi, tiến hành cập nhật hoặc thêm mới sản phẩm
+        if (CurrentSP.Don_Vi_Tinh_ID == 0)
+        {
+            await SweetAlert.ShowToast("Đơn vị tính không được để trống.", "Error", 1000);
+            return;
+        }
+
+        // If no errors, proceed to update or add the product
         if (maSanPham is not null)
         {
             await SanPhamSevice.UpdateSanPhamAsync(CurrentSP, maSanPham);
@@ -217,6 +223,7 @@ else
             nav.NavigateTo("/sanpham-list");
         }
     }
+
     private void OnClose(EventArgs e)
     {
         ClearPhieuContainer();

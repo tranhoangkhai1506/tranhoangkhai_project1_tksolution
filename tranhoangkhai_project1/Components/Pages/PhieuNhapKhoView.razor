@@ -1,6 +1,7 @@
 ﻿@page "/phieunhapkho-list"
 @inject iPhieuNhapKhoService PhieuNhapKhoService
-@inject iHieuChinhPhieuNhapKhoService HieuChinhPhieuNhapKhoService
+@inject iKhoService KhoService
+@inject iNhaCungCapService NhaCungCapService
 @inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
 @inject IJSRuntime js
 @inject ShowErrorMessage SweetAlert
@@ -10,12 +11,6 @@
 <PageTitle>PHIẾU NHẬP KHO</PageTitle>
 <h1 style="text-align: center;"><strong>PHIẾU NHẬP KHO</strong></h1>
 <hr />
-<EditPhieuNhapKhoDialog 
-    HandleAddPhieuNhapKhoEvent="HandleAddPhieuNhapKhoEvent" 
-    phieuNhapKho="phieuNhapKho"
-@ref="dialogPhieuNhapKho">
-
-</EditPhieuNhapKhoDialog>
 
 @if (itemCount == 0)
 {
@@ -48,13 +43,17 @@ else
                         </div>
                     </ColumnOptions>
                 </PropertyColumn>
-                <PropertyColumn Property="@(c => c.Kho_ID)" Sortable="true" Class="text-right" Title="KHO" />
-                <PropertyColumn Property="@(c => c.NCC_ID)" Sortable="true" Class="text-right" Title="NHÀ CUNG CẤP" />
+                <TemplateColumn Title="KHO" Align="Align.Center">
+                    @GetKhoName(context)
+                </TemplateColumn>
+                <TemplateColumn Title="NHÀ CUNG CẤP" Align="Align.Center">
+                    @GetTenNhaCC(context)
+                </TemplateColumn>
                 <PropertyColumn Property="@(c => c.Ngay_Nhap_Kho)" Sortable="true" Class="text-right date-column" Title="NGÀY NHẬP" Format="dd-MM-yyyy" />
                 <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Class="text-right" Title="GHI CHÚ" />
                 <TemplateColumn Title="Actions" Class="text-right">
                     <button class="btn btn-outline-success btn-sm me-1" @onclick="@(() => ChiTiet(context.So_Phieu_Nhap_Kho))">Chi tiết</button>
-                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context))">Sửa</button>
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => HieuChinh(context.So_Phieu_Nhap_Kho))">Sửa</button>
                     <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeletePhieuNhapKho(context.So_Phieu_Nhap_Kho))">Xóa</button>
                     @* <button class="btn btn-primary btn-sm me-1" @onclick="@(() => ShowReportByID(context.So_Phieu_Nhap_Kho))">Xem Report</button> *@
                     <button class="btn btn-secondary btn-sm" @onclick="@(() => Print(context.So_Phieu_Nhap_Kho))">In</button>
@@ -105,7 +104,8 @@ else
     bool showBirthDate = false;
     private string ErrorMessage { get; set; }
     private string currentReportId;
-    EditPhieuNhapKhoDialog? dialogPhieuNhapKho; 
+    public List<KhoModel> danhSachKho { get; set; } = new List<KhoModel>();
+    public List<NhaCungCapModel> danhSachNCC { get; set; } = new List<NhaCungCapModel>();
     PhieuNhapKhoModel phieuNhapKho = new();
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<PhieuNhapKhoModel>? itemsQueryable;
@@ -128,46 +128,20 @@ else
         nav.NavigateTo($"/chitietphieunhapkho-list/{So_Phieu_Nhap_Kho}");
     }
 
-    private async void HandleAddPhieuNhapKhoEvent(PhieuNhapKhoModel comingPhieuNhapKho)
-    {
-        var check = itemsQueryable.FirstOrDefault(p => p.So_Phieu_Nhap_Kho.Equals(comingPhieuNhapKho.So_Phieu_Nhap_Kho));
-        if(check is null)
-        {
-            await PhieuNhapKhoService.AddPhieuNhapKhoAsync(comingPhieuNhapKho);
-            phieuNhapKho = new();            
-            await SweetAlert.ShowToast("Thêm thành công", "Success", 1000);
-            itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
-            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
-        }
-        else
-        {
-            HieuChinhPhieuNhapKhoModel newHieuChinh = new HieuChinhPhieuNhapKhoModel();
-            newHieuChinh.So_Phieu_Nhap_Kho = phieuNhapKho.So_Phieu_Nhap_Kho;
-            newHieuChinh.Kho_ID = phieuNhapKho.Kho_ID;
-            newHieuChinh.NCC_ID = phieuNhapKho.NCC_ID;
-            newHieuChinh.Ngay_Nhap_Kho = phieuNhapKho.Ngay_Nhap_Kho;
-            newHieuChinh.Ghi_Chu = phieuNhapKho.Ghi_Chu;
-            await HieuChinhPhieuNhapKhoService.UpdateHieuChinhPhieuNhapKhoAsync(newHieuChinh, phieuNhapKho.So_Phieu_Nhap_Kho);
-            phieuNhapKho = new();
-            await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
-            itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
-            pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
-        }
-    }
-
+   
     protected override async Task OnInitializedAsync()
     {
+        danhSachKho = await KhoService.GetAllKhoAsync();
+        danhSachNCC = await NhaCungCapService.GetAllNhaCungCapAsync();
         itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
         itemCount = itemsQueryable.Count();
-        await dialogPhieuNhapKho.FetchData();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
 
     private async Task DeletePhieuNhapKho(string maphieu)
     {
-        var hieuchinhPhieuNhapKho = await HieuChinhPhieuNhapKhoService.GetByIdAsync(maphieu);
-        var chitietPhieuNhapKho = await ChiTietPhieuNhapKhoService.GetChiTietByKhoIDAsync(maphieu);
-        if (hieuchinhPhieuNhapKho is null && chitietPhieuNhapKho is null)
+        var chitietPhieuXuat = await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(maphieu);
+        if (chitietPhieuXuat.Count() == 0)
         {
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
             if (confirmed)
@@ -176,26 +150,34 @@ else
                 itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
                 await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
                 pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
-            }          
+            }
         }
         else
         {
-            await SweetAlert.ShowMessage("Error", "Không thể xóa phiếu nhập!", "Error");
+            await SweetAlert.ShowMessage("Error", "Không thể xóa phiếu!", "Error");
+            return;
         }
     }
-
-    private async void HieuChinh(PhieuNhapKhoModel phieuNhap)
+    string GetKhoName(dynamic context)
     {
-        dialogPhieuNhapKho.ChangeTitle("SỬA");
-        dialogPhieuNhapKho.IsUpdateMode = true;
-        phieuNhapKho = phieuNhap;
-        await ShowDiaLog();
+        var unit = danhSachKho.FirstOrDefault(u => u.KhoId == context.Kho_ID);
+        return unit?.Ten_Kho ?? "N/A";
+    }
+
+    string GetTenNhaCC(dynamic context)
+    {
+        var loaiSanPham = danhSachNCC.FirstOrDefault(l => l.Ma_NCC == context.NCC_ID);
+        return loaiSanPham?.Ten_NCC ?? "N/A";
+    }
+
+    private async void HieuChinh(string So_Phieu_Nhap_Kho)
+    {
+        nav.NavigateTo($"/edit-phieunhapkho/{So_Phieu_Nhap_Kho}");
     }
 
     private async void AddPhieuNhapHang()
     {
-        dialogPhieuNhapKho.IsUpdateMode = false;
-        await ShowDiaLog();
+        nav.NavigateTo($"/edit-phieunhapkho");
     }
 
     private RenderFragment DynamicComponent(string reportId) => builder =>
@@ -261,9 +243,6 @@ else
             windowToPrint.print();
             windowToPrint.onafterprint = function () { windowToPrint.close(); };
         }, 500); // Đảm bảo báo cáo được load đầy đủ trước khi in
-    }
-    window.myDialogFunction = function () {
-        document.getElementById('editPhieuNhapPhong').showModal()
     }
 </script>
 

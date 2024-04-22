@@ -56,9 +56,9 @@ namespace tranhoangkhai_project1.Services
             return phieuNhapKho;
         }
 
-        public async Task<PhieuNhapKhoModel> GetByKhoIDAsync(string Kho_ID)
+        public async Task<PhieuNhapKhoModel> GetByKhoIDAsync(int Kho_ID)
         {
-            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.Kho_ID.Equals(Kho_ID));
+            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.Kho_ID == Kho_ID);
             return phieuNhapKho;
         }
 
@@ -68,12 +68,17 @@ namespace tranhoangkhai_project1.Services
             return phieuNhapKho;
         }
 
-        //public async Task UpdatePhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho, string So_Phieu_Nhap_Kho)
-        //{
-        //    var dbPhieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.So_Phieu_Nhap_Kho.Equals(So_Phieu_Nhap_Kho));
-        //    if(dbPhieuNhapKho != null){
-
-        //    }
-        //}
+        public async Task UpdatePhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho, string So_Phieu_Nhap_Kho)
+        {
+            var dbPhieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.So_Phieu_Nhap_Kho.Equals(So_Phieu_Nhap_Kho));
+            if (dbPhieuNhapKho != null)
+            {
+                dbPhieuNhapKho.Ngay_Nhap_Kho = phieuNhapKho.Ngay_Nhap_Kho;
+                dbPhieuNhapKho.NCC_ID = phieuNhapKho.NCC_ID;
+                dbPhieuNhapKho.Kho_ID = phieuNhapKho.Kho_ID;
+                dbPhieuNhapKho.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                await _dataContext.SaveChangesAsync();
+            }
+        }
     }
 }

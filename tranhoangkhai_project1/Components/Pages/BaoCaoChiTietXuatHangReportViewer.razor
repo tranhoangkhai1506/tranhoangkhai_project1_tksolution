@@ -89,10 +89,10 @@
                                         isFirstDetail = false;
                                     }
                                     <td style="text-align: center;">@(sanPhamMap.TryGetValue(chitiet.San_Pham_ID, out var sanPham) ? sanPham.Ma_San_Pham : "N/A")</td>
-                                    <td>@(sanPham?.Ten_San_Pham ?? "N/A")</td>
+                                    <td style="text-align: center;">@(sanPham?.Ten_San_Pham ?? "N/A")</td>
                                     <td style="text-align: center;">@chitiet.SL_Xuat</td>
-                                    <td style="text-align: right;">@chitiet.Don_Gia_Xuat.ToString("N2")</td>
-                                    <td style="text-align: right;">@total.ToString("0.00")</td>
+                                    <td style="text-align: center;">@chitiet.Don_Gia_Xuat.ToString("N2")</td>
+                                    <td style="text-align: center;">@total.ToString("0.00")</td>
                                 </tr>
                             }
                         }
