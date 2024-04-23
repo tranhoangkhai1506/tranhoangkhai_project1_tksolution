@@ -53,6 +53,7 @@ namespace tranhoangkhai_project1.Services
             var dbSanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ma_San_Pham.Equals(maSanPham));
             if (dbSanPham != null)
             {
+                dbSanPham.Ma_San_Pham = sanPham.Ma_San_Pham;
                 dbSanPham.Ten_San_Pham = sanPham.Ten_San_Pham;
                 dbSanPham.Loai_San_Pham_ID = sanPham.Loai_San_Pham_ID;
                 dbSanPham.Don_Vi_Tinh_ID = sanPham.Don_Vi_Tinh_ID;

@@ -166,7 +166,7 @@ else
 
     string GetTenNhaCC(dynamic context)
     {
-        var loaiSanPham = danhSachNCC.FirstOrDefault(l => l.Ma_NCC == context.NCC_ID);
+        var loaiSanPham = danhSachNCC.FirstOrDefault(l => l.Id == context.NCC_ID);
         return loaiSanPham?.Ten_NCC ?? "N/A";
     }
 

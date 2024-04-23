@@ -72,6 +72,10 @@ else
                     <div class="card-body">
                         <EditForm Model="CurrentLSP" OnSubmit="HandleSubmit">
                             <div>
+                                <label for="Ma_LSP"><strong>Mã Loại</strong></label>
+                                <InputText id="Ma_LSP" @bind-Value="CurrentLSP.Ma_LSP" class="form-control"></InputText>
+                            </div>
+                            <div>
                                 <label for="Ten_LSP"><strong>Tên Loại Sản Phẩm</strong></label>
                                 <InputText id="Ten_LSP" @bind-Value="CurrentLSP.Ten_LSP" class="form-control"></InputText>
                             </div>
@@ -130,12 +134,22 @@ else
             await SweetAlert.ShowToast("Mã loại sản phẩm không được để trống.", "Error", 1000);
             return;
         }
+        var existingMaLoaiCode = await LoaiSanPhamSevice.GetByMaLoaiAsync(CurrentLSP.Ma_LSP);
+        if (existingMaLoaiCode != null && !existingMaLoaiCode.Ma_LSP.Equals(Ma_LSP))
+        {
+            await SweetAlert.ShowToast("Mã loại sản phẩm đã tồn tại.", "Error", 1000);
+            return;
+        }
 
         var existingUnitCode = await LoaiSanPhamSevice.GetByNameAsync(CurrentLSP.Ten_LSP);
-        if (existingUnitCode != null && existingUnitCode.Ma_LSP != Ma_LSP)
+        if (existingUnitCode != null )
         {
-            await SweetAlert.ShowToast("Tên loại sản phẩm đã tồn tại.", "Error", 1000);
-            return;
+            if (!existingMaLoaiCode.Ma_LSP.Equals(Ma_LSP))
+            {
+               await SweetAlert.ShowToast("Tên loại sản phẩm đã tồn tại.", "Error", 1000);
+            return; 
+            }
+            
         }
 
         if (string.IsNullOrWhiteSpace(CurrentLSP.Ten_LSP))

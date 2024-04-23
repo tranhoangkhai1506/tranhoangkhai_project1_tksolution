@@ -120,7 +120,7 @@ else
 
     string GetProductTypeName(dynamic context)
     {
-        var loaiSanPham = danhSachLoaiSanPham.FirstOrDefault(l => l.Ma_LSP.Equals(context.Loai_San_Pham_ID));
+        var loaiSanPham = danhSachLoaiSanPham.FirstOrDefault(l => l.Id.Equals(context.Loai_San_Pham_ID));
         return loaiSanPham?.Ten_LSP ?? "N/A";
     }
 

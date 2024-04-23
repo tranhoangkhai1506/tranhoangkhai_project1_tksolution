@@ -40,7 +40,7 @@
                                     <option value="" disabled selected>Chọn loại sản phẩm nhập kho</option>
                                     @foreach (var loaiSanPham in danhSachLoaiSanPham)
                                     {
-                                        <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ten_LSP</option>
+                                        <option value="@loaiSanPham.Id">@loaiSanPham.Ten_LSP</option>
                                     }
                                 </InputSelect>
                             </div>
@@ -97,6 +97,10 @@ else
                     <div class="card-body">
                         <EditForm Model="CurrentSP" OnSubmit="HandleSubmit">
                             <div>
+                                <label for="Ma_San_Pham"><strong>Tên Sản Phẩm</strong></label>
+                                <InputText id="Ma_San_Pham" @bind-Value="CurrentSP.Ma_San_Pham" class="form-control"></InputText>
+                            </div>
+                            <div>
                                 <label for="Ten_San_Pham"><strong>Tên Sản Phẩm</strong></label>
                                 <InputText id="Ten_San_Pham" @bind-Value="CurrentSP.Ten_San_Pham" class="form-control"></InputText>
                             </div>
@@ -106,7 +110,7 @@ else
                                     <option value="" disabled selected>Chọn loại sản phẩm nhập kho</option>
                                     @foreach (var loaiSanPham in danhSachLoaiSanPham)
                                     {
-                                        <option value="@loaiSanPham.Ma_LSP">@loaiSanPham.Ten_LSP</option>
+                                        <option value="@loaiSanPham.Id">@loaiSanPham.Ten_LSP</option>
                                     }
                                 </InputSelect>
                             </div>
@@ -156,8 +160,8 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        danhSachLoaiSanPham = await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync(); // Lấy danh sách loại sản phẩm từ dịch vụ
-        danhSachDonViTinh = await DonViTinhSevice.GetAllDonViTinhAsync(); // Lấy danh sách đơn vị tính từ dịch vụ
+        danhSachLoaiSanPham = await LoaiSanPhamSevice.GetAllLoaiSanPhamAsync(); 
+        danhSachDonViTinh = await DonViTinhSevice.GetAllDonViTinhAsync(); 
 
         if (maSanPham is not null)
         {
@@ -184,7 +188,7 @@ else
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(CurrentSP.Loai_San_Pham_ID))
+        if (string.IsNullOrWhiteSpace(CurrentSP.Loai_San_Pham_ID.ToString()))
         {
             await SweetAlert.ShowToast("Loại sản phẩm không được để trống.", "Error", 1000);
             return;

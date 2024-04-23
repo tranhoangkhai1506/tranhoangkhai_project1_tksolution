@@ -73,6 +73,10 @@ else
                     <div class="card-body">
                         <EditForm Model="CurrentNCC" OnSubmit="HandleSubmit">
                             <div>
+                                <label for="Ma_NCC"><strong>Mã Nhà Cung Cấp</strong></label>
+                                <InputText id="Ma_NCC" @bind-Value="CurrentNCC.Ma_NCC" class="form-control"></InputText>
+                            </div>
+                            <div>
                                 <label for="Ten_NCC"><strong>Tên Nhà Cung Cấp</strong></label>
                                 <InputText id="Ten_NCC" @bind-Value="CurrentNCC.Ten_NCC" class="form-control"></InputText>
                             </div>

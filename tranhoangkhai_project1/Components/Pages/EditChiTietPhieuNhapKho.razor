@@ -33,7 +33,7 @@
                                     <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
                                     @foreach (var sanpham in sanPhamList)
                                     {
-                                        <option value="@sanpham.Ma_San_Pham">@sanpham.Ten_San_Pham</option>
+                                        <option value="@sanpham.Id">@sanpham.Ten_San_Pham</option>
                                     }
                                 </InputSelect>
                             </div>
@@ -123,7 +123,7 @@ else
                                     <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
                                     @foreach (var item in sanPhamList)
                                     {
-                                        <option value="@item.Ma_San_Pham">@item.Ten_San_Pham</option>
+                                        <option value="@item.Id">@item.Ten_San_Pham</option>
                                     }
                                 </InputSelect>
                             </div>

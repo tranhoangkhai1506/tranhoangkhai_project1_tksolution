@@ -19,17 +19,17 @@ namespace tranhoangkhai_project1.Data
             //    new DonViTinhModel { Ten_Don_Vi_Tinh = "dvt_03", Ghi_Chu = "Ghi chu 3" }
             //);
 
-            modelBuilder.Entity<LoaiSanPhamModel>().HasData(
-                new LoaiSanPhamModel { Ma_LSP = "lsp_01",Ten_LSP = "Loai 1", Ghi_Chu = "Ghi chu 1" },
-                new LoaiSanPhamModel { Ma_LSP = "lsp_02", Ten_LSP = "Loai 2", Ghi_Chu = "Ghi chu 2" },
-                new LoaiSanPhamModel { Ma_LSP = "lsp_03", Ten_LSP = "Loai 3", Ghi_Chu = "Ghi chu 3" }
-            );
+            //modelBuilder.Entity<LoaiSanPhamModel>().HasData(
+            //    new LoaiSanPhamModel { Ma_LSP = "lsp_01",Ten_LSP = "Loai 1", Ghi_Chu = "Ghi chu 1" },
+            //    new LoaiSanPhamModel { Ma_LSP = "lsp_02", Ten_LSP = "Loai 2", Ghi_Chu = "Ghi chu 2" },
+            //    new LoaiSanPhamModel { Ma_LSP = "lsp_03", Ten_LSP = "Loai 3", Ghi_Chu = "Ghi chu 3" }
+            //);
 
-            modelBuilder.Entity<NhaCungCapModel>().HasData(
-                new NhaCungCapModel { Ma_NCC = "ncc_01", Ten_NCC = "Nha cung cap 1", Ghi_Chu = "Ghi chu 1" },
-                new NhaCungCapModel { Ma_NCC = "ncc_02", Ten_NCC = "Nha cung cap 2", Ghi_Chu = "Ghi chu 2" },
-                new NhaCungCapModel { Ma_NCC = "ncc_03", Ten_NCC = "Nha cung cap 3", Ghi_Chu = "Ghi chu 3" }
-            );
+            //modelBuilder.Entity<NhaCungCapModel>().HasData(
+            //    new NhaCungCapModel { Ma_NCC = "ncc_01", Ten_NCC = "Nha cung cap 1", Ghi_Chu = "Ghi chu 1" },
+            //    new NhaCungCapModel { Ma_NCC = "ncc_02", Ten_NCC = "Nha cung cap 2", Ghi_Chu = "Ghi chu 2" },
+            //    new NhaCungCapModel { Ma_NCC = "ncc_03", Ten_NCC = "Nha cung cap 3", Ghi_Chu = "Ghi chu 3" }
+            //);
             //modelBuilder.Entity<KhoModel>().HasData(
             //    new KhoModel { Ten_Kho = "Kho_01", Ghi_Chu = "Ghi chu 1" },
             //    new KhoModel { Ten_Kho = "Kho_02", Ghi_Chu = "Ghi chu 2" },

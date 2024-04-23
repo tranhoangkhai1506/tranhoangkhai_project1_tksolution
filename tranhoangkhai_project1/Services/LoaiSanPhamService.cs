@@ -44,6 +44,12 @@ namespace tranhoangkhai_project1.Services
             return loaiSP;
         }
 
+        public async Task<LoaiSanPhamModel> GetByMaLoaiAsync(string Ma_Loai_San_Pham)
+        {
+            var loaiSP = await _dataContext.tbl_DM_Loai_San_Pham.FirstOrDefaultAsync(p => p.Ma_LSP.Equals(Ma_Loai_San_Pham));
+            return loaiSP;
+        }
+
         public async Task<LoaiSanPhamModel> GetByNameAsync(string Ten_Loai_San_Pham)
         {
             var loaiSP = await _dataContext.tbl_DM_Loai_San_Pham.FirstOrDefaultAsync(p => p.Ten_LSP.Equals(Ten_Loai_San_Pham));

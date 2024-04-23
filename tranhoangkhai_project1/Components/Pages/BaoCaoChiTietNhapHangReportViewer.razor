@@ -88,7 +88,7 @@
                                     {
                                         <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.Ngay_Nhap_Kho.ToShortDateString()</td>
                                         <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@item.PhieuNhap.So_Phieu_Nhap_Kho</td>
-                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@GetTenNhaCC(@item.PhieuNhap.NCC_ID)</td>
+                                        <td rowspan="@item.ChiTiets.Count" style="text-align: center;">@GetTenNhaCC(@item.PhieuNhap.NCC_ID.ToString())</td>
                                         isFirstDetail = false;
                                     }
                                     <td style="text-align: center;">@(sanPhamMap.TryGetValue(chitiet.San_Pham_ID, out var sanPham) ? sanPham.Ma_San_Pham : "N/A")</td>
