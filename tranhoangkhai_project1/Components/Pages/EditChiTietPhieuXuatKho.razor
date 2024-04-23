@@ -26,16 +26,6 @@
                     <div class="card-header"><strong>THÔNG TIN ĐƠN VỊ TÍNH</strong></div>
                     <div class="card-body">
                         <EditForm Model="CurrentCTPXK" OnSubmit="HandleSubmit">
-                            @* <div>
-                        <label for="Xuat_Kho_ID">Số Phiếu Nhập</label>
-                        <InputSelect class="form-control" id="Xuat_Kho_ID" @bind-Value="CurrentCTPXK.Xuat_Kho_ID">
-                        <option value="" disabled selected>Chọn mã phiếu nhập kho</option>
-                        @foreach (var kho in phieuXuatKhoList)
-                        {
-                        <option value="@kho.So_Phieu_Xuat_Kho">@kho.So_Phieu_Xuat_Kho</option>
-                        }
-                        </InputSelect>
-                        </div> *@
                             <div>
                                 <label for="San_Pham_ID">Số Phiếu Xuất</label>
                                 <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPXK.San_Pham_ID">

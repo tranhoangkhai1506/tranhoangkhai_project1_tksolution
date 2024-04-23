@@ -123,10 +123,11 @@ else
         if (existingUnitCode is not null && Convert.ToInt16(Ten_Don_Vi_Tinh) != (existingUnitCode.DonViTinhID))
         {
             await SweetAlert.ShowToast("Tên đơn vị tính đã tồn tại.", "Error", 1000);
+            var dvt = await DonViTinhSevice.GetByIdAsync(Int16.Parse(Ten_Don_Vi_Tinh));
+            CurrentDVT.Ten_Don_Vi_Tinh = dvt.Ten_Don_Vi_Tinh;
             return;
         }
-
-        if (Ten_Don_Vi_Tinh is not null)
+        else if (Ten_Don_Vi_Tinh is not null)
         {
             await DonViTinhSevice.UpdateDonViTinhAsync(CurrentDVT, Int16.Parse(Ten_Don_Vi_Tinh));
             await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
