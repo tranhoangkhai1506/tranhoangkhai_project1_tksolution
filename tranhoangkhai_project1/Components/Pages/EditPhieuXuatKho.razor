@@ -64,7 +64,7 @@
                                 <option value="" disabled selected>Chọn sản phẩm xuất kho</option>
                                 @foreach (var sanpham in sanPhamList)
                                 {
-                                    <option value="@sanpham.Ma_San_Pham">@sanpham.Ten_San_Pham</option>
+                                    <option value="@sanpham.Id">@sanpham.Ten_San_Pham</option>
                                 }
                             </InputSelect>
                         </div>
@@ -249,13 +249,7 @@ else
 
     async Task HandleSubmitCTPXK()
     {
-        var existingUnitCode = chitietList.FirstOrDefault(p => p.San_Pham_ID.Equals(CurrentCTPXK.San_Pham_ID));
-        if (existingUnitCode != null)
-        {
-            await SweetAlert.ShowMessage("Error", "Phiếu xuất của sản phẩm đã tồn tại.", "Error");
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID))
+        if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID.ToString()))
         {
             await SweetAlert.ShowMessage("Error", "Mã sản phẩm không được để trống.", "Error");
             return;

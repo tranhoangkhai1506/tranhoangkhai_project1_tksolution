@@ -76,7 +76,7 @@
                                         <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
                                         @foreach (var sanpham in sanPhamList)
                                         {
-                                    <option value="@sanpham.Id">@sanpham.Ten_San_Pham</option>
+                                            <option value="@sanpham.Id">@sanpham.Ten_San_Pham</option>
                                         }
                                     </InputSelect>
                                 </div>
@@ -234,13 +234,13 @@ else
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(phieuNhapKho.NCC_ID.ToString()))
+        if (phieuNhapKho.NCC_ID == 0)
         {
             await SweetAlert.ShowToast("Nhà cung cấp không được để trống.", "Error", 1000);
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(phieuNhapKho.Kho_ID.ToString()))
+        if (phieuNhapKho.Kho_ID == 0)
         {
             await SweetAlert.ShowToast("Kho không được để trống.", "Error", 1000);
             return;
@@ -278,15 +278,9 @@ else
     }
     async Task HandleSubmitCTPNK()
     {
-        var existingUnitCode = chitietList.FirstOrDefault(p => p.San_Pham_ID.Equals(CurrentCTPNK.San_Pham_ID));
-        if (existingUnitCode != null)
+        if (CurrentCTPNK.San_Pham_ID == 0)
         {
-            await SweetAlert.ShowMessage("Error", "Phiếu nhập của sản phẩm đã tồn tại.", "Error");
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentCTPNK.San_Pham_ID))
-        {
-            await SweetAlert.ShowMessage("Error", "Mã sản phẩm không được để trống.", "Error");
+            await SweetAlert.ShowMessage("Error", "Vui lòng chọn sản phẩm.", "Error");
             return;
         }
         if (CurrentCTPNK.SL_Nhap <= 0)

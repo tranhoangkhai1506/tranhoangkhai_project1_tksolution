@@ -16,7 +16,6 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
     ServiceLifetime.Transient);
 
-
 builder.Services.AddScoped<iDonViTinhService, DonViTinhService>();
 builder.Services.AddScoped<iLoaiSanPhamService, LoaiSanPhamService>();
 builder.Services.AddScoped<iSanPhamService, SanPhamService>();

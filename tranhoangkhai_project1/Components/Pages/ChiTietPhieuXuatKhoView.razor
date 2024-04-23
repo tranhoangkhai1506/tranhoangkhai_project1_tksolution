@@ -1,5 +1,6 @@
 ﻿@page "/chitietphieuxuatkho-list/{So_Phieu_Xuat_Kho}"
 @inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
+@inject iSanPhamService SanPhamService
 @inject IJSRuntime js
 @inject ShowErrorMessage SweetAlert
 @inject NavigationManager nav
@@ -33,13 +34,15 @@ else
             <div class="table-responsive">
                 <QuickGrid Items="@itemsQueryable" Pagination="@pagination" class="table table-striped table-hover">
                     <PropertyColumn Property="@(c => c.Xuat_Kho_ID)" Sortable="true" Title="NHẬP KHO ID" />
-                    <PropertyColumn Property="@(c => c.San_Pham_ID)" Sortable="true" Title="SẢN PHẨM ID" />
+                    <TemplateColumn Title="SẢN PHẨM" Align="Align.Center">
+                        @GetProductName(context)
+                    </TemplateColumn>
                     <PropertyColumn Property="@(c => $"{c.SL_Xuat:0.0}")" Sortable="true" Title="SỐ LƯỢNG" />
                     <PropertyColumn Property="@(c => $"{c.Don_Gia_Xuat:0.0}")" Sortable="true" Title="ĐƠN GIÁ" />
                     <PropertyColumn Property="@(c => c.SL_Xuat * c.Don_Gia_Xuat)" Format="0.00" Sortable="true" Title="TRỊ GIÁ" />
                     <TemplateColumn Title="Actions" Class="text-center">
-                        <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID))">Hiệu chỉnh</button>
-                        <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID))">Xóa</button>
+                        <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID.ToString()))">Hiệu chỉnh</button>
+                        <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID.ToString()))">Xóa</button>
                     </TemplateColumn>
                 </QuickGrid>
 
@@ -80,13 +83,14 @@ else
 @code {
     [Parameter]
     public string So_Phieu_Xuat_Kho { get; set; }
+    List<SanPhamModel> sanPhamList = new List<SanPhamModel>();
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     IQueryable<ChiTietPhieuXuatKhoModel>? itemsQueryable;
     private int itemCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        
+        sanPhamList = await SanPhamService.GetAllSanPhamAsync();
         itemsQueryable = (await ChiTietPhieuXuatKhoService.GetAllChiTietByKhoIDAsync(So_Phieu_Xuat_Kho)).AsQueryable();
         itemCount = itemsQueryable.Count();
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
@@ -95,7 +99,11 @@ else
     {
         nav.NavigateTo("/phieuxuatkho-list");
     }
-
+    string GetProductName(dynamic context)
+    {
+        var unit = sanPhamList.FirstOrDefault(u => u.Id == context.San_Pham_ID);
+        return unit?.Ten_San_Pham ?? "N/A";
+    }
     private async Task GoToPageAsync(int pageIndex)
     {
         await pagination.SetCurrentPageIndexAsync(pageIndex);
@@ -122,7 +130,7 @@ else
         var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
         if (confirmed)
         {
-            await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(Nhap_Kho_ID, San_Pham_ID);
+            await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(Nhap_Kho_ID, Convert.ToInt32(San_Pham_ID));
             await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
             itemsQueryable = (await ChiTietPhieuXuatKhoService.GetAllChiTietByKhoIDAsync(Nhap_Kho_ID)).AsQueryable();
             pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();

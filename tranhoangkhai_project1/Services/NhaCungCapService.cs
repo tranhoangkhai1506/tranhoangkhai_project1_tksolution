@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using tranhoangkhai_project1.Data;
 using tranhoangkhai_project1.Models;
@@ -22,9 +23,9 @@ namespace tranhoangkhai_project1.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task DeleteNhaCungCapAsync(string maNCC)
+        public async Task DeleteNhaCungCapAsync(int Id)
         {
-            var nhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Ma_NCC.Equals(maNCC));
+            var nhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Id == Id);
             if (nhaCungCap != null)
             {
                 _dataContext.tbl_DM_NCC.Remove(nhaCungCap);
@@ -38,9 +39,15 @@ namespace tranhoangkhai_project1.Services
             return result;
         }
 
-        public async Task<NhaCungCapModel> GetByIdAsync(string maNCC)
+        public async Task<NhaCungCapModel> GetByIdAsync(int Id)
         {
-            var nhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Ma_NCC.Equals(maNCC));
+            var nhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Id == Id);
+            return nhaCungCap;
+        }
+
+        public async Task<NhaCungCapModel> GetByMaNCCAsync(string Ma_NCC)
+        {
+            var nhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Ma_NCC.Equals(Ma_NCC));
             return nhaCungCap;
         }
 
@@ -50,9 +57,9 @@ namespace tranhoangkhai_project1.Services
             return nhaCungCap;
         }
 
-        public async Task UpdateNhaCungCapAsync(NhaCungCapModel nhaCungCap, string maNCC)
+        public async Task UpdateNhaCungCapAsync(NhaCungCapModel nhaCungCap, int Id)
         {
-            var dbNhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Ma_NCC.Equals(maNCC));
+            var dbNhaCungCap = await _dataContext.tbl_DM_NCC.FirstOrDefaultAsync(p => p.Id == Id);
             if (dbNhaCungCap != null)
             {
                 dbNhaCungCap.Ten_NCC = nhaCungCap.Ten_NCC;

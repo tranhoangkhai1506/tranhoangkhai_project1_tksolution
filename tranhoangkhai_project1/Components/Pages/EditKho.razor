@@ -120,8 +120,8 @@ else
             return;
         }
 
-        var existingUnitCode = await KhoService.GetByIdAsync(CurrentKho.KhoId);
-        if (existingUnitCode != null && TenKho is null)
+        var existingUnitCode = await KhoService.GetByNameAsync(CurrentKho.Ten_Kho);
+        if (existingUnitCode != null && existingUnitCode.KhoId != Convert.ToInt32(TenKho))
         {
             await SweetAlert.ShowToast("Tên kho đã tồn tại.", "Error", 1000);
             return;

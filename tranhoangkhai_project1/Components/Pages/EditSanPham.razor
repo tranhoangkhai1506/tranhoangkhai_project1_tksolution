@@ -97,7 +97,7 @@ else
                     <div class="card-body">
                         <EditForm Model="CurrentSP" OnSubmit="HandleSubmit">
                             <div>
-                                <label for="Ma_San_Pham"><strong>Tên Sản Phẩm</strong></label>
+                                <label for="Ma_San_Pham"><strong>Mã Sản Phẩm</strong></label>
                                 <InputText id="Ma_San_Pham" @bind-Value="CurrentSP.Ma_San_Pham" class="form-control"></InputText>
                             </div>
                             <div>
@@ -165,7 +165,7 @@ else
 
         if (maSanPham is not null)
         {
-            var sanPham = await SanPhamSevice.GetByIdAsync(maSanPham);
+            var sanPham = await SanPhamSevice.GetByIdAsync(Convert.ToInt32(maSanPham));
             if (sanPham is not null)
             {
                 CurrentSP = sanPham;
@@ -181,14 +181,14 @@ else
             return;
         }
 
-        var existingProduct = await SanPhamSevice.GetByIdAsync(CurrentSP.Ma_San_Pham);
-        if (existingProduct != null && maSanPham is null)
+        var existingProduct = await SanPhamSevice.GetByMaAsync(CurrentSP.Ma_San_Pham);
+        if (existingProduct != null && existingProduct.Id != Convert.ToInt32(maSanPham))
         {
             await SweetAlert.ShowToast("Mã sản phẩm đã tồn tại.", "Error", 1000);
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(CurrentSP.Loai_San_Pham_ID.ToString()))
+        if (CurrentSP.Loai_San_Pham_ID == 0)
         {
             await SweetAlert.ShowToast("Loại sản phẩm không được để trống.", "Error", 1000);
             return;
@@ -201,7 +201,7 @@ else
         }
 
         var existingProductName = await SanPhamSevice.GetByNameAsync(CurrentSP.Ten_San_Pham);
-        if (existingProductName != null && maSanPham is null)
+        if (existingProductName is not null && existingProductName.Id != Convert.ToInt32(maSanPham))
         {
             await SweetAlert.ShowToast("Tên sản phẩm đã tồn tại.", "Error", 1000);
             return;
@@ -212,11 +212,9 @@ else
             await SweetAlert.ShowToast("Đơn vị tính không được để trống.", "Error", 1000);
             return;
         }
-
-        // If no errors, proceed to update or add the product
         if (maSanPham is not null)
         {
-            await SanPhamSevice.UpdateSanPhamAsync(CurrentSP, maSanPham);
+            await SanPhamSevice.UpdateSanPhamAsync(CurrentSP, Convert.ToInt32(maSanPham));
             await SweetAlert.ShowToast("Sửa sản phẩm thành công!", "Success", 1000);
             nav.NavigateTo("/sanpham-list");
         }

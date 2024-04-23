@@ -130,7 +130,7 @@
             {
                 foreach (var sanpham in sanPhamList)
                 {
-                    var detail = await ChiTietPhieuNhapKhoService.GetByIdAsync(phieuNhap.So_Phieu_Nhap_Kho, sanpham.Ma_San_Pham);
+                    var detail = await ChiTietPhieuNhapKhoService.GetByIdAsync(phieuNhap.So_Phieu_Nhap_Kho, Convert.ToInt32(sanpham.Id));
                     if (detail != null)
                     {
                         chitietPhieuNhapList.Add(detail);
@@ -141,7 +141,7 @@
             {
                 foreach (var sanpham in sanPhamList)
                 {
-                    var detail = await ChiTietPhieuXuatKhoService.GetByIdAsync(phieuXuat.So_Phieu_Xuat_Kho, sanpham.Ma_San_Pham);
+                    var detail = await ChiTietPhieuXuatKhoService.GetByIdAsync(phieuXuat.So_Phieu_Xuat_Kho, Convert.ToInt32(sanpham.Id));
                     if (detail != null)
                     {
                         chitietPhieuXuatList.Add(detail);
@@ -152,7 +152,7 @@
             reportItems = new List<ProductInventoryReportItem>();
             foreach (var sanpham in sanPhamList)
             {
-                var startingInventory = await getStartingInventoryOfProduct(sanpham.Ma_San_Pham);
+                var startingInventory = await getStartingInventoryOfProduct(sanpham.Id);
                 var reportItem = new ProductInventoryReportItem
                     {
                         ProductId = sanpham.Ma_San_Pham,
@@ -162,11 +162,11 @@
 
                 if (chitietPhieuNhapList is not null && chitietPhieuXuatList is not null)
                 {
-                    foreach (var detail in chitietPhieuNhapList.Where(d => d.San_Pham_ID == sanpham.Ma_San_Pham))
+                    foreach (var detail in chitietPhieuNhapList.Where(d => d.San_Pham_ID == sanpham.Id))
                     {
                         reportItem.QuantityIn += detail.SL_Nhap;
                     }
-                    foreach (var detail in chitietPhieuXuatList.Where(d => d.San_Pham_ID == sanpham.Ma_San_Pham))
+                    foreach (var detail in chitietPhieuXuatList.Where(d => d.San_Pham_ID == sanpham.Id))
                     {
                         reportItem.QuantityOut += detail.SL_Xuat;
                     }
@@ -187,7 +187,7 @@
     }
 
 
-    private async Task<decimal> getStartingInventoryOfProduct(string productId)
+    private async Task<decimal> getStartingInventoryOfProduct(int productId)
     {
         try
         {
@@ -198,7 +198,7 @@
 
             foreach (var phieuNhap in phieuNhaps)
             {
-                var detail = await ChiTietPhieuNhapKhoService.GetByIdAsync(phieuNhap.So_Phieu_Nhap_Kho, productId);
+                var detail = await ChiTietPhieuNhapKhoService.GetByIdAsync(phieuNhap.So_Phieu_Nhap_Kho, Convert.ToInt32(productId));
                 if (detail != null)
                 {
                     startingInventory += detail.SL_Nhap;
@@ -206,7 +206,7 @@
             }
             foreach (var phieuXuat in phieuXuats)
             {
-                var detail = await ChiTietPhieuXuatKhoService.GetByIdAsync(phieuXuat.So_Phieu_Xuat_Kho, productId);
+                var detail = await ChiTietPhieuXuatKhoService.GetByIdAsync(phieuXuat.So_Phieu_Xuat_Kho, Convert.ToInt32(productId));
                 if (detail != null)
                 {
                     startingInventory -= detail.SL_Xuat;

@@ -111,7 +111,7 @@
 
     [Parameter]
     public DateTime DateTo { get; set; }
-    private Dictionary<string, SanPhamModel> sanPhamMap = new Dictionary<string, SanPhamModel>();
+    private Dictionary<int, SanPhamModel> sanPhamMap = new Dictionary<int, SanPhamModel>();
     public string ErrorMessage { get; set; }
     private List<PhieuXuatKhoDisplayModel> phieuXuatDisplayList = new();
     protected override async Task OnParametersSetAsync()
@@ -125,7 +125,7 @@
         try
         {
             var sanPhams = await SanPhamService.GetAllSanPhamAsync();
-            sanPhamMap = sanPhams.ToDictionary(sp => sp.Ma_San_Pham);
+            sanPhamMap = sanPhams.ToDictionary(sp => sp.Id);
 
             var PhieuXuats = await PhieuXuatKhoService.GetByDateAsync(DateFrom, DateTo);
             if (PhieuXuats.Count() > 0)

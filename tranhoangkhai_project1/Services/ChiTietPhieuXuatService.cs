@@ -17,9 +17,9 @@ namespace tranhoangkhai_project1.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task DeleteChiTietPhieuXuatAsync(string Xuat_Kho_ID, string San_Pham_ID)
+        public async Task DeleteChiTietPhieuXuatAsync(string Xuat_Kho_ID, int San_Pham_ID)
         {
-            var chiTietPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID) && p.San_Pham_ID.Equals(San_Pham_ID));
+            var chiTietPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID) && p.San_Pham_ID == San_Pham_ID);
             if (chiTietPhieuXuatKho != null)
             {
                 _dataContext.tbl_DM_Xuat_Kho_Raw_Data.Remove(chiTietPhieuXuatKho);
@@ -38,15 +38,15 @@ namespace tranhoangkhai_project1.Services
             return result;
         }
 
-        public async Task<ChiTietPhieuXuatKhoModel> GetByIdAsync(string Xuat_Kho_ID, string San_Pham_ID)
+        public async Task<ChiTietPhieuXuatKhoModel> GetByIdAsync(string Xuat_Kho_ID, int San_Pham_ID)
         {
-            var chiTietPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID) && p.San_Pham_ID.Equals(San_Pham_ID));
+            var chiTietPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID) && p.San_Pham_ID == San_Pham_ID);
             return chiTietPhieuXuatKho;
         }
 
-        public async Task<ChiTietPhieuXuatKhoModel> GetBySanPhamIDAsync(string maSanPham)
+        public async Task<ChiTietPhieuXuatKhoModel> GetBySanPhamIDAsync(int maSanPham)
         {
-            var chiTietPhieuNhapKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.San_Pham_ID.Equals(maSanPham));
+            var chiTietPhieuNhapKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.San_Pham_ID == maSanPham);
             return chiTietPhieuNhapKho;
         }
 
@@ -56,9 +56,9 @@ namespace tranhoangkhai_project1.Services
             return chiTietPhieuXuatKho;
         }
 
-        public async Task UpdateChiTietPhieuXuatAsync(ChiTietPhieuXuatKhoModel chitietPXK, string Xuat_Kho_ID, string San_Pham_ID)
+        public async Task UpdateChiTietPhieuXuatAsync(ChiTietPhieuXuatKhoModel chitietPXK, string Xuat_Kho_ID, int San_Pham_ID)
         {
-            var dbChiTietPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID) && p.San_Pham_ID.Equals(San_Pham_ID));
+            var dbChiTietPhieuXuatKho = await _dataContext.tbl_DM_Xuat_Kho_Raw_Data.FirstOrDefaultAsync(p => p.Xuat_Kho_ID.Equals(Xuat_Kho_ID) && p.San_Pham_ID == San_Pham_ID);
             if (dbChiTietPhieuXuatKho != null)
             {
                 dbChiTietPhieuXuatKho.SL_Xuat = chitietPXK.SL_Xuat;

@@ -184,7 +184,7 @@
                 decimal totalPrice = 0;
                 foreach(var item in chitietPNKList){
                     var total = item.Don_Gia_Nhap * item.SL_Nhap;
-                    SanPhamModel sanpham = sanphamList.Where(p => p.Ma_San_Pham.Equals(item.San_Pham_ID)).FirstOrDefault();
+                    SanPhamModel sanpham = sanphamList.Where(p => p.Id == item.San_Pham_ID).FirstOrDefault();
                     <tr>
                         <td class="center">@i</td>
                         <td>@sanpham.Ten_San_Pham</td>
@@ -357,7 +357,4 @@
         }
 
     }
-
-
-
 }

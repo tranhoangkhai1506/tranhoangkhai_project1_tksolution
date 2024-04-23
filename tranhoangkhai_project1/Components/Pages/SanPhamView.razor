@@ -51,8 +51,8 @@ else
                 </TemplateColumn>
                 <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Align="Align.Left" Title="GHI CHÚ" />
                 <TemplateColumn Title="Actions" Class="text-left">
-                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditSanPham(context.Ma_San_Pham))">Hiệu chỉnh</button>
-                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteSanPham(context.Ma_San_Pham))">Xóa</button>
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditSanPham(context.Id.ToString()))">Hiệu chỉnh</button>
+                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteSanPham(context.Id.ToString()))">Xóa</button>
                 </TemplateColumn>
             </QuickGrid>
         </div>
@@ -136,15 +136,15 @@ else
 
     async Task DeleteSanPham(string maSanPham)
     {
-        var existChildrenPNKOfSanPham = await ChiTietPhieuNhapKhoService.GetBySanPhamIDAsync(maSanPham);
-        var existChildrenPXKOfSanPham = await ChiTietPhieuXuatKhoService.GetBySanPhamIDAsync(maSanPham);
+        var existChildrenPNKOfSanPham = await ChiTietPhieuNhapKhoService.GetBySanPhamIDAsync(Convert.ToInt32(maSanPham));
+        var existChildrenPXKOfSanPham = await ChiTietPhieuXuatKhoService.GetBySanPhamIDAsync(Convert.ToInt32(maSanPham));
         if (existChildrenPNKOfSanPham is null && existChildrenPXKOfSanPham is null)
         {
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa loại sản phẩm này?");
             if (confirmed)
             {
 
-                await SanPhamService.DeleteSanPhamAsync(maSanPham);
+                await SanPhamService.DeleteSanPhamAsync(Convert.ToInt32(maSanPham));
                 await SweetAlert.ShowToast("Xóa loại sản phẩm thành công!", "Success", 1000);
                 itemsQueryable = (await SanPhamService.GetAllSanPhamAsync()).AsQueryable();
                 pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();

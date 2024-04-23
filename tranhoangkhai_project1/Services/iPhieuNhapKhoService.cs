@@ -8,7 +8,7 @@ namespace tranhoangkhai_project1.Services
         Task<PhieuNhapKhoModel> GetByIdAsync(string So_Phieu_Nhap_Kho);
         Task<List<PhieuNhapKhoModel>> GetByDateAsync(DateTime DateFrom, DateTime DateTo);
         Task<List<PhieuNhapKhoModel>> GetByAfterDateAsync(DateTime AfterDate);
-        Task<PhieuNhapKhoModel> GetByNCCIDAsync(string NCC_ID);
+        Task<PhieuNhapKhoModel> GetByNCCIDAsync(int Id);
         Task<PhieuNhapKhoModel> GetByKhoIDAsync(int Kho_ID);
         Task AddPhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho);
         Task UpdatePhieuNhapKhoAsync(PhieuNhapKhoModel phieuNhapKho, string So_Phieu_Nhap_Kho);

@@ -77,9 +77,6 @@ else
             </div>
         </div>
     </div>
-
-    
-    @*  <Paginator State="@pagination" /> *@
     
     <hr/>
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
@@ -116,9 +113,9 @@ else
         pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
     }
 
-    void EditDVT(string tendonvi)
+    void EditDVT(string Id)
     {
-        nav.NavigateTo($"/edit-donvitinh/{tendonvi}");
+        nav.NavigateTo($"/edit-donvitinh/{Id}");
     }
 
     void AddDVT()

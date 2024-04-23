@@ -156,7 +156,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var ctPXK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Xuat_Kho_ID, San_Pham_ID);
+        var ctPXK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Xuat_Kho_ID,Convert.ToInt32(San_Pham_ID));
         if (ctPXK is not null)
         {
             CurrentCTPXK = ctPXK;
@@ -186,7 +186,7 @@ else
             await SweetAlert.ShowMessage("Error", "Phiếu xuất của sản phẩm đã tồn tại.", "Error");
             return;
         }
-        if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID))
+        if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID.ToString()))
         {
             await SweetAlert.ShowMessage("Error", "Mã sản phẩm không được để trống.", "Error");
             return;
@@ -206,7 +206,7 @@ else
         {
             try
             {
-                await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, San_Pham_ID);
+                await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, Convert.ToInt32(San_Pham_ID));
                 await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
                 nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
             }

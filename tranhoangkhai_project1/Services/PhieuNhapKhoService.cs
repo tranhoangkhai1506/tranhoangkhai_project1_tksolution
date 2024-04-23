@@ -62,9 +62,9 @@ namespace tranhoangkhai_project1.Services
             return phieuNhapKho;
         }
 
-        public async Task<PhieuNhapKhoModel> GetByNCCIDAsync(string NCC_ID)
+        public async Task<PhieuNhapKhoModel> GetByNCCIDAsync(int Id)
         {
-            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.NCC_ID.Equals(NCC_ID));
+            var phieuNhapKho = await _dataContext.tbl_DM_Nhap_Kho.FirstOrDefaultAsync(p => p.NCC_ID == Id);
             return phieuNhapKho;
         }
 
@@ -76,7 +76,14 @@ namespace tranhoangkhai_project1.Services
                 dbPhieuNhapKho.Ngay_Nhap_Kho = phieuNhapKho.Ngay_Nhap_Kho;
                 dbPhieuNhapKho.NCC_ID = phieuNhapKho.NCC_ID;
                 dbPhieuNhapKho.Kho_ID = phieuNhapKho.Kho_ID;
-                dbPhieuNhapKho.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                if (phieuNhapKho.Ghi_Chu is null)
+                {
+                    dbPhieuNhapKho.Ghi_Chu = "U/N";
+                }
+                else
+                {
+                    dbPhieuNhapKho.Ghi_Chu = phieuNhapKho.Ghi_Chu;
+                }
                 await _dataContext.SaveChangesAsync();
             }
         }

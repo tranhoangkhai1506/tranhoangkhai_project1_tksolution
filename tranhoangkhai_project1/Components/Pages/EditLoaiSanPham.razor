@@ -142,14 +142,10 @@ else
         }
 
         var existingUnitCode = await LoaiSanPhamSevice.GetByNameAsync(CurrentLSP.Ten_LSP);
-        if (existingUnitCode != null )
+        if (existingUnitCode != null && !existingUnitCode.Ma_LSP.Equals(CurrentLSP.Ma_LSP))
         {
-            if (!existingMaLoaiCode.Ma_LSP.Equals(Ma_LSP))
-            {
-               await SweetAlert.ShowToast("Tên loại sản phẩm đã tồn tại.", "Error", 1000);
-            return; 
-            }
-            
+            await SweetAlert.ShowToast("Tên loại sản phẩm đã tồn tại.", "Error", 1000);
+            return;
         }
 
         if (string.IsNullOrWhiteSpace(CurrentLSP.Ten_LSP))

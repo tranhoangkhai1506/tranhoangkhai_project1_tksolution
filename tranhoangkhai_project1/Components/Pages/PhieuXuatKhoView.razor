@@ -1,4 +1,4 @@
-﻿ @page "/phieuxuatkho-list"
+﻿@page "/phieuxuatkho-list"
 
 @inject iPhieuXuatKhoService PhieuXuatKhoService
 @inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
@@ -91,7 +91,7 @@ else
 
 @code {
     PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
-    public List<KhoModel> danhSachKho { get; set; } = new List<KhoModel>();
+    public List<KhoModel> danhSachKho = new List<KhoModel>();
     private string currentReportId;
     private int itemCount = 0;
     IQueryable<PhieuXuatKhoModel>? itemsQueryable;
@@ -146,12 +146,15 @@ else
     async Task DeletePhieuXuatKho(string maphieu)
     {
         var chitietPhieuXuat = await ChiTietPhieuXuatKhoService.GetAllChiTietByKhoIDAsync(maphieu);
-        if (chitietPhieuXuat.Count() == 0)
+        if (chitietPhieuXuat.Count() != 0)
         {
-
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
             if (confirmed)
             {
+                foreach(var i in chitietPhieuXuat)
+                {
+                    await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(i.Xuat_Kho_ID, i.San_Pham_ID);
+                }
                 await PhieuXuatKhoService.DeletePhieuXuatKhoAsync(maphieu);
                 await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
                 itemsQueryable = (await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync()).AsQueryable();
@@ -160,8 +163,14 @@ else
         }
         else
         {
-            await SweetAlert.ShowMessage("Error", "Không thể xóa phiếu!", "Error");
-            return;
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
+            if (confirmed)
+            {
+                await PhieuXuatKhoService.DeletePhieuXuatKhoAsync(maphieu);
+                await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
+                itemsQueryable = (await PhieuXuatKhoService.GetAllPhieuXuatKhoAsync()).AsQueryable();
+                pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            }
         }
     }
     async Task HieuChinh(string So_Phieu_Xuat_Kho)

@@ -120,7 +120,7 @@
             decimal total = 0;
             foreach (var item in chitietPXKList)
             {
-                SanPhamModel sanpham = sanphamList.Where(p => p.Ma_San_Pham.Equals(item.San_Pham_ID)).FirstOrDefault();
+                SanPhamModel sanpham = sanphamList.Where(p => p.Id == item.San_Pham_ID).FirstOrDefault();
                 <tr>
                     <td>@soThuTu</td>
                     <td>@sanpham.Ma_San_Pham</td>

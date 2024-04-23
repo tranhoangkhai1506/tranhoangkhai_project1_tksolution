@@ -39,9 +39,13 @@ namespace tranhoangkhai_project1.Services
 
         public async Task<KhoModel> GetByIdAsync(int khoId)
         {
-            return await _dataContext.tbl_DM_Kho
-                                      .AsNoTracking()
-                                      .FirstOrDefaultAsync(p => p.KhoId==khoId);
+            return await _dataContext.tbl_DM_Kho.FindAsync(khoId);
+        }
+
+        public async Task<KhoModel> GetByNameAsync(string Ten_Kho)
+        {
+            var result = await _dataContext.tbl_DM_Kho.FirstOrDefaultAsync(p => p.Ten_Kho.Equals(Ten_Kho));
+            return result;
         }
 
         public async Task UpdateKhoAsync(KhoModel kho, int khoId)

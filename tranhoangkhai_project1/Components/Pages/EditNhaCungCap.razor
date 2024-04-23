@@ -1,12 +1,12 @@
 ﻿@page "/edit-nhacungcap"
-@page "/edit-nhacungcap/{maNCC}"
+@page "/edit-nhacungcap/{Id}"
 @inject IJSRuntime js
 @inject ShowErrorMessage SweetAlert
 @inject iNhaCungCapService NhaCungCapSevice
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@if (maNCC is null)
+@if (Id is null)
 {
     <PageTitle>THÊM NHÀ CUNG CẤP</PageTitle>
     <h1 style="text-align: center;"><strong>THÊM NHÀ CUNG CẤP</strong></h1>
@@ -103,16 +103,16 @@ else
 
 @code {
     [Parameter]
-    public string? maNCC { get; set; }
+    public string? Id { get; set; }
     public string ErrorMessage { get; set; }
 
 
     public NhaCungCapModel CurrentNCC { get; set; } = new();
     protected override async Task OnParametersSetAsync()
     {
-        if (maNCC is not null)
+        if (Id is not null)
         {
-            var sanPham = await NhaCungCapSevice.GetByIdAsync(maNCC);
+            var sanPham = await NhaCungCapSevice.GetByIdAsync(Convert.ToInt32(Id));
             if (sanPham is not null)
             {
                 CurrentNCC = sanPham;
@@ -125,36 +125,32 @@ else
 
         if (string.IsNullOrWhiteSpace(CurrentNCC.Ma_NCC))
         {
-            ErrorMessage = "Mã nhà cung cấp không được để trống.";
+            await SweetAlert.ShowToast("Mã nhà cung cấp không được để trống.", "Error", 1000);
+            return;
+        }
+        var existingProduct = await NhaCungCapSevice.GetByMaNCCAsync(CurrentNCC.Ma_NCC);
+        if (existingProduct != null && existingProduct.Id != Convert.ToInt32(Id))
+        {
+            await SweetAlert.ShowToast("Mã nhà cung cấp đã tồn tại.", "Error", 1000);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(CurrentNCC.Ten_NCC))
         {
-            ErrorMessage = "Tên nhà cung cấp không được để trống.";
+            await SweetAlert.ShowToast("Tên nhà cung cấp không được để trống.", "Error", 1000);
             return;
         }
-
-        var existingProduct = await NhaCungCapSevice.GetByIdAsync(CurrentNCC.Ma_NCC);
-        if (existingProduct != null && maNCC is null)
-        {
-            ErrorMessage = "Mã nhà cung cấp đã tồn tại.";
-            return;
-        }
-
-
         var existingNCCName = await NhaCungCapSevice.GetByNameAsync(CurrentNCC.Ten_NCC);
-        if (existingNCCName != null && existingNCCName.Ma_NCC != maNCC)
+        if (existingNCCName != null && existingNCCName.Id != Convert.ToInt32(Id))
         {
-            ErrorMessage = "Tên nhà cung cấp đã tồn tại.";
+            await SweetAlert.ShowToast("Tên nhà cung cấp đã tồn tại.", "Error", 1000);
             return;
         }
-        // Nếu không có lỗi, tiến hành cập nhật hoặc thêm mới sản phẩm
-        if (maNCC is not null)
+        if (Id is not null)
         {
             try
             {
-                await NhaCungCapSevice.UpdateNhaCungCapAsync(CurrentNCC, maNCC);
+                await NhaCungCapSevice.UpdateNhaCungCapAsync(CurrentNCC, Convert.ToInt32(Id));
                 await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
                 nav.NavigateTo("/nhacungcap-list");
             }   

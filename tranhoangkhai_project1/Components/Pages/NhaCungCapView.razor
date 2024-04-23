@@ -43,8 +43,8 @@ else
                 </PropertyColumn>
                 <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
                 <TemplateColumn Title="Actions" Class="text-left">
-                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditNhaCungCap(context.Ma_NCC))">Hiệu chỉnh</button>
-                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteNhaCungCap(context.Ma_NCC))">Xóa</button>
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditNhaCungCap(context.Id.ToString()))">Hiệu chỉnh</button>
+                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteNhaCungCap(context.Id))">Xóa</button>
                 </TemplateColumn>
             </QuickGrid>
         </div>
@@ -110,24 +110,24 @@ else
     private string? AriaCurrentValue(int pageIndex)
         => pagination.CurrentPageIndex == pageIndex ? "page" : null;
 
-    void EditNhaCungCap(string maNCC)
+    void EditNhaCungCap(string Id)
     {
-        nav.NavigateTo($"/edit-nhacungcap/{maNCC}");
+        nav.NavigateTo($"/edit-nhacungcap/{Id}");
     }
 
     void AddNhaCungCap()
     {
         nav.NavigateTo($"/edit-nhacungcap");
     }
-    async Task DeleteNhaCungCap(string maNCC)
+    async Task DeleteNhaCungCap(int Id)
     {
-        var existChildrenOfPhieuNhap = await PhieuNhapKhoService.GetByNCCIDAsync(maNCC);
+        var existChildrenOfPhieuNhap = await PhieuNhapKhoService.GetByNCCIDAsync(Id);
         if (existChildrenOfPhieuNhap is null)
         {
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa nhà cung cấp này?");
             if (confirmed)
             {
-                await NhaCungCapService.DeleteNhaCungCapAsync(maNCC);
+                await NhaCungCapService.DeleteNhaCungCapAsync(Id);
                 await SweetAlert.ShowToast("Xóa nhà cung cấp thành công!", "Success", 1000);
                 itemsQueryable = (await NhaCungCapService.GetAllNhaCungCapAsync()).AsQueryable();
                 pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();                

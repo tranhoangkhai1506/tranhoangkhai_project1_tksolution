@@ -6,6 +6,7 @@ namespace tranhoangkhai_project1.Services
     {
         Task<List<KhoModel>> GetAllKhoAsync();
         Task<KhoModel> GetByIdAsync(int khoId);
+        Task<KhoModel> GetByNameAsync(string Ten_Kho);
 
         Task AddKho(KhoModel kho);
         Task UpdateKhoAsync(KhoModel kho, int khoId);

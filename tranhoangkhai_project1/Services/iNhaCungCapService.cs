@@ -5,11 +5,11 @@ namespace tranhoangkhai_project1.Services
     public interface iNhaCungCapService
     {
         Task<List<NhaCungCapModel>> GetAllNhaCungCapAsync();
-        Task<NhaCungCapModel> GetByIdAsync(string maNCC);
+        Task<NhaCungCapModel> GetByIdAsync(int Id);
         Task<NhaCungCapModel> GetByNameAsync(string Ten_NhaCC);
-
+        Task<NhaCungCapModel> GetByMaNCCAsync(string Ma_NCC);
         Task AddNhaCungCap(NhaCungCapModel nhaCungCap);
-        Task UpdateNhaCungCapAsync(NhaCungCapModel nhaCungCap, string maNCC);
-        Task DeleteNhaCungCapAsync(string maNCC);
+        Task UpdateNhaCungCapAsync(NhaCungCapModel nhaCungCap, int Id);
+        Task DeleteNhaCungCapAsync(int Id);
     }
 }

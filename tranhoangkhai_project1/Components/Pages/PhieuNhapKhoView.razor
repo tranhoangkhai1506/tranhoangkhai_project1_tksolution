@@ -128,7 +128,7 @@ else
         nav.NavigateTo($"/chitietphieunhapkho-list/{So_Phieu_Nhap_Kho}");
     }
 
-   
+
     protected override async Task OnInitializedAsync()
     {
         danhSachKho = await KhoService.GetAllKhoAsync();
@@ -141,7 +141,22 @@ else
     private async Task DeletePhieuNhapKho(string maphieu)
     {
         var chitietPhieuXuat = await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(maphieu);
-        if (chitietPhieuXuat.Count() == 0)
+        if (chitietPhieuXuat.Count() != 0)
+        {
+            var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
+            if (confirmed)
+            {
+                foreach (var i in chitietPhieuXuat)
+                {
+                    await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(i.Nhap_Kho_ID,i.San_Pham_ID);
+                }
+                await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
+                itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();
+                await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
+                pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
+            }
+        }
+        else
         {
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
             if (confirmed)
@@ -151,11 +166,6 @@ else
                 await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
                 pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();
             }
-        }
-        else
-        {
-            await SweetAlert.ShowMessage("Error", "Không thể xóa phiếu!", "Error");
-            return;
         }
     }
     string GetKhoName(dynamic context)

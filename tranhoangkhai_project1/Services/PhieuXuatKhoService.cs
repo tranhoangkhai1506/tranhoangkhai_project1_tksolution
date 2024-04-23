@@ -13,6 +13,10 @@ namespace tranhoangkhai_project1.Services
         }
         public async Task AddPhieuXuatKhoAsync(PhieuXuatKhoModel phieuXuatKho)
         {
+            if (phieuXuatKho.Ghi_Chu is null)
+            {
+                phieuXuatKho.Ghi_Chu = "U/N";
+            }
             _dataContext.tbl_DM_Xuat_Kho.Add(phieuXuatKho);
             await _dataContext.SaveChangesAsync();
         }
@@ -37,6 +41,7 @@ namespace tranhoangkhai_project1.Services
             var result = await _dataContext.tbl_DM_Xuat_Kho.ToListAsync();
             return result;
         }
+
 
         public async Task<PhieuXuatKhoModel> GetByIdAsync(string So_Phieu_Xuat_Kho)
         {
@@ -63,7 +68,14 @@ namespace tranhoangkhai_project1.Services
             {
                 dbPhieuXuatKho.Ngay_Nhap_Kho = phieuXuatKho.Ngay_Nhap_Kho;
                 dbPhieuXuatKho.Kho_ID = phieuXuatKho.Kho_ID;
-                dbPhieuXuatKho.Ghi_Chu = phieuXuatKho.Ghi_Chu;
+                if (phieuXuatKho.Ghi_Chu is null)
+                {
+                    dbPhieuXuatKho.Ghi_Chu = "U/N";
+                }
+                else
+                {
+                    dbPhieuXuatKho.Ghi_Chu = phieuXuatKho.Ghi_Chu;
+                }
                 await _dataContext.SaveChangesAsync();
             }
         }

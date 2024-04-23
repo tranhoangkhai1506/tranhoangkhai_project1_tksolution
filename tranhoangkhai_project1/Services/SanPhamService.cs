@@ -21,9 +21,9 @@ namespace tranhoangkhai_project1.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task DeleteSanPhamAsync(string maSanPham)
+        public async Task DeleteSanPhamAsync(int maSanPham)
         {
-            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ma_San_Pham.Equals(maSanPham));
+            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Id == maSanPham);
             if (sanPham != null)
             {
                 _dataContext.tbl_DM_San_Pham.Remove(sanPham);
@@ -37,9 +37,9 @@ namespace tranhoangkhai_project1.Services
             return result;
         }
 
-        public async Task<SanPhamModel> GetByIdAsync(string maSanPham)
+        public async Task<SanPhamModel> GetByIdAsync(int maSanPham)
         {
-            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ma_San_Pham.Equals(maSanPham));
+            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Id == maSanPham);
             return sanPham;
         }
         public async Task<SanPhamModel> GetByDVTAsync(int maDVT)
@@ -48,9 +48,9 @@ namespace tranhoangkhai_project1.Services
             return sanPham;
         }
 
-        public async Task UpdateSanPhamAsync(SanPhamModel sanPham, string maSanPham)
+        public async Task UpdateSanPhamAsync(SanPhamModel sanPham, int maSanPham)
         {
-            var dbSanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ma_San_Pham.Equals(maSanPham));
+            var dbSanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Id == maSanPham);
             if (dbSanPham != null)
             {
                 dbSanPham.Ma_San_Pham = sanPham.Ma_San_Pham;
@@ -78,6 +78,12 @@ namespace tranhoangkhai_project1.Services
         public async Task<SanPhamModel> GetByNameAsync(string Ten_San_Pham)
         {
             var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ten_San_Pham.Equals(Ten_San_Pham));
+            return sanPham;
+        }
+
+        public async Task<SanPhamModel> GetByMaAsync(string Ma_SP)
+        {
+            var sanPham = await _dataContext.tbl_DM_San_Pham.FirstOrDefaultAsync(p => p.Ma_San_Pham.Equals(Ma_SP));
             return sanPham;
         }
     }
