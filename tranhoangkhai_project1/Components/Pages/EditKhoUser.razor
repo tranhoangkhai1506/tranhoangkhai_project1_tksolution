@@ -1,0 +1,150 @@
+﻿@page "/edit-khouser"
+@page "/edit-khouser/{khoID}/{maDangNhap}"
+
+@inject iKhoUserService KhoUserService
+@inject IJSRuntime js
+@inject ShowErrorMessage SweetAlert
+@inject NavigationManager nav
+@inject iKhoService KhoService
+
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+
+@if (khoID is null && maDangNhap is null)
+{
+    <PageTitle>THÊM KHO USER</PageTitle>
+
+    <h1 style="text-align: center;"><strong>THÊM KHO</strong></h1>
+    <hr />
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN KHO</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentKhoUser" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ma_Dang_Nhap">Mã Đăng Nhập</label>
+                                <InputText id="Ma_Dang_Nhap" @bind-Value="CurrentKhoUser.Ma_Dang_Nhap" class="form-control"></InputText>
+                            </div>
+                            <div>
+                                <label for="Kho_ID">Kho</label>
+                                <InputSelect class="form-control" id="Kho_ID" @bind-Value="CurrentKhoUser.Kho_ID">
+                                    <option value="" disabled selected>Chọn kho</option>
+                                    @foreach (var kho in listKho)
+                                    {
+                                        <option value="@kho.KhoId">@kho.Ten_Kho</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <PageTitle>SỬA KHO USER</PageTitle>
+
+    <h1 style="text-align: center;"><strong>THÊM KHO</strong></h1>
+    <hr />
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header"><strong>THÔNG TIN KHO</strong></div>
+                    <div class="card-body">
+                        <EditForm Model="CurrentKhoUser" OnSubmit="HandleSubmit">
+                            <div>
+                                <label for="Ma_Dang_Nhap">Mã Đăng Nhập</label>
+                                <InputText id="Ma_Dang_Nhap" @bind-Value="CurrentKhoUser.Ma_Dang_Nhap" class="form-control"></InputText>
+                            </div>
+                            @* <div>
+                                <label for="Kho_ID">Kho</label>
+                                <InputSelect class="form-control" id="Kho_ID" @bind-Value="CurrentKhoUser.Kho_ID">
+                                    <option value="" disabled selected>Chọn kho</option>
+                                    @foreach (var kho in listKho)
+                                    {
+                                        <option value="@kho.KhoId">@kho.Ten_Kho</option>
+                                    }
+                                </InputSelect>
+                            </div> *@
+                        </EditForm>
+                    </div>
+                    <div class="card-footer">
+                        <div class="hstack gap-3 float-end">
+                            <form method="dialog">
+                                <button class="btn btn-danger" @onclick="OnClose">Close</button>
+                            </form>
+                            <button class="btn btn-success" @onclick="HandleSubmit" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? khoID { get; set; }
+    [Parameter]
+    public string? maDangNhap { get; set; }
+    public KhoUserModel CurrentKhoUser { get; set; } = new();
+    public List<KhoModel> listKho { get; set; } = new List<KhoModel>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        listKho = await KhoService.GetAllKhoAsync();
+        if (khoID is not null && maDangNhap is not null)
+        {
+            var khoUser = await KhoUserService.GetByIdAsync(Int32.Parse(khoID), maDangNhap);
+            if (khoUser is not null)
+            {
+                CurrentKhoUser = khoUser;
+            }
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentKhoUser.Ma_Dang_Nhap))
+        {
+            await SweetAlert.ShowToast("Mã đăng nhập không được để trống.", "Error", 1000);
+            return;
+        }
+
+        var existingUnitCode = await KhoUserService.GetByIdAsync(CurrentKhoUser.Kho_ID,CurrentKhoUser.Ma_Dang_Nhap);
+        if (existingUnitCode != null && khoID is not null && maDangNhap is not null)
+        {
+            await SweetAlert.ShowToast("Mã đăng nhập đã tồn tại.", "Error", 1000);
+            return;
+        }
+
+        if (khoID is not null && maDangNhap is not null)
+        {
+            await KhoUserService.UpdateKhoUserAsync(CurrentKhoUser, Int32.Parse(khoID), maDangNhap);
+            await SweetAlert.ShowToast("Sửa thành công!", "Success", 1000);
+            nav.NavigateTo("/khouser-list");
+        }
+        else
+        {
+            await KhoUserService.AddKhoUser(CurrentKhoUser);
+            await SweetAlert.ShowToast("Thêm thành công!", "Success", 1000);
+            nav.NavigateTo("/khouser-list");
+        }
+    }
+    private void OnClose(EventArgs e)
+    {
+        nav.NavigateTo("/khouser-list");
+    }
+}

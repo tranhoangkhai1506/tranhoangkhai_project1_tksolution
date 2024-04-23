@@ -22,7 +22,7 @@ builder.Services.AddScoped<iLoaiSanPhamService, LoaiSanPhamService>();
 builder.Services.AddScoped<iSanPhamService, SanPhamService>();
 builder.Services.AddScoped<iNhaCungCapService, NhaCungCapService>();
 builder.Services.AddScoped<iKhoService, KhoService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<iKhoUserService, KhoUserService>();
 builder.Services.AddScoped<iPhieuNhapKhoService, PhieuNhapKhoService>();
 builder.Services.AddScoped<iChiTietPhieuNhapKhoService, ChiTietPhiNhapKhoService>();
 builder.Services.AddScoped<iPhieuXuatKhoService, PhieuXuatKhoService>();

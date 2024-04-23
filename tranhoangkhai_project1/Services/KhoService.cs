@@ -13,6 +13,10 @@ namespace tranhoangkhai_project1.Services
         }
         public async Task AddKho(KhoModel kho)
         {
+            if (kho.Ghi_Chu is null)
+            {
+                kho.Ghi_Chu = "U/N";
+            }
             _dataContext.tbl_DM_Kho.Add(kho);
             await _dataContext.SaveChangesAsync();
         }
@@ -46,8 +50,15 @@ namespace tranhoangkhai_project1.Services
 
             if (existingKho != null)
             {
-                _dataContext.tbl_DM_Kho.Remove(existingKho);
-                _dataContext.tbl_DM_Kho.Add(kho);
+                existingKho.Ten_Kho = kho.Ten_Kho;
+                if(kho.Ghi_Chu is null)
+                {
+                    existingKho.Ghi_Chu = "U/N";
+                }
+                else
+                {
+                    existingKho.Ghi_Chu = kho.Ghi_Chu;
+                }
                 await _dataContext.SaveChangesAsync();
             }
         }

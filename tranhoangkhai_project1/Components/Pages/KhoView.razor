@@ -4,6 +4,7 @@
 @inject ShowErrorMessage SweetAlert
 @inject iPhieuNhapKhoService PhieuNhapKhoService
 @inject iPhieuXuatKhoService PhieuXuatKhoService
+@inject iKhoUserService KhoUserService
 @inject NavigationManager nav
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
@@ -122,7 +123,8 @@ else
     {
         var existChildrenOfPhieuNhapKho = await PhieuNhapKhoService.GetByKhoIDAsync(Int32.Parse(khoId));
         var existChildrenOfPhieuXuatKho = await PhieuXuatKhoService.GetByKhoIDAsync(Int32.Parse(khoId));
-        if (existChildrenOfPhieuNhapKho is null && existChildrenOfPhieuXuatKho is null )
+        var existChildrenOfUserKho = await KhoUserService.GetUsersByKhoIdAsync(Int32.Parse(khoId));
+        if (existChildrenOfPhieuNhapKho is null && existChildrenOfPhieuXuatKho is null && existChildrenOfUserKho.Count == 0)
         {
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa loại sản phẩm này?");
             if (confirmed)

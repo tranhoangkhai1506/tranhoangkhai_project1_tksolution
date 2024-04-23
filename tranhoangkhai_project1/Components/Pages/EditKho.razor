@@ -116,19 +116,14 @@ else
     {
         if (string.IsNullOrWhiteSpace(CurrentKho.Ten_Kho))
         {
-            ErrorMessage = "Tên kho tính không được để trống.";
+            await SweetAlert.ShowToast("Tên kho không được để trống.", "Error", 1000);
             return;
         }
 
         var existingUnitCode = await KhoService.GetByIdAsync(CurrentKho.KhoId);
         if (existingUnitCode != null && TenKho is null)
         {
-            ErrorMessage = "Tên kho đã tồn tại.";
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(CurrentKho.Ghi_Chu))
-        {
-            ErrorMessage = "Ghi chú không được để trống.";
+            await SweetAlert.ShowToast("Tên kho đã tồn tại.", "Error", 1000);
             return;
         }
 
