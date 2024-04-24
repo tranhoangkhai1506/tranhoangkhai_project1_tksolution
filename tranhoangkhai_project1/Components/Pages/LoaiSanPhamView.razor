@@ -49,7 +49,7 @@ else
                 <PropertyColumn Property="@(c => c.Ghi_Chu)" Sortable="true" Title="GHI CHÚ" />
                 <TemplateColumn Title="Actions" Class="text-left">
                     <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditDVT(context.Ma_LSP))">Hiệu chỉnh</button>
-                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteDVT(context.Ma_LSP, context.Ma_LSP))">Xóa</button>
+                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteDVT(context.Ma_LSP, context.Id.ToString()))">Xóa</button>
                 </TemplateColumn>
             </QuickGrid>
         </div>
@@ -125,7 +125,7 @@ else
     }
     async Task DeleteDVT(string ma_lsp, string maLoai)
     {
-        var existChildrenOfLoai = await SanPhamService.GetByLoaiSanPhamAsync(maLoai);
+        var existChildrenOfLoai = await SanPhamService.GetByLoaiSanPhamAsync(Convert.ToInt32( maLoai));
         if(existChildrenOfLoai is null)
         {
             var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa loại sản phẩm này?");
