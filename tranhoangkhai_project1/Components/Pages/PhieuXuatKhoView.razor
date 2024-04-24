@@ -153,7 +153,7 @@ else
             {
                 foreach(var i in chitietPhieuXuat)
                 {
-                    await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(i.Xuat_Kho_ID, i.San_Pham_ID);
+                    await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(i.Id);
                 }
                 await PhieuXuatKhoService.DeletePhieuXuatKhoAsync(maphieu);
                 await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);

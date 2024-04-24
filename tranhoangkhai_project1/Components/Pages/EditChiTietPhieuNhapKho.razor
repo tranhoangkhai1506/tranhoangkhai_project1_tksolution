@@ -1,5 +1,5 @@
 ﻿@page "/edit-chitietphieunhapkho/{Nhap_Kho_ID}"
-@page "/edit-chitietphieunhapkho/{Nhap_Kho_ID}/{San_Pham_ID}"
+@page "/edit-chitietphieunhapkho/{Nhap_Kho_ID}/{Id}"
 
 @inject iChiTietPhieuNhapKhoService ChiTietPhieuNhapKhoService
 @inject iPhieuNhapKhoService PhieuNhapKhoService
@@ -9,7 +9,7 @@
 @inject ShowErrorMessage SweetAlert
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@if (San_Pham_ID is null)
+@if (Id is null)
 {
     <PageTitle>THÊM CHI TIẾT PHIẾU NHẬP KHO</PageTitle>
     <h1 style="text-align: center;"><strong>THÊM CHI TIẾT PHIẾU NHẬP KHO</strong></h1>
@@ -99,7 +99,7 @@ else
                     <div class="card-body">
                         @foreach (var sanpham in sanPhamList)
                         {
-                            if (sanpham.Ma_San_Pham.Equals(CurrentCTPNK.San_Pham_ID))
+                            if (sanpham.Id == CurrentCTPNK.San_Pham_ID)
                             {
                                 <p class="card-text"><strong>Mã sản phẩm:</strong> @sanpham.Ma_San_Pham</p>
                                 <p class="card-text"><strong>Tên sản phẩm:</strong> @sanpham.Ten_San_Pham</p>
@@ -116,17 +116,7 @@ else
                 <div class="card">
                     <div class="card-header"><strong>NHẬP THÔNG TIN CHỈNH SỬA</strong></div>
                     <div class="card-body">
-                        <EditForm Model="CurrentCTPNK" OnSubmit="HandleSubmit">
-                            <div class="mb-3">
-                                <label for="San_Pham_ID" class="form-label">Sản phẩm</label>
-                                <InputSelect class="form-control" id="San_Pham_ID" @bind-Value="CurrentCTPNK.San_Pham_ID">
-                                    <option value="" disabled selected>Chọn sản phẩm nhập kho</option>
-                                    @foreach (var item in sanPhamList)
-                                    {
-                                        <option value="@item.Id">@item.Ten_San_Pham</option>
-                                    }
-                                </InputSelect>
-                            </div>
+                        <EditForm Model="CurrentCTPNK" OnSubmit="HandleSubmit">                       
                             <div class="mb-3">
                                 <label for="SL_Nhap" class="form-label">Số lượng nhập</label>
                                 <InputNumber id="SL_Nhap" @bind-Value="CurrentCTPNK.SL_Nhap" class="form-control"></InputNumber>
@@ -159,7 +149,7 @@ else
     public string Nhap_Kho_ID { get; set; }
 
     [Parameter]
-    public string San_Pham_ID { get; set; }
+    public string Id { get; set; }
 
     public string ErrorMessage { get; set; }
     public ChiTietPhieuNhapKho CurrentCTPNK { get; set; } = new();
@@ -168,7 +158,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var ctPNK = await ChiTietPhieuNhapKhoService.GetByIdAsync(Nhap_Kho_ID, Convert.ToInt32(San_Pham_ID));
+        var ctPNK = await ChiTietPhieuNhapKhoService.GetByIdAsync(Convert.ToInt32(Id));
         if (ctPNK is not null)
         {
             CurrentCTPNK = ctPNK;
@@ -186,12 +176,6 @@ else
 
     async Task HandleSubmit()
     {
-        var existingUnitCode = await ChiTietPhieuNhapKhoService.GetByIdAsync(CurrentCTPNK.Nhap_Kho_ID, CurrentCTPNK.San_Pham_ID);
-        if (existingUnitCode != null && San_Pham_ID is null)
-        {
-            await SweetAlert.ShowMessage("Error", "Phiếu nhập của sản phẩm đã tồn tại.", "Error");
-            return;
-        }
         if (string.IsNullOrWhiteSpace(CurrentCTPNK.San_Pham_ID.ToString()))
         {
             ErrorMessage = "Mã sản phẩm không được để trống.";
@@ -208,11 +192,11 @@ else
             return;
         }
 
-        if (Nhap_Kho_ID is not null && San_Pham_ID is not null)
+        if (Nhap_Kho_ID is not null && Id is not null)
         {
             try
             {
-                await ChiTietPhieuNhapKhoService.UpdateChiTietPhieuNhapAsync(CurrentCTPNK, Nhap_Kho_ID, Convert.ToInt32(San_Pham_ID));
+                await ChiTietPhieuNhapKhoService.UpdateChiTietPhieuNhapAsync(CurrentCTPNK, Convert.ToInt32(Id));
                 await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
                 nav.NavigateTo($"/chitietphieunhapkho-list/{CurrentCTPNK.Nhap_Kho_ID}");
             }

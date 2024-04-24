@@ -148,7 +148,7 @@ else
             {
                 foreach (var i in chitietPhieuXuat)
                 {
-                    await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(i.Nhap_Kho_ID,i.San_Pham_ID);
+                    await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(i.Id);
                 }
                 await PhieuNhapKhoService.DeletePhieuNhapKhoAsync(maphieu);
                 itemsQueryable = (await PhieuNhapKhoService.GetAlPhieuNhapKhoAsync()).AsQueryable();

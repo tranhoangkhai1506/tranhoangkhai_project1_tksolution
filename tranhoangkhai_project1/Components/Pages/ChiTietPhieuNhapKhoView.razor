@@ -41,8 +41,8 @@ else
                 <PropertyColumn Property="@(c => $"{c.Don_Gia_Nhap:0.0}")" Sortable="true" Title="ĐƠN GIÁ" />
                 <PropertyColumn Property="@(c => c.SL_Nhap * c.Don_Gia_Nhap)" Format="0.00" Sortable="true" Title="TRỊ GIÁ" />
                 <TemplateColumn Title="Actions" Class="text-center">
-                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditCTPNK(context.Nhap_Kho_ID, context.San_Pham_ID.ToString()))">Hiệu chỉnh</button>
-                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteCTPNK(context.Nhap_Kho_ID, context.San_Pham_ID.ToString()))">Xóa</button>
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditCTPNK(context.Nhap_Kho_ID,context.Id.ToString()))">Hiệu chỉnh</button>
+                    <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteCTPNK(context.Id.ToString(), context.Nhap_Kho_ID))">Xóa</button>
                 </TemplateColumn>
             </QuickGrid>
         </div>
@@ -103,9 +103,9 @@ else
     private string? AriaCurrentValue(int pageIndex)
         => pagination.CurrentPageIndex == pageIndex ? "page" : null;
 
-    void EditCTPNK(string Nhap_Kho_ID, string San_Pham_ID)
+    void EditCTPNK(string Nhap_Kho_ID, string Id)
     {
-        nav.NavigateTo($"/edit-chitietphieunhapkho/{Nhap_Kho_ID}/{San_Pham_ID}");
+        nav.NavigateTo($"/edit-chitietphieunhapkho/{Nhap_Kho_ID}/{Id}");
     }
     void BackToPhieuNhapKhoView()
     {
@@ -121,12 +121,12 @@ else
     {
         nav.NavigateTo($"/edit-chitietphieunhapkho/{Nhap_Kho_ID}");
     }
-    async Task DeleteCTPNK(string Nhap_Kho_ID, string San_Pham_ID)
+    async Task DeleteCTPNK(string Id, string Nhap_Kho_ID)
     {
         var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
         if (confirmed)
         {
-            await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(Nhap_Kho_ID, Convert.ToInt32(San_Pham_ID));
+            await ChiTietPhieuNhapKhoService.DeleteChiTietPhieuNhapAsync(Convert.ToInt32(Id));
             await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
             itemsQueryable = (await ChiTietPhieuNhapKhoService.GetAllChiTietByKhoIDAsync(Nhap_Kho_ID)).AsQueryable();
             pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();

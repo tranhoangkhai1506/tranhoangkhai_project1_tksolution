@@ -41,8 +41,8 @@ else
                     <PropertyColumn Property="@(c => $"{c.Don_Gia_Xuat:0.0}")" Sortable="true" Title="ĐƠN GIÁ" />
                     <PropertyColumn Property="@(c => c.SL_Xuat * c.Don_Gia_Xuat)" Format="0.00" Sortable="true" Title="TRỊ GIÁ" />
                     <TemplateColumn Title="Actions" Class="text-center">
-                        <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID.ToString()))">Hiệu chỉnh</button>
-                        <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteChiTietPhieuXuatKho(context.Xuat_Kho_ID, context.San_Pham_ID.ToString()))">Xóa</button>
+                        <button class="btn btn-info btn-sm me-1" @onclick="@(() => EditChiTietPhieuXuatKho(context.Xuat_Kho_ID,context.Id.ToString()))">Hiệu chỉnh</button>
+                        <button class="btn btn-danger btn-sm me-1" @onclick="@(() => DeleteChiTietPhieuXuatKho(context.Id.ToString(),context.Xuat_Kho_ID))">Xóa</button>
                     </TemplateColumn>
                 </QuickGrid>
 
@@ -116,21 +116,21 @@ else
         => pagination.CurrentPageIndex == pageIndex ? "page" : null;
 
 
-    void EditChiTietPhieuXuatKho(string Xuat_Kho_ID, string San_Pham_ID)
+    void EditChiTietPhieuXuatKho(string So_Phieu_Xuat_Kho, string Id)
     {
-        nav.NavigateTo($"/edit-chitietphieuxuatkho/{Xuat_Kho_ID}/{San_Pham_ID}");
+        nav.NavigateTo($"/edit-chitietphieuxuatkho/{So_Phieu_Xuat_Kho}/{Id}");
     }
 
     void AddChiTietPhieuXuatKho(string So_Phieu_Xuat_Kho)
     {
         nav.NavigateTo($"/edit-chitietphieuxuatkho/{So_Phieu_Xuat_Kho}");
     }
-    async Task DeleteChiTietPhieuXuatKho(string Nhap_Kho_ID, string San_Pham_ID)
+    async Task DeleteChiTietPhieuXuatKho(string Id, string Nhap_Kho_ID)
     {
         var confirmed = await js.InvokeAsync<bool>("confirm", "Bạn có chắc chắn muốn xóa phiếu này?");
         if (confirmed)
         {
-            await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(Nhap_Kho_ID, Convert.ToInt32(San_Pham_ID));
+            await ChiTietPhieuXuatKhoService.DeleteChiTietPhieuXuatAsync(Convert.ToInt32(Id));
             await SweetAlert.ShowToast("Xóa thành công", "Success", 1000);
             itemsQueryable = (await ChiTietPhieuXuatKhoService.GetAllChiTietByKhoIDAsync(Nhap_Kho_ID)).AsQueryable();
             pagination.TotalItemCountChanged += (sender, eventArgs) => StateHasChanged();

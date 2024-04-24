@@ -35,9 +35,7 @@ else
         </div>
         <div class="table-responsive">
             <QuickGrid Items="@FilteredKho" Pagination="@pagination" class="table table-striped table-hover">
-                <PropertyColumn Property="@(c => c.KhoId)" Sortable="true" Align="Align.Center" Title="ID KHO" />
-
-                <PropertyColumn Property="@(c => c.Ten_Kho)" Sortable="true" Class="country-name" Title="TÊN KHO">
+                <PropertyColumn Property="@(c => c.Ten_Kho)" Sortable="true" Align="Align.Center" Title="TÊN KHO">
                     <ColumnOptions>
                         <div class="search-box">
                             <input type="search" autofocus @bind="nameFilter" @bind:event="oninput" placeholder="Tên kho..." />

@@ -1,5 +1,5 @@
 ﻿@page "/edit-chitietphieuxuatkho/{Xuat_Kho_ID}"
-@page "/edit-chitietphieuxuatkho/{Xuat_Kho_ID}/{San_Pham_ID}"
+@page "/edit-chitietphieuxuatkho/{Xuat_Kho_ID}/{Id}"
 
 @inject iChiTietPhieuXuatKhoService ChiTietPhieuXuatKhoService
 @inject iPhieuXuatKhoService PhieuXuatKhoService
@@ -9,7 +9,7 @@
 @inject ShowErrorMessage SweetAlert
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
 
-@if (San_Pham_ID is null)
+@if (Id is null)
 {
     <PageTitle>THÊM CHI TIẾT PHIẾU NHẬP KHO</PageTitle>
     <h3>THÊM CHI TIẾT PHIẾU NHẬP KHO</h3>
@@ -96,7 +96,7 @@ else
                     <div class="card-body">
                         @foreach (SanPhamModel sanpham in sanPhamList)
                         {
-                            if (sanpham.Ma_San_Pham.Equals(CurrentCTPXK.San_Pham_ID))
+                            if (sanpham.Id == CurrentCTPXK.San_Pham_ID)
                             {
                                 <p class="card-text"><strong>Mã sản phẩm:</strong> @sanpham.Ma_San_Pham</p>
                                 <p class="card-text"><strong>Tên sản phẩm:</strong> @sanpham.Ten_San_Pham</p>
@@ -147,7 +147,7 @@ else
     public string Xuat_Kho_ID { get; set; }
 
     [Parameter]
-    public string San_Pham_ID { get; set; }
+    public string Id { get; set; }
 
     public string ErrorMessage { get; set; }
     public ChiTietPhieuXuatKhoModel CurrentCTPXK { get; set; } = new();
@@ -156,7 +156,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var ctPXK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Xuat_Kho_ID,Convert.ToInt32(San_Pham_ID));
+        var ctPXK = await ChiTietPhieuXuatKhoService.GetByIdAsync(Convert.ToInt32(Id));
         if (ctPXK is not null)
         {
             CurrentCTPXK = ctPXK;
@@ -179,13 +179,6 @@ else
             ErrorMessage = "Số phiếu nhập kho được để trống.";
             return;
         }
-
-        var existingUnitCode = await ChiTietPhieuXuatKhoService.GetByIdAsync(CurrentCTPXK.Xuat_Kho_ID, CurrentCTPXK.San_Pham_ID);
-        if (existingUnitCode != null && Xuat_Kho_ID is null && San_Pham_ID is null)
-        {
-            await SweetAlert.ShowMessage("Error", "Phiếu xuất của sản phẩm đã tồn tại.", "Error");
-            return;
-        }
         if (string.IsNullOrWhiteSpace(CurrentCTPXK.San_Pham_ID.ToString()))
         {
             await SweetAlert.ShowMessage("Error", "Mã sản phẩm không được để trống.", "Error");
@@ -202,11 +195,11 @@ else
             return;
         }
 
-        if (Xuat_Kho_ID is not null && San_Pham_ID is not null)
+        if (Xuat_Kho_ID is not null && Id is not null)
         {
             try
             {
-                await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK, Xuat_Kho_ID, Convert.ToInt32(San_Pham_ID));
+                await ChiTietPhieuXuatKhoService.UpdateChiTietPhieuXuatAsync(CurrentCTPXK,Convert.ToInt32(Id));
                 await SweetAlert.ShowToast("Sửa thành công", "Success", 1000);
                 nav.NavigateTo($"/chitietphieuxuatkho-list/{CurrentCTPXK.Xuat_Kho_ID}");
             }
@@ -218,7 +211,7 @@ else
         }
         else
         {
-            var existPhieuXuat = await ChiTietPhieuXuatKhoService.GetByIdAsync(CurrentCTPXK.Xuat_Kho_ID, CurrentCTPXK.San_Pham_ID);
+            var existPhieuXuat = await ChiTietPhieuXuatKhoService.GetByIdAsync(Convert.ToInt32(Id));
             if (existPhieuXuat is null)
             {
                 try
